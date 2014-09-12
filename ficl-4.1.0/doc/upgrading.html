@@ -1,0 +1,808 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<META name='Description' content='Ficl - embedded scripting with object oriented programming'>
+<META name='Keywords' content='scripting prototyping tcl OOP Forth interpreter C'>
+<LINK rel='SHORTCUT ICON' href='ficl.ico'>
+<TITLE>upgrading ficl</TITLE>
+<style>
+
+blockquote { margin-left: 1em }
+
+</style>
+
+</HEAD>
+<BODY>
+
+<table border=0 cellspacing=0 width=100%%><tr>
+
+
+<td width=112 bgcolor=#004968 colspan=3>
+<img src=graphics/ficl.4.96.jpg height=96 width=96>
+</td>
+
+<td bgcolor=#004968>
+<font face=arial,helvetica color=white size=7><b><i>
+upgrading ficl
+</i></b></font>
+</td></tr>
+
+
+<tr>
+<td bgcolor=#004968 width=10></td>
+<td bgcolor=#004968 valign=top>
+<br><p>
+<a href=index.html><font face=arial,helvetica color=white><b>Index</b></font></a><p>
+<p><br>
+<a href=dpans.html><font face=arial,helvetica color=white><b>ANS</b></font></a><br>
+<a href=api.html><font face=arial,helvetica color=white><b>API</b></font></a><br>
+<a href=debugger.html><font face=arial,helvetica color=white><b>Debugger</b></font></a><br>
+<a href=http://sourceforge.net/project/showfiles.php?group_id=24441><font face=arial,helvetica color=white><b>Download</b></font></a><br>
+<a href=license.html><font face=arial,helvetica color=white><b>Licensing</b></font></a><br>
+<a href=links.html><font face=arial,helvetica color=white><b>Links</b></font></a><br>
+<a href=locals.html><font face=arial,helvetica color=white><b>Locals</b></font></a><br>
+<a href=oop.html><font face=arial,helvetica color=white><b>OOP&nbsp;In&nbsp;Ficl</b></font></a><br>
+<a href=parsesteps.html><font face=arial,helvetica color=white><b>Parse&nbsp;Steps</b></font></a><br>
+<a href=releases.html><font face=arial,helvetica color=white><b>Release&nbsp;History</b></font></a><br>
+<a href=upgrading.html><font face=arial,helvetica color=white><b>Upgrading&nbsp;To&nbsp;4.0</b></font></a><br>
+</td><td bgcolor=#004968 width=5></td><td valign=top><blockquote><p>
+
+
+
+Ficl 4.0 is smaller, faster, and more capable than any previous
+version.  For more information on why Ficl 4.0 is so gosh-darned
+swell, see the <a href=index.html#WhatsNewInFicl4.0>What's New In Ficl 4.0?</a>
+section of the overview.
+<p>
+
+
+Since the Ficl API has changed so dramatically, you can't just drop
+the new Ficl source.  You have two basic choices:
+<a href=#compatibility>use the <code>FICL_WANT_COMPATIBILITY</code> support</a>, and
+<a href=#newapi>switching to the new API</a>.
+<p>
+
+Note that using <i>either</i> of these choices <i>requires</i>
+that you recompile your application.  You cannot build Ficl 4 into
+a shared library or DLL and use it with an application expecting
+Ficl 3.0.  Stated another way: Ficl 4 is <i>source</i> compatible
+but not <i>binary</i> compatible with Ficl 3.
+
+
+<a name=oldnames>
+
+<p>
+</blockquote><table border=0 bgcolor=#a0a0a0 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=5><b><i>
+<a name='UsingcodeFICL_WANT_COMPATIBILITY/code'>
+Using <code>FICL_WANT_COMPATIBILITY</code>
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+</a>
+
+
+If you want to get Ficl 4.0 up and running in your project as quickly
+as possible, <code>FICL_WANT_COMPATIBILITY</code> is what you'll want to use.
+There are two easy steps, one of which you might be able to skip:
+<p>
+
+<ol>
+
+<li>
+Set the C preprocessor constant <code>FICL_WANT_COMPATIBILITY</code> to 1.
+The best way is by adding the following line to <code>ficllocal.h</code>:
+<pre>
+	#define FICL_WANT_COMPATIBILITY (1)
+</pre>
+
+
+<li>
+
+<i>If</i> you use a custom <code>ficlTextOut()</code> function, you'll
+have to rename it, and explicitly specify it to Ficl.  Renaming it is
+necessary, because the Ficl compatibility layer also provides one for
+code that called <code>ficlTextOut()</code> directly (instead of calling
+<code>vmTextOut()</code> as it should have).
+We recommend renaming your function to <code>ficlTextOutLocal()</code>, as
+we have have provided a prototype for this function for you in <code>ficlcompatibility.h</code>.
+This will save you the trouble of defining your own prototype, ensuring you get
+correct name decoration / linkage, etc.
+
+<p>
+
+There are two methods you can use to specify your <code>ficlTextOut()</code>
+function:
+<ol>
+
+<li>
+Specify it in the <code>FICL_INIT_INFO</code> structure passed in to
+<code>ficlInitSystem()</code>.  This is the preferred method, as it ensures
+you will see the results of Ficl's initialization code, and it will be
+automatically passed in to every newly created VM.
+
+<li>
+Set it explicitly in every VM by calling <code>vmSetTextOut()</code> and
+passing it in.
+
+</ol>
+<p>
+
+<b>Note:</b>  Any other method, such as setting it by hand in the
+<code>FICL_SYSTEM</code> or <code>FICL_VM</code> structures,
+will <b>not</b> work.  There is a special compatibility layer for old-style
+<code>OUTFUNC</code> functions, but it is only invoked properly when you
+use one of the two methods mentioned above.
+
+
+</ol>
+
+<p>
+
+This <i>should</i> be sufficient for you to recompile-and-go
+with Ficl 4.  If it's not, please let us know, preferably including a
+suggested solution to the problem.
+
+
+<a name=newapi>
+
+<p>
+</blockquote><table border=0 bgcolor=#a0a0a0 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=5><b><i>
+<a name='UsingTheNewAPI'>
+Using The New API
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+</a>
+
+Since most (all?) of the external symbols have changed names since the 3.0 series,
+here is a quick guide to get you started on renaming everything.  This is by no
+means an exhaustive list; this is meant to guide you towards figuring out what
+the new name <i>should</i> be.  (After all, part of the point of this massive
+renaming was to make all the external symbols consistent.)
+<p>
+
+
+
+
+
+<p>
+</blockquote><table border=0 bgcolor=#b8b8b8 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=4><b><i>
+<a name='Types'>
+Types
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+
+Every external type has been renamed.  They all begin with the
+word <code>ficl</code>, and they use mixed case (instead of all upper-case,
+which is now reserved for macros).  Also, the confusingly-named
+string objects have been renamed:
+<code>FICL_STRING</code> is now <code>ficlCountedString</code>, as it
+represents a "counted string" in the language, and
+the more commonly-used <code>STRINGINFO</code> is now simply
+<code>ficlString</code>.
+
+<table width=100%><tr>
+
+<td bgcolor=#d0d0f0><b>old name</b></td>
+
+<td bgcolor=#e0e0ff><b>new name</td>
+
+</tr>
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>FICL_SYSTEM</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlSystem</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>FICL_VM</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlVm</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>FICL_SYSTEM_INFO</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlSystemInformation</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>FICL_WORD</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlWord</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>IPTYPE</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlIp</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>FICL_CODE</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlPrimitive</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>OUTFUNC</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlOutputFunction</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>FICL_DICTIONARY</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlDictionary</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>FICL_STACK</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlStack</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>STRINGINFO</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlString</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>FICL_STRING</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlCountedString</code></td>
+
+</tr>
+
+
+</table><p>
+
+
+
+
+<p>
+</blockquote><table border=0 bgcolor=#b8b8b8 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=4><b><i>
+<a name='StructureMembers'>
+Structure Members
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+
+In addition, many structure names have changed.  To help ease the heartache,
+we've also added some accessor macros.  So, in case they change in the future,
+your code might still compile (hooray!).
+<table width=100%><tr>
+
+<td bgcolor=#d0d0f0><b>old name</b></td>
+
+<td bgcolor=#e0e0ff><b>new name</td>
+
+<td bgcolor=#d0d0f0><b>accessor</td>
+
+</tr>
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>pExtend</code></td>
+
+<td bgcolor=#f0f0f0><code>context</code></td>
+
+<td bgcolor=#e0e0e0><code>ficlVmGetContext(), ficlSystemGetContext()</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>pStack</code></td>
+
+<td bgcolor=#f0f0f0><code>dataStack</code></td>
+
+<td bgcolor=#e0e0e0><code>ficlVmGetDataStack()</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>fStack</code></td>
+
+<td bgcolor=#f0f0f0><code>floatStack</code></td>
+
+<td bgcolor=#e0e0e0><code>ficlVmGetFloatStack()</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>rStack</code></td>
+
+<td bgcolor=#f0f0f0><code>returnStack</code></td>
+
+<td bgcolor=#e0e0e0><code>ficlVmGetReturnStack()</code></td>
+
+</tr>
+
+
+</table><p>
+
+
+
+
+<p>
+</blockquote><table border=0 bgcolor=#b8b8b8 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=4><b><i>
+<a name='CallbackFunctions'>
+Callback Functions
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+
+Text output callbacks have changed in two major ways:
+
+<ul>
+
+<li>
+They no longer take a VM pointer; they now take a <code>ficlCallback</code> structure.
+This allows output to be printed before a VM is defined, or in circumstances where a
+VM may not be defined (such as an assertion failure in a <code>ficlSystem...()</code> function).
+
+<li>
+They no longer take a flag indicating whether or not to add a "newline".
+Instead, the function must output a newline whenever it encounters
+a <code>\n</code> character in the text.
+
+</ul>
+
+If you don't want to rewrite your output function yet, you can
+"thunk" the new-style call to the old-style.  Just pass in <code>ficlOldnamesCallbackTextOut</code>
+as the name of the output function for the system and VM, and then set 
+the <code>thunkedTextout</code> member of the <code>ficlSystem</code>
+or <code>ficlVm</code> to your old-style text output function.
+
+
+
+<p>
+</blockquote><table border=0 bgcolor=#b8b8b8 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=4><b><i>
+<a name='RenamedMacros'>
+Renamed Macros
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+
+<table width=100%><tr>
+
+<td bgcolor=#d0d0f0><b>old name</b></td>
+
+<td bgcolor=#e0e0ff><b>new name</td>
+
+</tr>
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>PUSHPTR(p)</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlStackPushPointer(vm->dataStack, p)</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>POPUNS()</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlStackPopUnsigned(vm->dataStack)</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>GETTOP()</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlStackGetTop(vm->dataStack)</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>FW_IMMEDIATE</code></td>
+
+<td bgcolor=#f0f0f0><code>FICL_WORD_IMMEDIATE</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>FW_COMPILE</code></td>
+
+<td bgcolor=#f0f0f0><code>FICL_WORD_COMPILE_ONLY</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>VM_INNEREXIT</code></td>
+
+<td bgcolor=#f0f0f0><code>FICL_VM_STATUS_INNER_EXIT</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>VM_OUTOFTEXT</code></td>
+
+<td bgcolor=#f0f0f0><code>FICL_VM_STATUS_OUT_OF_TEXT</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>VM_RESTART</code></td>
+
+<td bgcolor=#f0f0f0><code>FICL_VM_RESTART</code></td>
+
+</tr>
+
+
+</table><p>
+
+
+
+
+<p>
+</blockquote><table border=0 bgcolor=#b8b8b8 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=4><b><i>
+<a name='codeficllocalh/code'>
+<code>ficllocal.h</code>
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+
+One more note about macros.  Ficl now ships with a standard place for
+you to tweak the Ficl compile-time preprocessor switches  such as
+<code>FICL_WANT_COMPATIBILITY</code> and <code>FICL_WANT_FLOAT</code>.
+It's a file called <code>ficllocal.h</code>, and we guarantee that it
+will always ship empty (or with only comments).  We suggest that you
+put all your local changes there, rather than editing <code>ficl.h</code>
+or editing the makefile.  That should make it much easier to integrate
+future Ficl releases into your product&mdash;all you need do is preserve
+your tweaked copy of <code>ficllocal.h</code> and replace the rest.
+
+
+
+<p>
+</blockquote><table border=0 bgcolor=#b8b8b8 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=4><b><i>
+<a name='RenamedFunctions'>
+Renamed Functions
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+
+Every function that deals primarily with a particular structure
+is now named after that structure.  For instance, any function
+that takes a <code>ficlSystem</code> as its first argument is
+named <code>ficlSystem<i>Something</i>()</code>.  Any function
+that takes a <code>ficlVm</code> as its first argument is
+named <code>ficlVm<i>Something</i>()</code>.  And so on.
+<p>
+
+Also, functions that create a new object are always
+called <code>Create</code> (not <code>Alloc</code>, <code>Allot</code>, <code>Init</code>, or <code>New</code>).
+Functions that create a new object are always
+called <code>Destroy</code> (not <code>Free</code>, <code>Term</code>, or <code>Delete</code>).
+<p>
+
+
+<table width=100%><tr>
+
+<td bgcolor=#d0d0f0><b>old name</b></td>
+
+<td bgcolor=#e0e0ff><b>new name</td>
+
+</tr>
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>ficlInitSystem()</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlSystemCreate()</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>ficlTermSystem()</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlSystemDestroy()</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>ficlNewVM()</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlSystemCreateVm()</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>ficlFreeVM()</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlVmDestroy()</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>dictCreate()</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlDictionaryCreate()</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>dictDelete()</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlDictionaryDestroy()</code></td>
+
+</tr>
+
+
+</table><p>
+
+
+<p>
+
+All functions exported by Ficl now start with the word <code>ficl</code>.
+This is a <i>feature</i>, as it means the Ficl project will no longer
+pollute your namespace.
+
+<table width=100%><tr>
+
+<td bgcolor=#d0d0f0><b>old name</b></td>
+
+<td bgcolor=#e0e0ff><b>new name</td>
+
+</tr>
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>PUSHPTR(p)</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlStackPushPointer(vm->dataStack, p)</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>POPUNS()</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlStackPopUnsigned(vm->dataStack)</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>GETTOP()</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlStackGetTop(vm->dataStack)</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>ltoa()</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlLtoa()</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>strincmp()</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlStrincomp()</code></td>
+
+</tr>
+
+
+</table><p>
+
+
+
+
+
+
+<p>
+</blockquote><table border=0 bgcolor=#b8b8b8 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=4><b><i>
+<a name='RemovedFunctions'>
+Removed Functions
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+
+A few entry points have simply been removed.
+For instance, functions specifically managing a system's <code>ENVIRONMENT</code>
+settings have been removed, in favor of managing the system's
+<code>environment</code> dictionary directly:
+<table width=100%><tr>
+
+<td bgcolor=#d0d0f0><b>old name</b></td>
+
+<td bgcolor=#e0e0ff><b>new name</td>
+
+</tr>
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>ficlSystemSetEnvironment(system)</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlDictionarySetConstant(ficlSystemGetEnvironment(system), ...)</code></td>
+
+</tr>
+
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>ficlSystemSet2Environment(system)</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlDictionarySet2Constant(ficlSystemGetEnvironment(system), ...)</code></td>
+
+</tr>
+
+
+</table><p>
+
+
+
+
+In a similar vein, <code>ficlSystemBuild()</code> has been removed in favor
+of using <code>ficlDictionarySetPrimitive()</code> directly:
+
+<table width=100%><tr>
+
+<td bgcolor=#d0d0f0><b>old name</b></td>
+
+<td bgcolor=#e0e0ff><b>new name</td>
+
+</tr>
+
+<tr>
+
+<td bgcolor=#e0e0e0><code>ficlSystemBuild(system, ...)</code></td>
+
+<td bgcolor=#f0f0f0><code>ficlDictionarySetPrimitive(ficlSystemGetDictionary(system), ...)</code></td>
+
+</tr>
+
+
+</table><p>
+
+
+
+Finally, there is no <i>exact</i> replacement for <code>ficlExec()</code>.  99% of the code
+that called <code>ficlExec()</code> never bothered to manage <code>SOURCE-ID</code> properly.
+If you were calling <code>ficlExec()</code>, and you weren't changing <code>SOURCE-ID</code>
+(or <code>vm->sourceId</code>) to match, you should replace those calls with <code>ficlVmEvaluate()</code>,
+which will manage <code>SOURCE-ID</code> for you.
+<p>
+
+There <i>is</i> a function that takes the place of <code>ficlExec()</code> which doesn't change
+<code>SOURCE-ID</code>: <code>ficlVmExecuteString()</code>.  However, instead of taking a
+straight C string (a <code>char *</code>), it takes a <code>ficlString *</code> as its
+code argument.  (This is to discourage its use.)
+
+
+
+<p>
+</blockquote><table border=0 bgcolor=#a0a0a0 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=5><b><i>
+<a name='InternalChanges'>
+Internal Changes
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+
+<b>Note:</b> none of these changes should affect you.  If they do, there's probably
+a problem somewhere.  Either Ficl's API doesn't abstract away something enough, or
+you are approaching a problem the wrong way.  Food for thought.
+<p>
+
+There's only one internal change worth noting here.
+The top value on a Ficl stack used to be at (to use the modern structure names)
+<code>stack->top[-1]</code>.  It is now at <code>stack->top[0]</code>.
+In other words, the "stack top" pointer used to point <i>past</i> the top
+element; it now points <i>at</i> the top element.  (Pointing <i>at</i> the
+top element is not only less confusing, it is also faster.)
+
+</body>
+</html>

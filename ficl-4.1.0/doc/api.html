@@ -1,0 +1,401 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<META name='Description' content='Ficl - embedded scripting with object oriented programming'>
+<META name='Keywords' content='scripting prototyping tcl OOP Forth interpreter C'>
+<LINK rel='SHORTCUT ICON' href='ficl.ico'>
+<TITLE>ficl api</TITLE>
+<style>
+
+blockquote { margin-left: 1em }
+
+</style>
+
+</HEAD>
+<BODY>
+
+<table border=0 cellspacing=0 width=100%%><tr>
+
+
+<td width=112 bgcolor=#004968 colspan=3>
+<img src=graphics/ficl.4.96.jpg height=96 width=96>
+</td>
+
+<td bgcolor=#004968>
+<font face=arial,helvetica color=white size=7><b><i>
+ficl api
+</i></b></font>
+</td></tr>
+
+
+<tr>
+<td bgcolor=#004968 width=10></td>
+<td bgcolor=#004968 valign=top>
+<br><p>
+<a href=index.html><font face=arial,helvetica color=white><b>Index</b></font></a><p>
+<p><br>
+<a href=dpans.html><font face=arial,helvetica color=white><b>ANS</b></font></a><br>
+<a href=api.html><font face=arial,helvetica color=white><b>API</b></font></a><br>
+<a href=debugger.html><font face=arial,helvetica color=white><b>Debugger</b></font></a><br>
+<a href=http://sourceforge.net/project/showfiles.php?group_id=24441><font face=arial,helvetica color=white><b>Download</b></font></a><br>
+<a href=license.html><font face=arial,helvetica color=white><b>Licensing</b></font></a><br>
+<a href=links.html><font face=arial,helvetica color=white><b>Links</b></font></a><br>
+<a href=locals.html><font face=arial,helvetica color=white><b>Locals</b></font></a><br>
+<a href=oop.html><font face=arial,helvetica color=white><b>OOP&nbsp;In&nbsp;Ficl</b></font></a><br>
+<a href=parsesteps.html><font face=arial,helvetica color=white><b>Parse&nbsp;Steps</b></font></a><br>
+<a href=releases.html><font face=arial,helvetica color=white><b>Release&nbsp;History</b></font></a><br>
+<a href=upgrading.html><font face=arial,helvetica color=white><b>Upgrading&nbsp;To&nbsp;4.0</b></font></a><br>
+</td><td bgcolor=#004968 width=5></td><td valign=top><blockquote><p>
+
+
+
+
+
+
+<p>
+</blockquote><table border=0 bgcolor=#a0a0a0 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=5><b><i>
+<a name='QuickFiclProgrammingConceptsOverview'>
+Quick Ficl Programming Concepts Overview
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+
+
+A Ficl <i>dictionary</i> is equivalent to the FORTH "dictionary"; it is where words are stored.
+A single dictionary has a single <code>HERE</code> pointer.
+<p>
+
+A Ficl <i>system information</i> structure is used to change default values used
+in initializing a Ficl <i>system</i>.
+<p>
+
+A Ficl <i>system</i> contains a single <i>dictionary</i>, and one or more <i>virtual machines</i>.
+<p>
+
+A Ficl <i>stack</i> is equivalent to a FORTH "stack".  Ficl has three stacks:
+<ul>
+
+<li>
+The <i>data</i> stack, where integer arguments are stored.
+
+<li>
+The <i>return</i> stack, where locals and return addresses for subroutine returns are stored.
+
+<li>
+The <i>float</i> stack, where floating-point arguments are stored.  (This stack
+is only enabled when <code>FICL_WANT_FLOAT</code> is nonzero.)
+</ul>
+
+<p>
+
+A Ficl <i>virtual machine</i> (or <i>vm</i>) represents a single running instance of the Ficl interpreter.
+All virtual machines in a single Ficl system see the same dictionary.
+<p>
+
+
+<p>
+</blockquote><table border=0 bgcolor=#b8b8b8 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=4><b><i>
+<a name='QuickFiclProgrammingTutorial'>
+Quick Ficl Programming Tutorial
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+
+Though Ficl's API offers a great deal of flexibility, most programs
+incorporating Ficl simply use it as follows:
+
+<ol>
+
+<li>
+Create a single <code>ficlSystem</code> using <code>ficlSystemCreate(NULL)</code>.
+
+<li>
+Add native functions as necessary with <code>ficlDictionarySetPrimitive()</code>.
+
+<li>
+Add constants as necessary with <code>ficlDictionarySetConstant()</code>.
+
+<li>
+Create one (or more) virtual machine(s) with <code>ficlSystemCreateVm()</code>.
+
+<li>
+Add one or more scripted functions with <code>ficlVmEvaluate()</code>.
+
+<li>
+Execute code in a Ficl virtual machine, usually with <code>ficlVmEvaluate()</code>,
+but perhaps with <code>ficlVmExecuteXT()</code>.
+
+<li>
+At shutdown, call <code>ficlSystemDestroy()</code> on the single Ficl system.
+
+</ol>
+
+
+
+<p>
+</blockquote><table border=0 bgcolor=#a0a0a0 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=5><b><i>
+<a name='FiclApplicationProgrammingInterface'>
+Ficl Application Programming Interface
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+
+The following is a partial listing of functions that interface your
+system or program to Ficl. For a complete listing, see <code>ficl.h</code>
+(which is heavily commented).  For a simple example, see <code>main.c</code>.
+<p>
+
+Note that as of Ficl 4, the API is internally consistent.
+<i>Every</i> external entry point starts with the word
+<code>ficl</code>, and the word after that also corresponds
+with the first argument.  For instance, a word that operates
+on a <code>ficlSystem *</code> will be called <code>ficlSystem<i>Something</i>()</code>.
+
+
+
+
+<dl>
+
+<p><dt>
+<code>void ficlSystemInformationInitialize(ficlSystemInformation *fsi)</code>
+<dd>
+
+
+
+Resets a <code>ficlSystemInformation</code> structure to all zeros.
+(Actually implemented as a macro.)  Use this to initialize a <code>ficlSystemInformation</code>
+structure before initializing its members and passing it
+into <code>ficlSystemCreate()</code> (below).
+
+<p><dt>
+<code>ficlSystem *ficlSystemCreate(ficlSystemInformation *fsi)</code>
+<dd>
+
+
+
+Initializes Ficl's shared system data structures, and creates the
+dictionary allocating the specified number of cells from the heap
+(by a call to <code>ficlMalloc()</code>).  If you pass in a <code>NULL</code>
+pointer, you will recieve a <code>ficlSystem</code> using the default
+sizes for the dictionary and stacks.
+
+
+<p><dt>
+<code>void ficlSystemDestroy(ficlSystem *system)</code>
+<dd>
+
+
+
+Reclaims memory allocated for the Ficl system including all
+dictionaries and all virtual machines created by
+<code>ficlSystemCreateVm()</code>.  Note that this will <i>not</i>
+automatically free memory allocated by the FORTH memory allocation
+words (<code>ALLOCATE</code> and <code>RESIZE</code>).
+
+<p><dt>
+<code>ficlWord *ficlDictionarySetPrimitive(ficlDictionary *dictionary, char *name,  ficlCode code, ficlUnsigned8 flags)</code>
+<dd>
+
+
+
+Adds a new word to the dictionary with the given
+name, code pointer, and flags.  To add 
+<p>
+
+The <code>flags</code> parameter is a bitfield.  The valid
+flags are:<ul>
+
+<li>
+FICL_WORD_IMMEDIATE
+<li>
+FICL_WORD_COMPILE_ONLY
+<li>
+FICL_WORD_SMUDGED
+<li>
+FICL_WORD_OBJECT
+<li>
+FICL_WORD_INSTRUCTION
+
+</ul>
+
+For more information on these flags, see <code>ficl.h</code>.
+
+
+<p><dt>
+<code>ficlVm *ficlSystemCreateVm(ficlSystem *system)</code>
+<dd>
+
+
+
+Creates a new virtual machine in the specified system.
+
+
+<p><dt>
+<code>int ficlVmEvaluate(ficlVm *vm, char *text)</code>
+<dd>
+
+
+
+ the specified C string (zero-terminated) to the given
+virtual machine for evaluation. Returns various exception codes (VM_XXXX
+in ficl.h) to indicate the reason for returning. Normal exit
+condition is VM_OUTOFTEXT, indicating that the VM consumed the string
+successfully and is back for more.  Calls to <code>ficlVmEvaluate()</code>
+can be nested, and
+the function itself is re-entrant, but note that a VM is
+static, so you have to take reasonable precautions (for example, use one
+VM per thread in a multithreaded system if you want multiple threads to
+be able to execute commands). 
+
+
+<p><dt>
+<code>int ficlVmExecuteXT(ficlVm *vm, ficlWord *pFW)</code>
+<dd>
+
+
+
+Same as ficlExec, but takes a pointer to a ficlWord instead of a
+string. Executes the word and returns after it has finished. If
+executing the word results in an exception, this function will
+re-throw the same code if it is nested under another ficlExec family
+function, or return the exception code directly if not. This function
+is useful if you need to execute the same word repeatedly&mdash;you
+save the dictionary search and outer interpreter overhead. 
+
+<p><dt>
+<code>void ficlFreeVM(ficlVm *vm)</code>
+<dd>
+
+
+
+Removes the VM in question from the system VM list and deletes
+the memory allocated to it. This is an optional call, since
+ficlTermSystem will do this cleanup for you. This function           is
+handy if you're going to do a lot of dynamic creation of VMs. 
+
+<p><dt>
+<code>ficlVm *ficlNewVM(ficlSystem *system)</code>
+<dd>
+
+
+
+Create, initialize, and return a VM from the heap using
+ficlMalloc. Links the VM into the system VM list for later reclamation
+by ficlTermSystem. 
+
+<p><dt>
+<code>ficlWord *ficlSystemLookup(ficlSystem *system, char *name)</code>
+<dd>
+
+
+
+Returns the address of the specified word in the main dictionary.
+If no such word is found, it returns <code>NULL</code>.
+The address is also a valid execution token, and can be used in a call to <code>ficlVmExecuteXT()</code>. 
+
+<p><dt>
+<code>ficlDictionary *ficlSystemGetDictionary(ficlSystem *system)<br>ficlDictionary *ficlVmGetDictionary(ficlVm *system)</code>
+<dd>
+
+
+
+Returns a pointer to the main system dictionary. 
+
+
+<p><dt>
+<code>ficlDictionary *ficlSystemGetEnvironment(ficlSystem *system)</code>
+<dd>
+
+
+
+Returns a pointer to the environment dictionary. This dictionary
+stores information that describes this implementation as required by the
+Standard. 
+
+
+
+
+<p><dt>
+<code>ficlDictionary *ficlSystemGetLocals(ficlSystem *system)</code>
+<dd>
+
+
+
+Returns a pointer to the locals dictionary. This function is
+defined only if <code>FICL_WANT_LOCALS</code> is non-zero (see <code>ficl.h</code>).
+The locals dictionary is the symbol table for
+<a href="locals.html">local variables</a>. 
+
+
+</dl>
+
+
+
+<p>
+</blockquote><table border=0 bgcolor=#a0a0a0 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=5><b><i>
+<a name='FiclCompile-TimeConstants'>
+Ficl Compile-Time Constants
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+
+There are a lot of preprocessor constants you can set at compile-time
+to modify Ficl's runtime behavior.  Some are required, such as telling
+Ficl whether or not the local platform supports double-width integers
+(<code>FICL_PLATFORM_HAS_2INTEGER</code>);
+some are optional, such as telling Ficl whether or not to use the
+extended set of "prefixes" (<code>FICL_WANT_EXTENDED_PREFIXES</code>).
+<p>
+
+The best way to find out more about these constants is to read <code>ficl.h</code>
+yourself.  The settings that turn on or off Ficl modules all start with
+<code>FICL_WANT</code>.  The settings relating to functionality available
+on the current platform all start with <code>FICL_PLATFORM</code>.
+<p>
+
+
+
+
+<p>
+</blockquote><table border=0 bgcolor=#b8b8b8 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=4><b><i>
+<a name='codeficllocalh/code'>
+<code>ficllocal.h</code>
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+
+One more note about constants.  Ficl now ships with a standard place for
+you to tweak the Ficl compile-time preprocessor constants.
+It's a file called <code>ficllocal.h</code>, and we guarantee that it
+will always ship empty (or with only comments).  We suggest that you
+put all your local changes there, rather than editing <code>ficl.h</code>
+or editing the makefile.  That should make it much easier to integrate
+future Ficl releases into your product&mdash;all you need do is preserve
+your tweaked copy of <code>ficllocal.h</code> and replace the rest.
+
+
+
+
+</blockquote><p></td></tr></table></body></html>
+
+

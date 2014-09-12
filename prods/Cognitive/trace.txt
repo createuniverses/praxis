@@ -1,0 +1,38 @@
+(deriv (exp + (* a (* x x)) (* b x) c) (var . x))
+ (deriv (exp * a (* x x)) (var . x))
+  (deriv (exp * x x) (var . x))
+   (deriv (exp . x) (var . x))
+    deriv returns 1
+   (make-product (m1 . x) (m2 . 1))
+    make-product returns x
+   (deriv (exp . x) (var . x))
+    deriv returns 1
+   (make-product (m1 . 1) (m2 . x))
+    make-product returns x
+   (make-sum (a1 . x) (a2 . x))
+    make-sum returns (+ x x)
+   deriv returns (+ x x)
+  (make-product (m1 . a) (m2 + x x))
+   make-product returns (* a (+ x x))
+  (deriv (exp . a) (var . x))
+   deriv returns 0
+  (make-product (m1 . 0) (m2 * x x))
+   make-product returns 0
+  (make-sum (a1 * a (+ x x)) (a2 . 0))
+   make-sum returns (* a (+ x x))
+  deriv returns (* a (+ x x))
+ (deriv (exp * b x) (var . x))
+  (deriv (exp . x) (var . x))
+   deriv returns 1
+  (make-product (m1 . b) (m2 . 1))
+   make-product returns b
+  (deriv (exp . b) (var . x))
+   deriv returns 0
+  (make-product (m1 . 0) (m2 . x))
+   make-product returns 0
+  (make-sum (a1 . b) (a2 . 0))
+   make-sum returns b
+  deriv returns b
+ (make-sum (a1 * a (+ x x)) (a2 . b))
+  make-sum returns (+ (* a (+ x x)) b)
+ deriv returns (+ (* a (+ x x)) b)

@@ -1,0 +1,1579 @@
+praxis:
+
+setClipboardText(inspect(fugue))
+
+
+{
+  adjacencies = { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } },
+  chordProgression = { <1>{ {
+        degree = 1,
+        octave = 0
+      }, {
+        degree = 3,
+        octave = 0
+      }, {
+        degree = 5,
+        octave = 1
+      } }, <2>{ {
+        degree = 5,
+        octave = 0
+      }, {
+        degree = 7,
+        octave = 0
+      }, {
+        degree = 2,
+        octave = 1
+      } }, <table 1>, <table 1>, <3>{ {
+        degree = 4,
+        octave = 0
+      }, {
+        degree = 6,
+        octave = 0
+      }, {
+        degree = 1,
+        octave = 1
+      } }, <table 1>, <table 3>, <4>{ {
+        degree = 2,
+        octave = 0
+      }, {
+        degree = 4,
+        octave = 0
+      }, {
+        degree = 6,
+        octave = 0
+      } }, <table 2>, <table 1> },
+  cloneNote = <function 1>,
+  compose = <function 2>,
+  composeAndPlay = <function 3>,
+  currentChord = 1,
+  currentKey = 60,
+  currentPhrase = <5>{
+    destination = 2,
+    shape = { -1, 1, 1 }
+  },
+  currnote = 1,
+  demiurge = { {
+      x = 30,
+      y = 80.5,
+      z = -207.90528296456,
+      <metatable> = <6>{
+        __add = <function 4>,
+        __index = <function 5>,
+        __mul = <function 6>,
+        __sub = <function 7>
+      }
+    }, {
+      x = 0,
+      y = 0,
+      z = 0,
+      <metatable> = <table 6>
+    } },
+  dominantbases = <table 2>,
+  findNearestBaseMatch = <function 8>,
+  generateRandomSequence = <function 9>,
+  initParticles = <function 10>,
+  inst1 = 0,
+  inst2 = 10,
+  isaBase = <function 11>,
+  lastNote1 = 60,
+  lastNote2 = 60,
+  lastNoteTime = 0,
+  lines = { { {
+        degree = 1,
+        octave = 0
+      }, {
+        degree = 7,
+        octave = -1
+      }, {
+        degree = 1,
+        octave = 0
+      }, {
+        degree = 2,
+        octave = 0
+      }, {
+        degree = 3,
+        octave = 0
+      }, {
+        degree = 2,
+        octave = 0
+      }, {
+        degree = 3,
+        octave = 0
+      }, {
+        degree = 4,
+        octave = 0
+      }, {
+        degree = 5,
+        octave = 0
+      }, {
+        degree = 4,
+        octave = 0
+      }, {
+        degree = 3,
+        octave = 0
+      }, {
+        degree = 2,
+        octave = 0
+      }, {
+        degree = 1,
+        octave = 0
+      } }, {} },
+  majscale = { 0, 2, 4, 5, 7, 9, 11, 12 },
+  makeMidiNote = <function 12>,
+  makeNote = <function 13>,
+  minscale = <7>{ 0, 2, 3, 5, 7, 8, 11, 12 },
+  noteTick = <function 14>,
+  numNotes = 0,
+  p1On = true,
+  p2On = true,
+  particles = { {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    }, {
+      active = false,
+      pos = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      },
+      vel = {
+        x = 0,
+        y = 0,
+        z = 0,
+        <metatable> = <table 6>
+      }
+    } },
+  pastePhrase = <function 15>,
+  perturbs = 0,
+  phrases = { <table 5>, {
+      destination = -2,
+      shape = { 1, -1, -1 }
+    }, {
+      destination = -4,
+      shape = { -1, -1, -1 }
+    }, {
+      destination = 4,
+      shape = { 1, 1, 1 }
+    }, {
+      destination = -1,
+      shape = { -1, -1, 2 }
+    }, {
+      destination = 1,
+      shape = { 1, 1, -2 }
+    }, {
+      destination = 2,
+      shape = { 2, -1, 2 }
+    }, {
+      destination = -2,
+      shape = { -2, 1, -2 }
+    } },
+  play = <function 16>,
+  playForwardAndImprovise = <function 17>,
+  playing = false,
+  render = <function 18>,
+  renderDemiurge = <function 19>,
+  renderGear = <function 20>,
+  renderParticles = <function 21>,
+  renderSheet = <function 22>,
+  rhythms = { { 3, 1, 3, 1 }, { 1.3333333333333, 1.3333333333333, 1.3333333333333, 4 } },
+  roots = { {
+      degree = 1,
+      octave = 0
+    }, {
+      degree = 3,
+      octave = 0
+    } },
+  scale = <table 7>,
+  stepNote = <function 23>,
+  stop = <function 24>,
+  subdominantbases = <table 3>,
+  supertonicbases = <table 4>,
+  timeBetweenNotes = 0.1,
+  tonicbases = <table 1>,
+  update = <function 25>,
+  updateParticles = <function 26>
+}

@@ -1,0 +1,388 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<META name='Description' content='Ficl - embedded scripting with object oriented programming'>
+<META name='Keywords' content='scripting prototyping tcl OOP Forth interpreter C'>
+<LINK rel='SHORTCUT ICON' href='ficl.ico'>
+<TITLE>ficl parse steps</TITLE>
+<style>
+
+blockquote { margin-left: 1em }
+
+</style>
+
+</HEAD>
+<BODY>
+
+<table border=0 cellspacing=0 width=100%%><tr>
+
+
+<td width=112 bgcolor=#004968 colspan=3>
+<img src=graphics/ficl.4.96.jpg height=96 width=96>
+</td>
+
+<td bgcolor=#004968>
+<font face=arial,helvetica color=white size=7><b><i>
+ficl parse steps
+</i></b></font>
+</td></tr>
+
+
+<tr>
+<td bgcolor=#004968 width=10></td>
+<td bgcolor=#004968 valign=top>
+<br><p>
+<a href=index.html><font face=arial,helvetica color=white><b>Index</b></font></a><p>
+<p><br>
+<a href=dpans.html><font face=arial,helvetica color=white><b>ANS</b></font></a><br>
+<a href=api.html><font face=arial,helvetica color=white><b>API</b></font></a><br>
+<a href=debugger.html><font face=arial,helvetica color=white><b>Debugger</b></font></a><br>
+<a href=http://sourceforge.net/project/showfiles.php?group_id=24441><font face=arial,helvetica color=white><b>Download</b></font></a><br>
+<a href=license.html><font face=arial,helvetica color=white><b>Licensing</b></font></a><br>
+<a href=links.html><font face=arial,helvetica color=white><b>Links</b></font></a><br>
+<a href=locals.html><font face=arial,helvetica color=white><b>Locals</b></font></a><br>
+<a href=oop.html><font face=arial,helvetica color=white><b>OOP&nbsp;In&nbsp;Ficl</b></font></a><br>
+<a href=parsesteps.html><font face=arial,helvetica color=white><b>Parse&nbsp;Steps</b></font></a><br>
+<a href=releases.html><font face=arial,helvetica color=white><b>Release&nbsp;History</b></font></a><br>
+<a href=upgrading.html><font face=arial,helvetica color=white><b>Upgrading&nbsp;To&nbsp;4.0</b></font></a><br>
+</td><td bgcolor=#004968 width=5></td><td valign=top><blockquote><p>
+
+
+
+
+
+<p>
+</blockquote><table border=0 bgcolor=#a0a0a0 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=5><b><i>
+<a name='ParseSteps'>
+Parse Steps
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+
+Unlike every other FORTH we know of, Ficl features an <i>extensible
+parser chain</i>.  The Ficl parser is not a monolithic function; instead,
+it is comprised of a simple tokenizer and a series of <i>parse steps</i>.
+A parse step is a step in the parser chain that handles a particular kind
+of token, acting on the token as appropriate.  Example parse steps, in
+terms of traditional FORTH lore, would be the "number runner" and the
+"colon compiler".
+<p>
+
+The Ficl parser works like this:
+<ol>
+
+<li>
+Read in a new <i>token</i> (string of text with no internal whitespace).
+
+<li>
+For each parse step in the chain, call the parse step, passing in the token.
+If the parse step returns <code>FICL_TRUE</code>, that parse step must have
+handled the token appropriately; move on to the next token.
+
+<li>
+If the parser tries all the parse steps and none of them return
+<code>FICL_TRUE</code>, the token is illegal&mdash;print an error
+and reset the virtual machine.
+
+</ol>
+
+Parse steps can be written as native functions, or as Ficl script functions.
+New parse steps can be appended to the chain at any time.
+
+
+
+<p>
+</blockquote><table border=0 bgcolor=#b8b8b8 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=4><b><i>
+<a name='TheDefaultFiclParseChain'>
+The Default Ficl Parse Chain
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+
+These is the default Ficl parser chain, shown in order.
+
+<dl>
+
+<dt>
+<code>?word</code>
+<dd>
+
+
+
+If compiling and local variable support is enabled, attempt to find the token in the local 
+variable dictionary. If found, execute the token's compilation semantics and return <code>FICL_TRUE</code>.
+<p>
+
+Attempt to find the token in the system dictionary. If found, execute the token's semantics
+(may be different when compiling than when interpreting) and return <code>FICL_TRUE</code>.
+
+<dt>
+<code>?prefix</code>
+<dd>
+
+
+This parse step is only active if prefix support is enabled, setting <code>FICL_WANT_PREFIX</code>
+in <code>ficl.h</code> to a non-zero value.
+Attempt to match the beginning of the token to the list of known prefixes. If there's a match,
+execute the associated prefix method and return <code>FICL_TRUE</code>.
+
+<dt>
+<code>?number</code>
+<dd>
+
+
+Attempt to convert the token to a number in the present <code>BASE</code>. If successful, push the 
+value onto the stack if interpreting, otherwise compile it, then return <code>FICL_TRUE</code>.
+
+<dt>
+<code>?float</code>
+<dd>
+
+
+This parse step is only active if floating-point number support is enabled,
+setting <code>FICL_WANT_FLOAT</code> in <code>ficl.h</code> to a non-zero value.
+Attempt to convert the token to a floating-point number. If successful, push the 
+value onto the floating-point stack if interpreting, otherwise compile it,
+then return <code>FICL_TRUE</code>.
+
+</dl>
+
+
+
+
+<p>
+</blockquote><table border=0 bgcolor=#b8b8b8 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=4><b><i>
+<a name='AddingAParseStepFromWithinFicl'>
+Adding A Parse Step From Within Ficl
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+<a name=ficlparsestep></a>
+
+You can add a parse step in two ways. The first is to write a Ficl word that
+has the correct stack signature for a parse step:
+<pre>
+<i>MY-PARSE-STEP</i>   ( c-addr u -- x*i flag )
+</pre>
+where <code>c-addr u</code> are the address and length of the incoming token,
+and <code>flag</code> is <code>FICL_TRUE</code> if the parse step processed
+the token and <code>FICL_FALSE</code> otherwise. 
+<p>
+
+Install the parse step using <code>add-parse-step</code>.
+A trivial example:
+<pre>
+: ?silly   ( c-addr u -- flag )
+   ." Oh no! Not another  " type cr  true ;
+' ?silly add-parse-step
+parse-order
+</pre>
+
+
+<p>
+</blockquote><table border=0 bgcolor=#b8b8b8 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=4><b><i>
+<a name='AddingANativeParseStep'>
+Adding A Native Parse Step
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+
+The other way to add a parse step is to write it in C and add it into the 
+parse chain with the following function:
+
+<pre>
+void ficlSystemAddPrimitiveParseStep(ficlSystem *system, char *name, ficlParseStep step);
+</pre>
+
+<code>name</code> is the display name of the parse step in the parse chain
+(as displayed by the Ficl word <code>PARSE-ORDER</code>). <code>step</code>
+is a pointer to the code for the parse step itself,
+and must match the following declaration:
+<pre>
+typedef int (*ficlParseStep)(ficlVm *vm, ficlString s);
+</pre>
+<p>
+
+When a native parse step is run, <code>si</code> points to the incoming token.
+The parse step must return <code>FICL_TRUE</code> if it succeeds in handling the
+token, and <code>FICL_FALSE</code> otherwise. 
+See <code>ficlVmParseNumber()</code> in <code>system.c</code> for an example.
+
+
+
+<p>
+</blockquote><table border=0 bgcolor=#a0a0a0 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=5><b><i>
+<a name='Prefixes'>
+Prefixes
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+
+What's a prefix, anyway? A prefix (contributed by Larry Hastings) is a token that's
+recognized as the beginning of another token. Its presence modifies the semantics of
+the rest of the token. An example is <code>0x</code>, which causes digits following
+it to be converted to hex regardless of the current value of <code>BASE</code>. 
+<p>
+
+Caveat: Prefixes are matched in sequence, so the more of them there are, 
+the slower the interpreter gets.  On the other hand, because the prefix
+parse step occurs immediately after the dictionary lookup step, if you
+have a prefix for a particular purpose, using it may save time since it
+stops the parse process.  Also, the Ficl interpreter is wonderfully fast,
+and most interpretation only happens once, so it's likely you won't notice
+any change in interpreter speed even if you make heavy use of prefixes.
+<p>
+
+Each prefix is a Ficl word stored in a special wordlist called <code>&lt;PREFIXES&gt;</code>. When the
+prefix parse step (<code>?prefix</code>, implemented in C as <code>ficlVmParsePrefix()</code>) is
+executed, it searches each word in <code>&lt;PREFIXES&gt;</code> in turn, comparing it with the
+initial characters of the incoming token.  If a prefix matches, the parse step returns the remainder
+of the token to the input stream  and executes the code associated with the prefix. This code can be
+anything you like, but it would typically do something with the remainder of the token. If the prefix
+code does not consume the rest of the token, it will go through the parse process again (which may
+be what you want).
+<p>
+
+Prefixes are defined in <code>prefix.c</code> and in <code>softcore/prefix.fr</code>.
+The best way to add prefixes is by defining them in your own code, bracketed with the special
+words <code>START-PREFIXES</code> and <code>END-PREFIXES</code>.  For example, the following
+code would make <code>.(</code> a prefix.
+
+<pre>
+start-prefixes
+: .(  .( ;
+end-prefixes
+</pre>
+<p>
+
+The compile-time constant <code>FICL_EXTENDED_PREFIX</code> controls the inclusion of
+several additional prefixes. This is turned off in the default build, since several
+of these prefixes alter standard behavior, but you might like them.
+
+
+
+<p>
+</blockquote><table border=0 bgcolor=#a0a0a0 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=5><b><i>
+<a name='Notes'>
+Notes
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+
+<ul>
+
+<li>
+Prefixes and parser extensions are non-standard.  However, with the exception of
+prefix support, Ficl's default parse order follows the standard.
+Inserting parse steps in some other order will almost certainly break standard behavior.
+<p>
+
+<li>
+The number of parse steps that can be added to the system is limited by the value of 
+<code>FICL_MAX_PARSE_STEPS</code> (defined in <code>sysdep.h</code>).  The default
+maximum number is 8.
+<p>
+
+<li>
+The compile-time constant <code>FICL_EXTENDED_PREFIX</code> controls the inclusion of
+several additional prefixes. This is turned off in the default build, since several
+of these prefixes alter standard behavior, but you might like them.
+<p>
+
+
+</ul>
+
+
+<p>
+</blockquote><table border=0 bgcolor=#a0a0a0 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=5><b><i>
+<a name='ParserGlossary'>
+Parser Glossary
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+
+<dl>
+
+<dt>
+<code>PARSE-ORDER  ( -- )</code>
+<dd>
+
+
+
+Prints the list of parse steps, in the order in which they are called.
+
+<dt>
+<code>ADD-PARSE-STEP  ( xt -- )</code>
+<dd>
+
+
+
+Appends a parse step to the parse chain. <code>xt</code> is the address
+(execution token) of a Ficl word to use as the parse step. The word must be a
+legal Ficl parse step (<a href=#ficlparsestep>see above</a>).
+
+<dt>
+<code>SHOW-PREFIXES  ( -- )</code>
+<dd>
+
+
+
+Prints the list of all prefixes. Each prefix is a Ficl word that is executed if its name
+is found at the beginning of a token.
+
+<dt>
+<code>START-PREFIXES  ( -- )</code>
+<dd>
+
+
+
+Declares the beginning of a series of prefix definitions.
+Should be followed, eventually, by <code>END-PREFIXES</code>.
+(All <code>START-PREFIXES</code> does is tell the Ficl virtual machine
+to compile into the <code>&lt;PREFIXES&gt;</code> wordlist.)
+
+<dt>
+<code>END-PREFIXES  ( -- )</code>
+<dd>
+
+
+
+Declares the end of a series of prefix definitions.
+Should only be used after calling <code>START-PREFIXES</code>.
+(All <code>END-PREFIXES</code> does is tell the Ficl virtual machine
+to switch back to the wordlist that was in use before <code>START-PREFIXES</code> was called.)
+
+</dl>
+
+
+
+</blockquote><p></td></tr></table></body></html>
+

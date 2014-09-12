@@ -1,0 +1,11 @@
+each note has a feel, a relationship
+apply iteractive correction to a propsed bit of composition or improvisation
+a phrase can have a start and end, with a tweak to help it reach those
+starts and ends
+as much as possible don't change the shape.
+allow the "any" notes to move instead of the root notes 
+
+c, eflat f g, eflat, c2, g, eflat, g, (repeat)
+c g d f eflat, d eflat f, g aflat g, f, eflat, d, (repeat)
+
+need to have the notes in the phrase have a duration

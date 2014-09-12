@@ -1,0 +1,18 @@
+
+Sample 1030000,  23.4 seconds - MAIN Kick in at start
+
+Sample 2289100,  51.9 seconds - Kick in (angle change?)
+
+Sample 3544649,  80.4 seconds - Break and build up...
+
+Sample 4488186, 101.8 seconds - Kick in
+
+Sample 5744139, 130.3 seconds - Change angle
+
+Sample 7000895, 158.8 seconds - Angle Change (key change ending coming soon)
+
+Sample 7628551, 173.0 seconds - Ending Note (ending screen / seq?)
+
+Original mp3 name: cTrix-Live-Tek-in-2006.mp3
+
+Thanks to cTrix for the music.

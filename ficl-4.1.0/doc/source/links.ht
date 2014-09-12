@@ -1,0 +1,156 @@
+<?
+ficlPageHeader("ficl links")
+
+ficlAddToNavBarAs("Links")
+
+def linkto(href):
+	print "<p><dt>\n<a href=\"" + href + "\">" + href + "</a>\n<dd>\n"
+
+?>
+
+<? ficlHeader1("Official Ficl Pages") ?>
+
+<dl>
+
+<? linkto("http://ficl.sourceforge.net") ?>
+The official web home of Ficl.
+
+<? linkto("http://sourceforge.net/project/showfiles.php?group_id=24441") ?>
+The Ficl download page.
+
+
+</dl>
+
+
+
+<? ficlHeader1("Forth Primers And Tutorials") ?>
+
+<dl>
+
+<? linkto("http://www.phys.virginia.edu/classes/551.jvn.fall01/primer.htm") ?>
+An excellent Forth primer, by Julian Nobel.
+
+<? linkto("http://ficl.sourceforge.net/pdf/Forth_Primer.pdf") ?>
+Another excellent Forth primer, by Hans Bezemer.
+
+<? linkto("http://www.taygeta.com/forth_intro/stackflo.html") ?>
+<i>An Introduction To Forth Using Stack Flow</i> by Gordon Charton.
+Mr. Charton's stack-flow diagrams make it easy to understand how
+to manipulate the FORTH stacks.
+
+<? linkto("http://www.softsynth.com/pforth/pf_tut.htm") ?>
+Phil Burk's Forth Tutorial.
+
+</dl>
+
+
+
+<? ficlHeader1("Technical Articles On Ficl And Forth") ?>
+
+<dl>
+
+<? linkto("articles/ficlddj.pdf") ?>
+Manuscript of John Sadler's article on Ficl for January 1999 <a href=http://www.ddj.com>Dr. Dobb's Journal</a>.
+
+<? linkto("articles/jwsforml.pdf") ?>
+1998 FORML Conference paper: <i>OO Programming in Ficl,</i> written and presented by John Sadler.
+
+
+<? linkto("http://www.complang.tuwien.ac.at/forth/threaded-code.html") ?>
+Anton Ertl's description of threaded code techniques.  (The FORTH-related definition
+of "threaded code" is different from&mdash;and predates&mdash;the common modern
+usage dealing with light-weight processes.)  Ficl 4 uses what Ertl calls
+"switch threading".
+
+<? linkto("http://ficl.sourceforge.net/dpans/dpans.htm") ?>
+1994 Draft Proposed American National Standard for Forth.
+And surprisingly readable, as language standards go.
+
+<? linkto("http://www.taygeta.com/forthlit.html") ?>
+Forth literature index on Taygeta, a web clearinghouse of Forth links.
+
+</dl>
+
+<? ficlHeader1("Other Forth Sites Of Interest") ?>
+
+<dl>
+
+<? linkto("http://www.forth.org") ?>
+The Forth Interest Group.
+
+<? linkto("http://www.forth.com") ?>
+FORTH, Incorporated.  Thirty years old and going strong.
+You might be surprised to learn that they wrote software for
+the <a href=http://www.forth.com/Content/Stories/FedEx.htm>FedEx</a>
+"SuperTracker" bar code scanners / package trackers.
+
+</dl>
+
+<table width=100% bgcolor=#e0e0e0><tr><td width=160>
+<A href="http://t.webring.com/hub?sid=&ring=forth&list"><IMG src="graphics/4ring.gif" width="155" height="140" border="0" alt="Forth Webring Logo"></A>
+</td><td>
+<? ficlHeader1("The Forth Web Ring") ?>
+<A href="http://t.webring.com/hub?sid=&ring=forth&id=47&prev5">Previous 5 Sites</A><BR>
+<A href="http://t.webring.com/hub?sid=&ring=forth&id=47&prev">Previous</A><BR>
+<A href="http://t.webring.com/hub?sid=&ring=forth&id=47&next">Next</A><BR>
+<A href="http://t.webring.com/hub?sid=&ring=forth&id=47&next5">Next 5 Sites</A><BR>
+<A href="http://t.webring.com/hub?sid=&ring=forth&random">Random Site</A><BR>
+<A href="http://t.webring.com/hub?sid=&ring=forth&list">List Sites</A></FONT>
+</td></tr></table>
+
+
+
+<? ficlHeader1("Some Software That Uses Ficl") ?>
+
+<ul>
+<li>
+The <a href="http://www.freebsd.org/">FreeBSD</a> boot loader
+(Daniel Sobral, Jordan Hubbard)
+
+<li>
+<a href="http://www.chipcenter.com/networking/images/prod/prod158a.pdf">
+SwitchCore
+</a>
+Gigabit Ethernet switches (&Ouml;rjan Gustavsson )
+
+<li>
+<a href="http://debuffer.sourceforge.net/">
+Palm Pilot Debuffer
+</a>
+(Eric Sessoms)
+Also see <a href=http://sonic-weasel.org/eric/ficlx/>FiclX</a>, a C++ interface to Ficl.
+
+<li>
+<a href="http://www.swcp.com/%7Ejchavez/osmond.html">
+Osmond PC Board Layout tool
+</a>
+
+<li>
+<a href="http://www.netcomsystems.com">
+NetCom Systems
+</a>
+ML7710
+
+<li>
+<a href="http://www.parview.com/ds/homepage.html">
+ParView
+</a>
+GPS system
+
+<li>
+<a href="http://www.thekompany.com/products/powerplant/software/Languages/Embedded.php3">
+PowerPlant Software
+</a>
+Development Environment for Linux
+
+<li>
+<a href="http://www.vyyo.com/products/architecture_v3000.html">
+Vyyo V3000 Broadband Wireless Hub
+</a>
+
+</ul>
+
+(Contact us if you'd like your name and product listed here.)
+
+
+<? ficlPageFooter() ?>

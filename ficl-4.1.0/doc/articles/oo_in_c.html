@@ -1,0 +1,223 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <title>Object Oriented Idioms in C</title>
+</head>
+<body>
+
+<h1>
+<b><font face="Arial"><font size=+1>Object Oriented Idioms in C</font></font></b></h1>
+<font face="Arial"><font size=-1>John Sadler</font></font>
+<br><font face="Arial"><font size=-1>10 Aug 98</font></font>
+<br>&nbsp;
+<br>&nbsp;
+<table COLS=1 WIDTH="675" >
+<tr>
+<td><a NAME="review"></a><b><font face="Arial"><font size=+1>Review of
+Key OO Characteristics</font></font></b>
+<h3>
+<b><i><font face="Arial">Object</font></i></b></h3>
+<a NAME="object-def"></a><font face="Times New Roman,Times"><b>"A package
+of information and descriptions of its manipulation"</b> [<a href="#robson">Robson</a>]</font>
+<p><font face="Times New Roman,Times">Objects separate interface from implementation,
+"what" is wanted (on the outside) from "how" it is accomplished (on the
+inside). This idea of hiding the data inside a package with a fixed set
+of allowed manipulations is called encapsulation. Why? If the object always
+selects how to perform a requested manipulation, you guarantee that the
+procedure and the data it operates on always match.</font>
+<p><font face="Times New Roman,Times">A <b>message</b> denotes an operation
+that can be performed on an <b>object</b>. The code that describes how
+to perform an operation on a specific object type is called a <b>method</b>.
+From the outside, objects receive messages. On the inside, these messages
+are mapped to methods that perform appropriate actions for the specific
+kind of object. An object’s <b>interface</b> is the set of messages to
+which it can respond. For example, several object types may have a "dump"
+method to cause the object to display its state. Each kind of object will
+need a unique method to accomplish this. So the message-method idea separates
+the interface from the implementation. The idea that different kinds of
+objects might invoke different methods to respond to the same message is
+called <b>polymorphism</b>. Methods can be bound to messages as soon as
+the type of the object receiving the message is known (called <b>early
+binding</b>), or this mapping can wait until run-time (<b>late binding</b>).</font>
+<p><font face="Times New Roman,Times">Some languages (notably C++) make
+a syntactic distinction between early and late binding of methods to messages
+(virtual functions are bound late, while all others are bound early – at
+link time). Smalltalk makes no such distinction. The C++ approach has potentially
+dangerous consequences when you manipulate an object through a pointer
+to its parent class. If a method of the superclass is virtual, you get
+late binding to the appropriate function for the object’s class. On the
+other hand, if that method is not virtual, you get early binding to the
+parent class’s definition even if the child class has overridden it. Smalltalk
+adheres rigorously to the idea that the object itself has sole ownership
+of the mapping from methods to messages.</font>
+<br>&nbsp;</td>
+</tr>
+
+<tr>
+<td>
+<h3>
+<b><i><font face="Arial">Class</font></i></b></h3>
+<a NAME="class-def"></a><b><font face="Times New Roman,Times">"A description
+of one or more similar objects"</font></b> [<a href="#robson">Robson</a>]
+<p><a NAME="instance-def"></a>A specific object described by a particular
+class is called an <b>instance</b> of the class.
+<br>(Example: Dog is a class; Poodle is a subclass of Dog; FiFi is an object,
+an instance of Poodle).
+<br>A class is a kind of object that describes the behaviors (methods)
+of its instances, and whose methods provide for creation, initialization,
+and destruction of an instance. All instances of a particular class use
+the same method to respond to a given message. Classes may define other
+members that are shared by all instances of the class. These are called
+class variables. (In C++, these would be static members.)
+<br>&nbsp;</td>
+</tr>
+
+<tr>
+<td>
+<h3>
+<b><i><font face="Arial">Inheritance</font></i></b></h3>
+<font face="Times New Roman,Times">A means for creating a new object or
+class using an existing one as a starting place and defining only what
+changes. C++ only supports class-based inheritance, but some systems also
+allow objects to inherit directly from other objects. At minimum, inheritance
+requires that the child class override its parent’s name. In addition,
+a child class can:</font>
+<ul>
+<li>
+<font face="Times New Roman,Times">add instance variables</font></li>
+
+<li>
+<font face="Times New Roman,Times">add class variables</font></li>
+
+<li>
+<font face="Times New Roman,Times">define methods for new messages</font></li>
+
+<li>
+<font face="Times New Roman,Times">provide methods for (<b>override</b>)
+messages already handled by the parent class</font></li>
+</ul>
+</td>
+</tr>
+
+<tr>
+<td>
+<h3>
+<b><font face="Arial"><font size=+1>What C++ Does for you…</font></font></b></h3>
+<b><i><font face="Arial">Name mangling – separation of name spaces</font></i></b>
+<p><font face="Times New Roman,Times">This mechanism – decorating symbol
+names with extra characters that uniquely identify their class and prototype
+– is the traditional C++ method for operator overloading, method overloading,
+and namespace separation. C provides a much smaller set of namespaces than
+C++ requires, so this strategy allowed C++ to be implemented as a preprocessor
+for C compilers originally.</font>
+<p><b><i><font face="Arial">Rigorous type checking</font></i></b>
+<p>Because of the function prototype requirement and name mangling, a C++
+compiler can provide strict type checking for method invocations.
+<p><b><i><font face="Arial">Automatic lifetime control</font></i></b>
+<p>Guarantees constructor call upon creation and destructor call upon deletion
+<p><b><i><font face="Arial">Multiple Storage classes (same as C)</font></i></b>
+<p>Automatic, static, dynamically allocated
+<p><b><i><font face="Arial">Typed dynamic memory management</font></i></b>
+<p><b><i><font face="Arial">Default constructor, destructor, copy constructor,
+and assignment operator</font></i></b>
+<p><b><i><font face="Arial">Explicit early and late binding support</font></i></b>
+<p><b><i><font face="Arial">And more…</font></i></b>
+<br>&nbsp;</td>
+</tr>
+
+<tr>
+<td>
+<h3>
+<b><font face="Arial"><font size=+1>What other OO languages do (or don’t
+do)</font></font></b></h3>
+Just to make sure we don’t get caught in a C++ centered view of the world,
+here are some ways other OO systems differ.
+<p><b><i><font face="Arial">Run-time type identification</font></i></b>
+<p>This is a Big Deal in C++, but it’s relatively trivial in an interpreted
+language to know the type of a reference at run-time.
+<p><b><i><font face="Arial">Metaclasses</font></i></b>
+<p>Classes are objects, too (Smalltalk, Java?)
+<p><b><i><font face="Arial">Garbage collection</font></i></b>
+<p>Java and smalltalk both manage memory for you, freeing objects when
+they go out of scope or are no longer referenced anywhere.
+<p><b><i><font face="Arial">Single Inheritance only</font></i></b>
+<p>Java, Smalltalk 80
+<p><b><i><font face="Arial">Everything is an object</font></i></b>
+<p>Smalltalk
+<p><b><i><font face="Arial">Operator overloading</font></i></b>
+<p>Smalltalk makes no distinction between operators and other kinds of
+messages. The message syntax is flexible enough that you can define operators
+in the same way as any other kind of message.
+<p><b><i><font face="Arial">Visibility control</font></i></b>
+<p>Smalltalk 80 does not appear to provide options for visibility control
+(based on my quick survey). Instance variables are always private, methods
+are always public as far as I can tell.
+<p><b><i><font face="Arial">Pointers</font></i></b>
+<p>Not in Smalltalk, Java: Both languages deal with objects through implicit
+references. It is still possible to create data structures, but the language
+hides much of the memory management work.
+<p><b><i><font face="Arial">No Casting</font></i></b>
+<p>As far as I can tell, smalltalk has no equivalent of a C/C++ cast.
+<p><b><i><font face="Arial">Late binding</font></i></b>
+<p>Smalltalk makes no syntactic distinction between late and early bound
+methods (unlike C++ "virtual" methods)
+<br>&nbsp;</td>
+</tr>
+
+<tr>
+<td>
+<h3>
+<b><font face="Arial"><font size=+1>OO-C framework options</font></font></b></h3>
+<font face="Times New Roman,Times">Covered: objects (encapsulation, explicit
+construct and destruct), classes, inheritance, polymorphism</font>
+<br><font face="Times New Roman,Times">Not covered: multiple inheritance,
+automatic initialization / destruction,</font>
+<h3>
+<b><font face="Arial"><font size=+1>Strategy 1: message maps and aggregation</font></font></b></h3>
+<font face="Times New Roman,Times">Class: a struct with a pointer to a
+method table (message map). Contructor and destuctor are really initializer
+and destructor, and are invoked manually at beginning and end of lifetime.</font>
+<p><font face="Times New Roman,Times">Messages and methods: mapping table
+(first cut: use macros like MFC to create a mapping between messages and
+methods). Alternative: message map can be built at run-time (hash, tree,
+linked list) – method resolution may be slower.</font>
+<p><font face="Times New Roman,Times">Inheritance: aggregate the parent
+struct (recursively) at the beginning of the derived one, link the child
+method table to the parent and search recursively to resolve messages to
+methods</font>
+<p><font face="Times New Roman,Times">Pros and cons:</font>
+<blockquote><font face="Times New Roman,Times">+ flexible and minimal manual
+steps required</font>
+<br><font face="Times New Roman,Times">+ relatively simple – no need to
+write a preprocessor!</font>
+<br><font face="Times New Roman,Times">- all methods are late bound, run-time
+penalty</font>
+<br><font face="Times New Roman,Times">&shy; defeats compile time type
+checking, may require a single prototype for all methods</font></blockquote>
+
+<p><br><b><font face="Arial"><font size=+1>Strategy 2: manual name mangling</font></font></b>
+<br><font face="Times New Roman,Times">This is how the <a href="#samek">Samek</a>
+article handles encapsulation</font>
+<p><b><font face="Arial"><font size=+1>Strategy 3: preprocessor</font></font></b>
+<br><font face="Times New Roman,Times">This is how C++ started out.</font>
+<br>&nbsp;</td>
+</tr>
+
+<tr>
+<td><b><font face="Arial"><font size=+1>References</font></font></b>
+<ul>
+<li>
+<a NAME="robson"></a><font size=-1>David Robson, <i>Object Oriented Software
+Systems</i>. Byte, August 1981</font></li>
+
+<li>
+<a NAME="samek"></a><font size=-1>Miro Samek, <i>Portable Inheritance and
+Polymorphism in C</i>. Embedded Systems Programming, December 1997</font></li>
+</ul>
+</td>
+</tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,349 @@
+<?
+
+ficlPageHeader("upgrading ficl")
+
+ficlAddToNavBarAs("Upgrading To 4.0")
+
+def startoldvsnew(extra = None):
+	print "<table width=100%><tr>\n"
+	print "<td bgcolor=#d0d0f0><b>old name</b></td>\n"
+	print "<td bgcolor=#e0e0ff><b>new name</td>\n"
+	if extra != None:
+		print "<td bgcolor=#d0d0f0><b>" + extra + "</td>\n"
+	print "</tr>\n"
+
+def oldvsnew(old, new, extra = None):
+	print "<tr>\n"
+	print "<td bgcolor=#e0e0e0><code>" + old + "</code></td>\n"
+	print "<td bgcolor=#f0f0f0><code>" + new + "</code></td>\n"
+	if extra != None:
+		print "<td bgcolor=#e0e0e0><code>" + extra + "</code></td>\n"
+	print"</tr>\n\n"
+
+
+def endoldvsnew():
+	print "</table><p>\n"
+
+?>
+
+Ficl 4.0 is smaller, faster, and more capable than any previous
+version.  For more information on why Ficl 4.0 is so gosh-darned
+swell, see the <a href=index.html#WhatsNewInFicl4.0>What's New In Ficl 4.0?</a>
+section of the overview.
+<p>
+
+
+Since the Ficl API has changed so dramatically, you can't just drop
+the new Ficl source.  You have two basic choices:
+<a href=#compatibility>use the <code>FICL_WANT_COMPATIBILITY</code> support</a>, and
+<a href=#newapi>switching to the new API</a>.
+<p>
+
+Note that using <i>either</i> of these choices <i>requires</i>
+that you recompile your application.  You cannot build Ficl 4 into
+a shared library or DLL and use it with an application expecting
+Ficl 3.0.  Stated another way: Ficl 4 is <i>source</i> compatible
+but not <i>binary</i> compatible with Ficl 3.
+
+
+<a name=oldnames>
+<? ficlHeader1("Using <code>FICL_WANT_COMPATIBILITY</code>") ?>
+</a>
+
+
+If you want to get Ficl 4.0 up and running in your project as quickly
+as possible, <code>FICL_WANT_COMPATIBILITY</code> is what you'll want to use.
+There are two easy steps, one of which you might be able to skip:
+<p>
+
+<ol>
+
+<li>
+Set the C preprocessor constant <code>FICL_WANT_COMPATIBILITY</code> to 1.
+The best way is by adding the following line to <code>ficllocal.h</code>:
+<pre>
+	#define FICL_WANT_COMPATIBILITY (1)
+</pre>
+
+
+<li>
+
+<i>If</i> you use a custom <code>ficlTextOut()</code> function, you'll
+have to rename it, and explicitly specify it to Ficl.  Renaming it is
+necessary, because the Ficl compatibility layer also provides one for
+code that called <code>ficlTextOut()</code> directly (instead of calling
+<code>vmTextOut()</code> as it should have).
+We recommend renaming your function to <code>ficlTextOutLocal()</code>, as
+we have have provided a prototype for this function for you in <code>ficlcompatibility.h</code>.
+This will save you the trouble of defining your own prototype, ensuring you get
+correct name decoration / linkage, etc.
+
+<p>
+
+There are two methods you can use to specify your <code>ficlTextOut()</code>
+function:
+<ol>
+
+<li>
+Specify it in the <code>FICL_INIT_INFO</code> structure passed in to
+<code>ficlInitSystem()</code>.  This is the preferred method, as it ensures
+you will see the results of Ficl's initialization code, and it will be
+automatically passed in to every newly created VM.
+
+<li>
+Set it explicitly in every VM by calling <code>vmSetTextOut()</code> and
+passing it in.
+
+</ol>
+<p>
+
+<b>Note:</b>  Any other method, such as setting it by hand in the
+<code>FICL_SYSTEM</code> or <code>FICL_VM</code> structures,
+will <b>not</b> work.  There is a special compatibility layer for old-style
+<code>OUTFUNC</code> functions, but it is only invoked properly when you
+use one of the two methods mentioned above.
+
+
+</ol>
+
+<p>
+
+This <i>should</i> be sufficient for you to recompile-and-go
+with Ficl 4.  If it's not, please let us know, preferably including a
+suggested solution to the problem.
+
+
+<a name=newapi>
+<? ficlHeader1("Using The New API") ?>
+</a>
+
+Since most (all?) of the external symbols have changed names since the 3.0 series,
+here is a quick guide to get you started on renaming everything.  This is by no
+means an exhaustive list; this is meant to guide you towards figuring out what
+the new name <i>should</i> be.  (After all, part of the point of this massive
+renaming was to make all the external symbols consistent.)
+<p>
+
+
+
+
+<? ficlHeader2("Types") ?>
+
+Every external type has been renamed.  They all begin with the
+word <code>ficl</code>, and they use mixed case (instead of all upper-case,
+which is now reserved for macros).  Also, the confusingly-named
+string objects have been renamed:
+<code>FICL_STRING</code> is now <code>ficlCountedString</code>, as it
+represents a "counted string" in the language, and
+the more commonly-used <code>STRINGINFO</code> is now simply
+<code>ficlString</code>.
+
+<?
+
+startoldvsnew()
+
+oldvsnew("FICL_SYSTEM", "ficlSystem")
+oldvsnew("FICL_VM", "ficlVm")
+oldvsnew("FICL_SYSTEM_INFO", "ficlSystemInformation")
+oldvsnew("FICL_WORD", "ficlWord")
+oldvsnew("IPTYPE", "ficlIp")
+oldvsnew("FICL_CODE", "ficlPrimitive")
+oldvsnew("OUTFUNC", "ficlOutputFunction")
+oldvsnew("FICL_DICTIONARY", "ficlDictionary")
+oldvsnew("FICL_STACK", "ficlStack")
+oldvsnew("STRINGINFO", "ficlString")
+oldvsnew("FICL_STRING", "ficlCountedString")
+
+endoldvsnew()
+
+?>
+
+<? ficlHeader2("Structure Members") ?>
+
+In addition, many structure names have changed.  To help ease the heartache,
+we've also added some accessor macros.  So, in case they change in the future,
+your code might still compile (hooray!).
+<?
+
+startoldvsnew("accessor")
+
+oldvsnew("pExtend", "context", "ficlVmGetContext(), ficlSystemGetContext()")
+oldvsnew("pStack", "dataStack", "ficlVmGetDataStack()")
+oldvsnew("fStack", "floatStack", "ficlVmGetFloatStack()")
+oldvsnew("rStack", "returnStack", "ficlVmGetReturnStack()")
+
+endoldvsnew()
+
+?>
+
+<? ficlHeader2("Callback Functions") ?>
+
+Text output callbacks have changed in two major ways:
+
+<ul>
+
+<li>
+They no longer take a VM pointer; they now take a <code>ficlCallback</code> structure.
+This allows output to be printed before a VM is defined, or in circumstances where a
+VM may not be defined (such as an assertion failure in a <code>ficlSystem...()</code> function).
+
+<li>
+They no longer take a flag indicating whether or not to add a "newline".
+Instead, the function must output a newline whenever it encounters
+a <code>\n</code> character in the text.
+
+</ul>
+
+If you don't want to rewrite your output function yet, you can
+"thunk" the new-style call to the old-style.  Just pass in <code>ficlOldnamesCallbackTextOut</code>
+as the name of the output function for the system and VM, and then set 
+the <code>thunkedTextout</code> member of the <code>ficlSystem</code>
+or <code>ficlVm</code> to your old-style text output function.
+
+
+<? ficlHeader2("Renamed Macros") ?>
+
+<?
+
+startoldvsnew()
+
+oldvsnew("PUSHPTR(p)", "ficlStackPushPointer(vm->dataStack, p)")
+oldvsnew("POPUNS()", "ficlStackPopUnsigned(vm->dataStack)")
+oldvsnew("GETTOP()", "ficlStackGetTop(vm->dataStack)")
+
+oldvsnew("FW_IMMEDIATE", "FICL_WORD_IMMEDIATE")
+oldvsnew("FW_COMPILE", "FICL_WORD_COMPILE_ONLY")
+
+oldvsnew("VM_INNEREXIT", "FICL_VM_STATUS_INNER_EXIT")
+oldvsnew("VM_OUTOFTEXT", "FICL_VM_STATUS_OUT_OF_TEXT")
+oldvsnew("VM_RESTART", "FICL_VM_RESTART")
+
+
+endoldvsnew()
+
+?>
+
+<? ficlHeader2("<code>ficllocal.h</code>") ?>
+
+One more note about macros.  Ficl now ships with a standard place for
+you to tweak the Ficl compile-time preprocessor switches  such as
+<code>FICL_WANT_COMPATIBILITY</code> and <code>FICL_WANT_FLOAT</code>.
+It's a file called <code>ficllocal.h</code>, and we guarantee that it
+will always ship empty (or with only comments).  We suggest that you
+put all your local changes there, rather than editing <code>ficl.h</code>
+or editing the makefile.  That should make it much easier to integrate
+future Ficl releases into your product&mdash;all you need do is preserve
+your tweaked copy of <code>ficllocal.h</code> and replace the rest.
+
+
+<? ficlHeader2("Renamed Functions") ?>
+
+Every function that deals primarily with a particular structure
+is now named after that structure.  For instance, any function
+that takes a <code>ficlSystem</code> as its first argument is
+named <code>ficlSystem<i>Something</i>()</code>.  Any function
+that takes a <code>ficlVm</code> as its first argument is
+named <code>ficlVm<i>Something</i>()</code>.  And so on.
+<p>
+
+Also, functions that create a new object are always
+called <code>Create</code> (not <code>Alloc</code>, <code>Allot</code>, <code>Init</code>, or <code>New</code>).
+Functions that create a new object are always
+called <code>Destroy</code> (not <code>Free</code>, <code>Term</code>, or <code>Delete</code>).
+<p>
+
+
+<?
+
+startoldvsnew()
+
+oldvsnew("ficlInitSystem()", "ficlSystemCreate()")
+oldvsnew("ficlTermSystem()", "ficlSystemDestroy()")
+oldvsnew("ficlNewVM()", "ficlSystemCreateVm()")
+oldvsnew("ficlFreeVM()", "ficlVmDestroy()")
+oldvsnew("dictCreate()", "ficlDictionaryCreate()")
+oldvsnew("dictDelete()", "ficlDictionaryDestroy()")
+
+endoldvsnew()
+
+?>
+<p>
+
+All functions exported by Ficl now start with the word <code>ficl</code>.
+This is a <i>feature</i>, as it means the Ficl project will no longer
+pollute your namespace.
+
+<?
+
+startoldvsnew()
+
+oldvsnew("PUSHPTR(p)", "ficlStackPushPointer(vm->dataStack, p)")
+oldvsnew("POPUNS()", "ficlStackPopUnsigned(vm->dataStack)")
+oldvsnew("GETTOP()", "ficlStackGetTop(vm->dataStack)")
+oldvsnew("ltoa()", "ficlLtoa()")
+oldvsnew("strincmp()", "ficlStrincomp()")
+
+endoldvsnew()
+
+?>
+
+
+
+<? ficlHeader2("Removed Functions") ?>
+
+A few entry points have simply been removed.
+For instance, functions specifically managing a system's <code>ENVIRONMENT</code>
+settings have been removed, in favor of managing the system's
+<code>environment</code> dictionary directly:
+<?
+
+startoldvsnew()
+
+oldvsnew("ficlSystemSetEnvironment(system)", "ficlDictionarySetConstant(ficlSystemGetEnvironment(system), ...)")
+oldvsnew("ficlSystemSet2Environment(system)", "ficlDictionarySet2Constant(ficlSystemGetEnvironment(system), ...)")
+
+endoldvsnew()
+
+?>
+
+
+In a similar vein, <code>ficlSystemBuild()</code> has been removed in favor
+of using <code>ficlDictionarySetPrimitive()</code> directly:
+
+<?
+startoldvsnew()
+oldvsnew("ficlSystemBuild(system, ...)", "ficlDictionarySetPrimitive(ficlSystemGetDictionary(system), ...)")
+endoldvsnew()
+?>
+
+Finally, there is no <i>exact</i> replacement for <code>ficlExec()</code>.  99% of the code
+that called <code>ficlExec()</code> never bothered to manage <code>SOURCE-ID</code> properly.
+If you were calling <code>ficlExec()</code>, and you weren't changing <code>SOURCE-ID</code>
+(or <code>vm->sourceId</code>) to match, you should replace those calls with <code>ficlVmEvaluate()</code>,
+which will manage <code>SOURCE-ID</code> for you.
+<p>
+
+There <i>is</i> a function that takes the place of <code>ficlExec()</code> which doesn't change
+<code>SOURCE-ID</code>: <code>ficlVmExecuteString()</code>.  However, instead of taking a
+straight C string (a <code>char *</code>), it takes a <code>ficlString *</code> as its
+code argument.  (This is to discourage its use.)
+
+
+<?
+ficlHeader1("Internal Changes")
+?>
+
+<b>Note:</b> none of these changes should affect you.  If they do, there's probably
+a problem somewhere.  Either Ficl's API doesn't abstract away something enough, or
+you are approaching a problem the wrong way.  Food for thought.
+<p>
+
+There's only one internal change worth noting here.
+The top value on a Ficl stack used to be at (to use the modern structure names)
+<code>stack->top[-1]</code>.  It is now at <code>stack->top[0]</code>.
+In other words, the "stack top" pointer used to point <i>past</i> the top
+element; it now points <i>at</i> the top element.  (Pointing <i>at</i> the
+top element is not only less confusing, it is also faster.)
+
+</body>
+</html>

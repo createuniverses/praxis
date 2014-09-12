@@ -1,0 +1,46 @@
+Music composition
+
+Any shape, as long as first note and last note have a specific spatial relationship
+(eg, step above)
+
+Programmable shape
+
+Stepping mode, arpeggio mode
+
+Awareness of which beat we are in
+---
+
+Solving pearl puzzle
+Iterative process.
+
+---
+
+
+    changed widgets so they apply the transform to opengl
+    checked that there are no issues with an error being caused
+    while modelview stack unbalanced
+    
+    Added __index to vector metatable so that calling code can look
+    like this:
+    
+    slider.mousePos:set(x,y,z)
+    
+    instead of this:
+    
+    Vector3D.set(slider.mousePos, x,y,z)
+    
+    Should do the same for transform.
+    
+    Should also set working folder to prods so that any of the prods can
+    be opened from a praxis session, and common code can stay in the root
+    
+    Added f4 key event to cognitive for adding a second slider to further
+    play with new widget facility
+    
+    Using drawText3DStroked from Slider.render to show text drawn
+    in local coordinate space.
+
+---
+
+change the midi note playing thing so that it doesn't block
+use the winmm timer api for precision

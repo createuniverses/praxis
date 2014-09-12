@@ -1,0 +1,382 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<META name='Description' content='Ficl - embedded scripting with object oriented programming'>
+<META name='Keywords' content='scripting prototyping tcl OOP Forth interpreter C'>
+<LINK rel='SHORTCUT ICON' href='ficl.ico'>
+<TITLE>ficl</TITLE>
+<style>
+
+blockquote { margin-left: 1em }
+
+</style>
+
+</HEAD>
+<BODY>
+
+<table border=0 cellspacing=0 width=100%%><tr>
+
+
+<td width=112 bgcolor=#004968 colspan=3>
+<img src=graphics/ficl.4.96.jpg height=96 width=96>
+</td>
+
+<td bgcolor=#004968>
+<font face=arial,helvetica color=white size=7><b><i>
+ficl
+</i></b></font>
+</td></tr>
+
+
+<tr>
+<td bgcolor=#004968 width=10></td>
+<td bgcolor=#004968 valign=top>
+<br><p>
+<a href=index.html><font face=arial,helvetica color=white><b>Index</b></font></a><p>
+<p><br>
+<a href=dpans.html><font face=arial,helvetica color=white><b>ANS</b></font></a><br>
+<a href=api.html><font face=arial,helvetica color=white><b>API</b></font></a><br>
+<a href=debugger.html><font face=arial,helvetica color=white><b>Debugger</b></font></a><br>
+<a href=http://sourceforge.net/project/showfiles.php?group_id=24441><font face=arial,helvetica color=white><b>Download</b></font></a><br>
+<a href=license.html><font face=arial,helvetica color=white><b>Licensing</b></font></a><br>
+<a href=links.html><font face=arial,helvetica color=white><b>Links</b></font></a><br>
+<a href=locals.html><font face=arial,helvetica color=white><b>Locals</b></font></a><br>
+<a href=oop.html><font face=arial,helvetica color=white><b>OOP&nbsp;In&nbsp;Ficl</b></font></a><br>
+<a href=parsesteps.html><font face=arial,helvetica color=white><b>Parse&nbsp;Steps</b></font></a><br>
+<a href=releases.html><font face=arial,helvetica color=white><b>Release&nbsp;History</b></font></a><br>
+<a href=upgrading.html><font face=arial,helvetica color=white><b>Upgrading&nbsp;To&nbsp;4.0</b></font></a><br>
+</td><td bgcolor=#004968 width=5></td><td valign=top><blockquote><p>
+
+
+
+
+
+<p>
+</blockquote><table border=0 bgcolor=#a0a0a0 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=5><b><i>
+<a name='WhatisFicl'>
+What is Ficl?
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+
+
+Ficl is a programming language interpreter designed to be embedded
+into other systems as a command, macro, and development prototyping
+language.
+<p>
+
+Ficl is an acronym for "Forth Inspired Command Language".
+
+
+
+<p>
+</blockquote><table border=0 bgcolor=#a0a0a0 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=5><b><i>
+<a name='FiclFeatures'>
+Ficl Features
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+
+<dl>
+
+
+<p><dt>
+Ficl is <b><i>easy to port.</i></b> 
+<dd>
+
+
+
+<ul>
+
+<li>
+It typically takes under 2 hours to port to a new platform.
+
+<li>
+Ficl is written in strict ANSI C.
+
+<li>
+Ficl can run natively on 32- and 64-bit processors.
+
+</ul>
+
+
+
+<p><dt>
+Ficl has a <b><i>small memory footprint.</i></b> 
+<dd>
+
+
+
+A fully featured Win32 console version takes less than 100K
+of memory, and a minimal version is less
+than half that.
+
+
+
+<p><dt>
+Ficl is  <b><i>easy to integrate</i></b> into your program.
+<dd>
+
+
+
+Where most Forths view themselves as the center of the system and
+expect the rest of the system to be coded in Forth, Ficl acts as a
+component of your program.  It is easy to export code written in C or
+ASM to Ficl (in the style of TCL), or to invoke Ficl code from a
+compiled module.
+
+
+
+<p><dt>
+Ficl is <b><i>fast.</i></b> 
+<dd>
+
+
+
+Thanks to its
+<a href=http://www.complang.tuwien.ac.at/forth/threaded-code.html#switch-threading>"switch-threaded"</a>
+virtual machine design, Ficl 4 is faster than ever&mdash;about 3x the speed of Ficl 3.
+Ficl also features blindingly fast "just in time" compiling, removing the "compile" step from
+the usual compile-debug-edit iterative debugging cycle.
+
+
+
+<p><dt>
+Ficl is a <b><i>complete and powerful programming language.</i></b> 
+<dd>
+
+
+
+Ficl is an implementation of the FORTH language, a language providing
+a wide range of standard programming language features:
+<ul>
+
+<li>
+Integer and floating-point numbers, with a rich set of operators.
+
+<li>
+Arrays.
+
+<li>
+File I/O.
+
+<li>
+Flow control (<code>if/then/else</code> and many looping structures).
+
+<li>
+Subroutines with named arguments.
+
+<li>
+Language extensibility.
+
+<li>
+Powerful code pre-processing features.
+
+</ul>
+
+
+
+<p><dt>
+Ficl is  <b><i>standards-compliant.</i></b> 
+<dd>
+
+
+
+Ficl conforms to the 1994 ANSI Standard for FORTH (DPANS94).
+See <a href=dpans.html>ANS Required Information</a> for
+more detail.
+
+
+<p><dt>
+Ficl is <b><i>extensible.</i></b> 
+<dd>
+
+
+
+Ficl is extensible both at compile-time and at run-time.
+You can add new script functions, new native functions,
+even new control structures.
+
+
+
+
+<p><dt>
+Ficl adds  <b><i>object oriented programming features.</i></b> 
+<dd>
+
+
+
+Ficl's flexible OOP library can be used to wrap
+data structures or classes of the host system without altering them.
+(And remember how we said Ficl was extensible?  Ficl's object-oriented
+programming extensions are written in Ficl.)
+
+
+
+<p><dt>
+Ficl is <b><i>interactive.</i></b> 
+<dd>
+
+
+
+Ficl can be used interactively, like most other FORTHs, Python,
+and Smalltalk.  You can inspect data, run commands, or even
+define new commands, all on a running Ficl VM.
+Ficl also has a built-in script debugger that allows you to
+step through Ficl code as it is executed.
+
+
+<p><dt>
+Ficl is <b><i>ROMable.</i></b> 
+<dd>
+
+
+
+Ficl is designed to work in RAM based and ROM code / RAM
+data environments.
+
+
+
+<p><dt>
+Ficl is <b><i>safe for multithreaded programs.</i></b> 
+<dd>
+
+
+
+Ficl is reentrant and thread-safe.  After initialization,
+it does not write to any global data.
+
+
+<p><dt>
+Ficl is  <b><i>open-source and free.</i></b> 
+<dd>
+
+
+
+The <a href=license.html>Ficl licence</a> is a BSD-style
+license, requiring only that you document that you are
+using Ficl.  There are no licensing costs for using Ficl.
+
+
+</dl>
+
+
+<a name=whatsnew>
+
+<p>
+</blockquote><table border=0 bgcolor=#a0a0a0 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=5><b><i>
+<a name='WhatsNewInFicl40'>
+What's New In Ficl 4.0?
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+</a>
+
+Ficl 4.0 is a major change for Ficl.  Ficl 4.0 is <i>smaller</i>,
+<i>faster</i>, <i>more powerful</i>, and <i>easier to use</i>
+than ever before.  (Or your money back!)
+<p>
+
+Ficl 4.0 features a major engine rewrite.  Previous versions
+of Ficl stored compiled words as an array of pointers to data
+structure; Ficl 4.0 adds "instructions", and changes over to
+mostly using a "switch-threaded" model.  The result?  Ficl 4.0
+is approximately <i>three times</i> as fast as Ficl 3.03.
+<p>
+
+Ficl 4.0 also adds the ability to store the "softcore" words
+as LZ77 compressed text.  Decompression is so quick as to be
+nearly unmeasurable (0.00384 seconds on a 750MHz AMD Duron-based
+machine).  And even with the runtime decompressor, the resulting
+Ficl executable is over 13k smaller!
+<p>
+
+Another new feature: Ficl 4.0 can take advantage of native
+support for double-word math.  If your platform supports it,
+set the preprocessor symbol <code>FICL_HAVE_NATIVE_2INTEGER</code>
+to 1, and create <code>typedefs</code> for <code>ficl2Integer</code>
+and <code>ficl2Unsigned</code>.
+<p>
+
+Ficl 4.0 also features a retooled API, and a redesigned directory
+tree.  The API is now far more consistent.  But for those of you
+who are upgrading from Ficl 3.03 or before, you can enable API
+backwards compatibility by turning on the compile-time flag
+<code>FICL_WANT_COMPATIBILITY</code>.
+<p>
+
+Ficl 4.0 also extends support every kind of local and
+global value imaginable.  Every values can individually
+be local or global, single-cell or double-cell, and
+integer or floating-point.
+And <code>TO</code> <i>always</i> does the right thing.
+<p>
+
+If you're using Ficl under Windows, you'll be happy
+to know that there's a brand-new build process.
+The Ficl build process now builds Ficl as
+<ul>
+
+<li>
+a static library (.LIB),
+
+<li>
+a dynamic library (.DLL, with a .LIB import library), and
+
+<li>
+a standalone executable (.EXE).
+
+</ul>
+
+Furthermore, each of these targets can be built in
+Debug or Release, Singlethreaded or Multithreaded,
+and optionally using the DLL version of the C runtime
+library for Multithreaded builds.  (And, plus, the
+<code>/objects/common</code> nonsense is gone!)
+<p>
+
+
+Finally, Ficl 4.0 adds a <code>contrib</code>
+directory, a repository for user-contributed code that isn't
+part of the standard Ficl release.  The only package there
+right now is <b>XClasses</b>, a Python-based IDL that generates
+the definition files for C++-based classes, the equivalent Ficl
+classes, and code to allow the Ficl classes to call the C++ methods.
+Using <b>XClasses</b> you can write your class once, and use it
+immediately from both C++ and Ficl.
+
+
+
+<p>
+</blockquote><table border=0 bgcolor=#a0a0a0 width=100%><tr>
+
+<td width=1em></td>
+<td>
+<font face=arial,helvetica color=#004968 size=5><b><i>
+<a name='GettingFicl'>
+Getting Ficl
+</a></i></b></font></td></tr></table><p><blockquote>
+
+
+
+You can download Ficl from the
+<a href=http://sourceforge.net/project/showfiles.php?group_id=24441>
+Ficl download page at Sourceforge</a>.
+
+
+
+</blockquote><p></td></tr></table></body></html>
+
+

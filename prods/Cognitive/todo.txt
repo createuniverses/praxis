@@ -1,0 +1,16 @@
+Look at the original lisp code for pickup object
+
+Add error handler to s7
+
+Add some s7 callbacks
+
+Add forth, FICL forth. (check latest version?)
+
+Study scheme
+
+Added ECL for whatever reason - I can immediately run adventure.
+
+Add a word wrap or at least a line wrapping function which takes a string
+as argument
+
+Make the editor visuals modifiable - num visible lines and columns

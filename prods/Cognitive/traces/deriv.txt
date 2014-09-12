@@ -1,0 +1,279 @@
+-- -- deriv
+-- -- -- -- +
+-- -- -- -- -- (* x x)
+-- -- -- -- (* a (* x x))
+-- -- -- -- (* b x)
+-- -- -- (+ (* a (* x x)) (* b x) c)
+-- -- '(+ (* a (* x x)) (* b x) c)
+-- -- -- x
+-- -- 'x
+-- (deriv '(+ (* a (* x x)) (* b x) c) 'x)
+-- [] () : (deriv '(+ (* a (* x x)) (* b x) c) 'x)
+-- -- [] () : '(+ (* a (* x x)) (* b x) c)
+-- -- (+ (* a (* x x)) (* b x) c)
+-- -- [] () : 'x
+-- -- x
+-- [deriv] ((exp + (* a (* x x)) (* b x) c) (var . x)) : (cond ((number? exp) 0) ((variable? exp) (if (same-variable? exp var) 1 0)) ((sum? exp) (make-sum (deriv (addend exp) var) (deriv (augend exp) var))) ((product? exp) (make-sum (make-product (multiplier exp) (deriv (multiplicand exp) var)) (make-product (deriv (multiplier exp) var) (multiplicand exp)))) (else (error "unknown expression type -- DERIV" exp)))
+-- -- [deriv] ((exp + (* a (* x x)) (* b x) c) (var . x)) : (number? exp)
+-- -- #f
+-- -- [deriv] ((exp + (* a (* x x)) (* b x) c) (var . x)) : (variable? exp)
+-- -- [variable?] ((x + (* a (* x x)) (* b x) c)) : (symbol? x)
+-- -- #f
+-- -- [deriv] ((exp + (* a (* x x)) (* b x) c) (var . x)) : (sum? exp)
+-- -- [sum?] ((x + (* a (* x x)) (* b x) c)) : (and (pair? x) (eq? (car x) '+))
+-- -- #t
+-- #t
+-- [deriv] ((exp + (* a (* x x)) (* b x) c) (var . x)) : (make-sum (deriv (addend exp) var) (deriv (augend exp) var))
+-- -- [deriv] ((exp + (* a (* x x)) (* b x) c) (var . x)) : (deriv (addend exp) var)
+-- -- -- [addend] ((s + (* a (* x x)) (* b x) c)) : (cadr s)
+-- -- -- (* a (* x x))
+-- -- [deriv] ((exp * a (* x x)) (var . x)) : (cond ((number? exp) 0) ((variable? exp) (if (same-variable? exp var) 1 0)) ((sum? exp) (make-sum (deriv (addend exp) var) (deriv (augend exp) var))) ((product? exp) (make-sum (make-product (multiplier exp) (deriv (multiplicand exp) var)) (make-product (deriv (multiplier exp) var) (multiplicand exp)))) (else (error "unknown expression type -- DERIV" exp)))
+-- -- -- [deriv] ((exp * a (* x x)) (var . x)) : (number? exp)
+-- -- -- #f
+-- -- -- [deriv] ((exp * a (* x x)) (var . x)) : (variable? exp)
+-- -- -- [variable?] ((x * a (* x x))) : (symbol? x)
+-- -- -- #f
+-- -- -- [deriv] ((exp * a (* x x)) (var . x)) : (sum? exp)
+-- -- -- [sum?] ((x * a (* x x))) : (and (pair? x) (eq? (car x) '+))
+-- -- -- #f
+-- -- -- [deriv] ((exp * a (* x x)) (var . x)) : (product? exp)
+-- -- -- [product?] ((x * a (* x x))) : (and (pair? x) (eq? (car x) '*))
+-- -- -- #t
+-- -- [deriv] ((exp * a (* x x)) (var . x)) : (make-sum (make-product (multiplier exp) (deriv (multiplicand exp) var)) (make-product (deriv (multiplier exp) var) (multiplicand exp)))
+-- -- -- [deriv] ((exp * a (* x x)) (var . x)) : (make-product (multiplier exp) (deriv (multiplicand exp) var))
+-- -- -- -- [multiplier] ((p * a (* x x))) : (cadr p)
+-- -- -- -- a
+-- -- -- -- [deriv] ((exp * a (* x x)) (var . x)) : (deriv (multiplicand exp) var)
+-- -- -- -- -- [multiplicand] ((p * a (* x x))) : (caddr p)
+-- -- -- -- -- (* x x)
+-- -- -- -- [deriv] ((exp * x x) (var . x)) : (cond ((number? exp) 0) ((variable? exp) (if (same-variable? exp var) 1 0)) ((sum? exp) (make-sum (deriv (addend exp) var) (deriv (augend exp) var))) ((product? exp) (make-sum (make-product (multiplier exp) (deriv (multiplicand exp) var)) (make-product (deriv (multiplier exp) var) (multiplicand exp)))) (else (error "unknown expression type -- DERIV" exp)))
+-- -- -- -- -- [deriv] ((exp * x x) (var . x)) : (number? exp)
+-- -- -- -- -- #f
+-- -- -- -- -- [deriv] ((exp * x x) (var . x)) : (variable? exp)
+-- -- -- -- -- [variable?] ((x * x x)) : (symbol? x)
+-- -- -- -- -- #f
+-- -- -- -- -- [deriv] ((exp * x x) (var . x)) : (sum? exp)
+-- -- -- -- -- [sum?] ((x * x x)) : (and (pair? x) (eq? (car x) '+))
+-- -- -- -- -- #f
+-- -- -- -- -- [deriv] ((exp * x x) (var . x)) : (product? exp)
+-- -- -- -- -- [product?] ((x * x x)) : (and (pair? x) (eq? (car x) '*))
+-- -- -- -- -- #t
+-- -- -- -- [deriv] ((exp * x x) (var . x)) : (make-sum (make-product (multiplier exp) (deriv (multiplicand exp) var)) (make-product (deriv (multiplier exp) var) (multiplicand exp)))
+-- -- -- -- -- [deriv] ((exp * x x) (var . x)) : (make-product (multiplier exp) (deriv (multiplicand exp) var))
+-- -- -- -- -- -- [multiplier] ((p * x x)) : (cadr p)
+-- -- -- -- -- -- x
+-- -- -- -- -- -- [deriv] ((exp * x x) (var . x)) : (deriv (multiplicand exp) var)
+-- -- -- -- -- -- -- [multiplicand] ((p * x x)) : (caddr p)
+-- -- -- -- -- -- -- x
+-- -- -- -- -- -- [deriv] ((exp . x) (var . x)) : (cond ((number? exp) 0) ((variable? exp) (if (same-variable? exp var) 1 0)) ((sum? exp) (make-sum (deriv (addend exp) var) (deriv (augend exp) var))) ((product? exp) (make-sum (make-product (multiplier exp) (deriv (multiplicand exp) var)) (make-product (deriv (multiplier exp) var) (multiplicand exp)))) (else (error "unknown expression type -- DERIV" exp)))
+-- -- -- -- -- -- -- [deriv] ((exp . x) (var . x)) : (number? exp)
+-- -- -- -- -- -- -- #f
+-- -- -- -- -- -- -- [deriv] ((exp . x) (var . x)) : (variable? exp)
+-- -- -- -- -- -- -- [variable?] ((x . x)) : (symbol? x)
+-- -- -- -- -- -- -- #t
+-- -- -- -- -- -- [deriv] ((exp . x) (var . x)) : (if (same-variable? exp var) 1 0)
+-- -- -- -- -- -- -- [deriv] ((exp . x) (var . x)) : (same-variable? exp var)
+-- -- -- -- -- -- -- [same-variable?] ((v2 . x) (v1 . x)) : (and (variable? v1) (variable? v2) (eq? v1 v2))
+-- -- -- -- -- -- -- #t
+-- -- -- -- -- -- 1
+-- -- -- -- -- [make-product] ((m1 . x) (m2 . 1)) : (cond ((or (=number? m1 0) (=number? m2 0)) 0) ((=number? m1 1) m2) ((=number? m2 1) m1) ((and (number? m1) (number? m2)) (* m1 m2)) (else (list '* m1 m2)))
+-- -- -- -- -- -- [make-product] ((m1 . x) (m2 . 1)) : (or (=number? m1 0) (=number? m2 0))
+-- -- -- -- -- -- -- [make-product] ((m1 . x) (m2 . 1)) : (=number? m1 0)
+-- -- -- -- -- -- -- [=number?] ((num . 0) (exp . x)) : (and (number? exp) (= exp num))
+-- -- -- -- -- -- -- #f
+-- -- -- -- -- -- [make-product] ((m1 . x) (m2 . 1)) : (=number? m2 0)
+-- -- -- -- -- -- [=number?] ((num . 0) (exp . 1)) : (and (number? exp) (= exp num))
+-- -- -- -- -- -- #f
+-- -- -- -- -- -- [make-product] ((m1 . x) (m2 . 1)) : (=number? m1 1)
+-- -- -- -- -- -- [=number?] ((num . 1) (exp . x)) : (and (number? exp) (= exp num))
+-- -- -- -- -- -- #f
+-- -- -- -- -- -- [make-product] ((m1 . x) (m2 . 1)) : (=number? m2 1)
+-- -- -- -- -- -- [=number?] ((num . 1) (exp . 1)) : (and (number? exp) (= exp num))
+-- -- -- -- -- -- #t
+-- -- -- -- -- #t
+-- -- -- -- -- [make-product] ((m1 . x) (m2 . 1)) : m1
+-- -- -- -- -- [deriv] ((exp * x x) (var . x)) : (make-product (deriv (multiplier exp) var) (multiplicand exp))
+-- -- -- -- -- -- [deriv] ((exp * x x) (var . x)) : (deriv (multiplier exp) var)
+-- -- -- -- -- -- -- [multiplier] ((p * x x)) : (cadr p)
+-- -- -- -- -- -- -- x
+-- -- -- -- -- -- [deriv] ((exp . x) (var . x)) : (cond ((number? exp) 0) ((variable? exp) (if (same-variable? exp var) 1 0)) ((sum? exp) (make-sum (deriv (addend exp) var) (deriv (augend exp) var))) ((product? exp) (make-sum (make-product (multiplier exp) (deriv (multiplicand exp) var)) (make-product (deriv (multiplier exp) var) (multiplicand exp)))) (else (error "unknown expression type -- DERIV" exp)))
+-- -- -- -- -- -- -- [deriv] ((exp . x) (var . x)) : (number? exp)
+-- -- -- -- -- -- -- #f
+-- -- -- -- -- -- -- [deriv] ((exp . x) (var . x)) : (variable? exp)
+-- -- -- -- -- -- -- [variable?] ((x . x)) : (symbol? x)
+-- -- -- -- -- -- -- #t
+-- -- -- -- -- -- [deriv] ((exp . x) (var . x)) : (if (same-variable? exp var) 1 0)
+-- -- -- -- -- -- -- [deriv] ((exp . x) (var . x)) : (same-variable? exp var)
+-- -- -- -- -- -- -- [same-variable?] ((v2 . x) (v1 . x)) : (and (variable? v1) (variable? v2) (eq? v1 v2))
+-- -- -- -- -- -- -- #t
+-- -- -- -- -- -- 1
+-- -- -- -- -- -- [multiplicand] ((p * x x)) : (caddr p)
+-- -- -- -- -- -- x
+-- -- -- -- -- [make-product] ((m1 . 1) (m2 . x)) : (cond ((or (=number? m1 0) (=number? m2 0)) 0) ((=number? m1 1) m2) ((=number? m2 1) m1) ((and (number? m1) (number? m2)) (* m1 m2)) (else (list '* m1 m2)))
+-- -- -- -- -- -- [make-product] ((m1 . 1) (m2 . x)) : (or (=number? m1 0) (=number? m2 0))
+-- -- -- -- -- -- -- [make-product] ((m1 . 1) (m2 . x)) : (=number? m1 0)
+-- -- -- -- -- -- -- [=number?] ((num . 0) (exp . 1)) : (and (number? exp) (= exp num))
+-- -- -- -- -- -- -- #f
+-- -- -- -- -- -- [make-product] ((m1 . 1) (m2 . x)) : (=number? m2 0)
+-- -- -- -- -- -- [=number?] ((num . 0) (exp . x)) : (and (number? exp) (= exp num))
+-- -- -- -- -- -- #f
+-- -- -- -- -- -- [make-product] ((m1 . 1) (m2 . x)) : (=number? m1 1)
+-- -- -- -- -- -- [=number?] ((num . 1) (exp . 1)) : (and (number? exp) (= exp num))
+-- -- -- -- -- -- #t
+-- -- -- -- -- [make-product] ((m1 . 1) (m2 . x)) : m2
+-- -- -- -- [make-sum] ((a1 . x) (a2 . x)) : (cond ((=number? a1 0) a2) ((=number? a2 0) a1) ((and (number? a1) (number? a2)) (+ a1 a2)) (else (list '+ a1 a2)))
+-- -- -- -- -- [make-sum] ((a1 . x) (a2 . x)) : (=number? a1 0)
+-- -- -- -- -- [=number?] ((num . 0) (exp . x)) : (and (number? exp) (= exp num))
+-- -- -- -- -- #f
+-- -- -- -- -- [make-sum] ((a1 . x) (a2 . x)) : (=number? a2 0)
+-- -- -- -- -- [=number?] ((num . 0) (exp . x)) : (and (number? exp) (= exp num))
+-- -- -- -- -- #f
+-- -- -- -- -- [make-sum] ((a1 . x) (a2 . x)) : (and (number? a1) (number? a2))
+-- -- -- -- -- #f
+-- -- -- -- -- [make-sum] ((a1 . x) (a2 . x)) : else
+-- -- -- -- else
+-- -- -- -- [make-sum] ((a1 . x) (a2 . x)) : (list '+ a1 a2)
+-- -- -- -- (+ x x)
+-- -- -- [make-product] ((m1 . a) (m2 + x x)) : (cond ((or (=number? m1 0) (=number? m2 0)) 0) ((=number? m1 1) m2) ((=number? m2 1) m1) ((and (number? m1) (number? m2)) (* m1 m2)) (else (list '* m1 m2)))
+-- -- -- -- [make-product] ((m1 . a) (m2 + x x)) : (or (=number? m1 0) (=number? m2 0))
+-- -- -- -- -- [make-product] ((m1 . a) (m2 + x x)) : (=number? m1 0)
+-- -- -- -- -- [=number?] ((num . 0) (exp . a)) : (and (number? exp) (= exp num))
+-- -- -- -- -- #f
+-- -- -- -- [make-product] ((m1 . a) (m2 + x x)) : (=number? m2 0)
+-- -- -- -- [=number?] ((num . 0) (exp + x x)) : (and (number? exp) (= exp num))
+-- -- -- -- #f
+-- -- -- -- [make-product] ((m1 . a) (m2 + x x)) : (=number? m1 1)
+-- -- -- -- [=number?] ((num . 1) (exp . a)) : (and (number? exp) (= exp num))
+-- -- -- -- #f
+-- -- -- -- [make-product] ((m1 . a) (m2 + x x)) : (=number? m2 1)
+-- -- -- -- [=number?] ((num . 1) (exp + x x)) : (and (number? exp) (= exp num))
+-- -- -- -- #f
+-- -- -- -- [make-product] ((m1 . a) (m2 + x x)) : (and (number? m1) (number? m2))
+-- -- -- -- #f
+-- -- -- [make-product] ((m1 . a) (m2 + x x)) : (list '* m1 m2)
+-- -- -- (* a (+ x x))
+-- -- -- [deriv] ((exp * a (* x x)) (var . x)) : (make-product (deriv (multiplier exp) var) (multiplicand exp))
+-- -- -- -- [deriv] ((exp * a (* x x)) (var . x)) : (deriv (multiplier exp) var)
+-- -- -- -- -- [multiplier] ((p * a (* x x))) : (cadr p)
+-- -- -- -- -- a
+-- -- -- -- [deriv] ((exp . a) (var . x)) : (cond ((number? exp) 0) ((variable? exp) (if (same-variable? exp var) 1 0)) ((sum? exp) (make-sum (deriv (addend exp) var) (deriv (augend exp) var))) ((product? exp) (make-sum (make-product (multiplier exp) (deriv (multiplicand exp) var)) (make-product (deriv (multiplier exp) var) (multiplicand exp)))) (else (error "unknown expression type -- DERIV" exp)))
+-- -- -- -- -- [deriv] ((exp . a) (var . x)) : (number? exp)
+-- -- -- -- -- #f
+-- -- -- -- -- [deriv] ((exp . a) (var . x)) : (variable? exp)
+-- -- -- -- -- [variable?] ((x . a)) : (symbol? x)
+-- -- -- -- -- #t
+-- -- -- -- [deriv] ((exp . a) (var . x)) : (if (same-variable? exp var) 1 0)
+-- -- -- -- -- [deriv] ((exp . a) (var . x)) : (same-variable? exp var)
+-- -- -- -- -- [same-variable?] ((v2 . x) (v1 . a)) : (and (variable? v1) (variable? v2) (eq? v1 v2))
+-- -- -- -- -- #f
+-- -- -- -- 0
+-- -- -- -- [multiplicand] ((p * a (* x x))) : (caddr p)
+-- -- -- -- (* x x)
+-- -- -- [make-product] ((m1 . 0) (m2 * x x)) : (cond ((or (=number? m1 0) (=number? m2 0)) 0) ((=number? m1 1) m2) ((=number? m2 1) m1) ((and (number? m1) (number? m2)) (* m1 m2)) (else (list '* m1 m2)))
+-- -- -- -- [make-product] ((m1 . 0) (m2 * x x)) : (or (=number? m1 0) (=number? m2 0))
+-- -- -- -- -- [make-product] ((m1 . 0) (m2 * x x)) : (=number? m1 0)
+-- -- -- -- -- [=number?] ((num . 0) (exp . 0)) : (and (number? exp) (= exp num))
+-- -- -- -- -- #t
+-- -- -- -- #t
+-- -- -- [make-product] ((m1 . 0) (m2 * x x)) : 0
+-- -- -- 0
+-- -- [make-sum] ((a1 * a (+ x x)) (a2 . 0)) : (cond ((=number? a1 0) a2) ((=number? a2 0) a1) ((and (number? a1) (number? a2)) (+ a1 a2)) (else (list '+ a1 a2)))
+-- -- -- [make-sum] ((a1 * a (+ x x)) (a2 . 0)) : (=number? a1 0)
+-- -- -- [=number?] ((num . 0) (exp * a (+ x x))) : (and (number? exp) (= exp num))
+-- -- -- #f
+-- -- -- [make-sum] ((a1 * a (+ x x)) (a2 . 0)) : (=number? a2 0)
+-- -- -- [=number?] ((num . 0) (exp . 0)) : (and (number? exp) (= exp num))
+-- -- -- #t
+-- -- [make-sum] ((a1 * a (+ x x)) (a2 . 0)) : a1
+-- -- [deriv] ((exp + (* a (* x x)) (* b x) c) (var . x)) : (deriv (augend exp) var)
+-- -- -- [augend] ((s + (* a (* x x)) (* b x) c)) : (caddr s)
+-- -- -- (* b x)
+-- -- [deriv] ((exp * b x) (var . x)) : (cond ((number? exp) 0) ((variable? exp) (if (same-variable? exp var) 1 0)) ((sum? exp) (make-sum (deriv (addend exp) var) (deriv (augend exp) var))) ((product? exp) (make-sum (make-product (multiplier exp) (deriv (multiplicand exp) var)) (make-product (deriv (multiplier exp) var) (multiplicand exp)))) (else (error "unknown expression type -- DERIV" exp)))
+-- -- -- [deriv] ((exp * b x) (var . x)) : (number? exp)
+-- -- -- #f
+-- -- -- [deriv] ((exp * b x) (var . x)) : (variable? exp)
+-- -- -- [variable?] ((x * b x)) : (symbol? x)
+-- -- -- #f
+-- -- -- [deriv] ((exp * b x) (var . x)) : (sum? exp)
+-- -- -- [sum?] ((x * b x)) : (and (pair? x) (eq? (car x) '+))
+-- -- -- #f
+-- -- -- [deriv] ((exp * b x) (var . x)) : (product? exp)
+-- -- -- [product?] ((x * b x)) : (and (pair? x) (eq? (car x) '*))
+-- -- -- #t
+-- -- [deriv] ((exp * b x) (var . x)) : (make-sum (make-product (multiplier exp) (deriv (multiplicand exp) var)) (make-product (deriv (multiplier exp) var) (multiplicand exp)))
+-- -- -- [deriv] ((exp * b x) (var . x)) : (make-product (multiplier exp) (deriv (multiplicand exp) var))
+-- -- -- -- [multiplier] ((p * b x)) : (cadr p)
+-- -- -- -- b
+-- -- -- -- [deriv] ((exp * b x) (var . x)) : (deriv (multiplicand exp) var)
+-- -- -- -- -- [multiplicand] ((p * b x)) : (caddr p)
+-- -- -- -- -- x
+-- -- -- -- [deriv] ((exp . x) (var . x)) : (cond ((number? exp) 0) ((variable? exp) (if (same-variable? exp var) 1 0)) ((sum? exp) (make-sum (deriv (addend exp) var) (deriv (augend exp) var))) ((product? exp) (make-sum (make-product (multiplier exp) (deriv (multiplicand exp) var)) (make-product (deriv (multiplier exp) var) (multiplicand exp)))) (else (error "unknown expression type -- DERIV" exp)))
+-- -- -- -- -- [deriv] ((exp . x) (var . x)) : (number? exp)
+-- -- -- -- -- #f
+-- -- -- -- -- [deriv] ((exp . x) (var . x)) : (variable? exp)
+-- -- -- -- -- [variable?] ((x . x)) : (symbol? x)
+-- -- -- -- -- #t
+-- -- -- -- [deriv] ((exp . x) (var . x)) : (if (same-variable? exp var) 1 0)
+-- -- -- -- -- [deriv] ((exp . x) (var . x)) : (same-variable? exp var)
+-- -- -- -- -- [same-variable?] ((v2 . x) (v1 . x)) : (and (variable? v1) (variable? v2) (eq? v1 v2))
+-- -- -- -- -- #t
+-- -- -- -- 1
+-- -- -- [make-product] ((m1 . b) (m2 . 1)) : (cond ((or (=number? m1 0) (=number? m2 0)) 0) ((=number? m1 1) m2) ((=number? m2 1) m1) ((and (number? m1) (number? m2)) (* m1 m2)) (else (list '* m1 m2)))
+-- -- -- -- [make-product] ((m1 . b) (m2 . 1)) : (or (=number? m1 0) (=number? m2 0))
+-- -- -- -- -- [make-product] ((m1 . b) (m2 . 1)) : (=number? m1 0)
+-- -- -- -- -- [=number?] ((num . 0) (exp . b)) : (and (number? exp) (= exp num))
+-- -- -- -- -- #f
+-- -- -- -- [make-product] ((m1 . b) (m2 . 1)) : (=number? m2 0)
+-- -- -- -- [=number?] ((num . 0) (exp . 1)) : (and (number? exp) (= exp num))
+-- -- -- -- #f
+-- -- -- -- [make-product] ((m1 . b) (m2 . 1)) : (=number? m1 1)
+-- -- -- -- [=number?] ((num . 1) (exp . b)) : (and (number? exp) (= exp num))
+-- -- -- -- #f
+-- -- -- -- [make-product] ((m1 . b) (m2 . 1)) : (=number? m2 1)
+-- -- -- -- [=number?] ((num . 1) (exp . 1)) : (and (number? exp) (= exp num))
+-- -- -- -- #t
+-- -- -- [make-product] ((m1 . b) (m2 . 1)) : m1
+-- -- -- [deriv] ((exp * b x) (var . x)) : (make-product (deriv (multiplier exp) var) (multiplicand exp))
+-- -- -- -- [deriv] ((exp * b x) (var . x)) : (deriv (multiplier exp) var)
+-- -- -- -- -- [multiplier] ((p * b x)) : (cadr p)
+-- -- -- -- -- b
+-- -- -- -- [deriv] ((exp . b) (var . x)) : (cond ((number? exp) 0) ((variable? exp) (if (same-variable? exp var) 1 0)) ((sum? exp) (make-sum (deriv (addend exp) var) (deriv (augend exp) var))) ((product? exp) (make-sum (make-product (multiplier exp) (deriv (multiplicand exp) var)) (make-product (deriv (multiplier exp) var) (multiplicand exp)))) (else (error "unknown expression type -- DERIV" exp)))
+-- -- -- -- -- [deriv] ((exp . b) (var . x)) : (number? exp)
+-- -- -- -- -- #f
+-- -- -- -- -- [deriv] ((exp . b) (var . x)) : (variable? exp)
+-- -- -- -- -- [variable?] ((x . b)) : (symbol? x)
+-- -- -- -- -- #t
+-- -- -- -- [deriv] ((exp . b) (var . x)) : (if (same-variable? exp var) 1 0)
+-- -- -- -- -- [deriv] ((exp . b) (var . x)) : (same-variable? exp var)
+-- -- -- -- -- [same-variable?] ((v2 . x) (v1 . b)) : (and (variable? v1) (variable? v2) (eq? v1 v2))
+-- -- -- -- -- #f
+-- -- -- -- 0
+-- -- -- -- [multiplicand] ((p * b x)) : (caddr p)
+-- -- -- -- x
+-- -- -- [make-product] ((m1 . 0) (m2 . x)) : (cond ((or (=number? m1 0) (=number? m2 0)) 0) ((=number? m1 1) m2) ((=number? m2 1) m1) ((and (number? m1) (number? m2)) (* m1 m2)) (else (list '* m1 m2)))
+-- -- -- -- [make-product] ((m1 . 0) (m2 . x)) : (or (=number? m1 0) (=number? m2 0))
+-- -- -- -- -- [make-product] ((m1 . 0) (m2 . x)) : (=number? m1 0)
+-- -- -- -- -- [=number?] ((num . 0) (exp . 0)) : (and (number? exp) (= exp num))
+-- -- -- -- -- #t
+-- -- -- -- #t
+-- -- -- [make-product] ((m1 . 0) (m2 . x)) : 0
+-- -- -- 0
+-- -- [make-sum] ((a1 . b) (a2 . 0)) : (cond ((=number? a1 0) a2) ((=number? a2 0) a1) ((and (number? a1) (number? a2)) (+ a1 a2)) (else (list '+ a1 a2)))
+-- -- -- [make-sum] ((a1 . b) (a2 . 0)) : (=number? a1 0)
+-- -- -- [=number?] ((num . 0) (exp . b)) : (and (number? exp) (= exp num))
+-- -- -- #f
+-- -- -- [make-sum] ((a1 . b) (a2 . 0)) : (=number? a2 0)
+-- -- -- [=number?] ((num . 0) (exp . 0)) : (and (number? exp) (= exp num))
+-- -- -- #t
+-- -- [make-sum] ((a1 . b) (a2 . 0)) : a1
+-- [make-sum] ((a1 * a (+ x x)) (a2 . b)) : (cond ((=number? a1 0) a2) ((=number? a2 0) a1) ((and (number? a1) (number? a2)) (+ a1 a2)) (else (list '+ a1 a2)))
+-- -- [make-sum] ((a1 * a (+ x x)) (a2 . b)) : (=number? a1 0)
+-- -- [=number?] ((num . 0) (exp * a (+ x x))) : (and (number? exp) (= exp num))
+-- -- #f
+-- -- [make-sum] ((a1 * a (+ x x)) (a2 . b)) : (=number? a2 0)
+-- -- [=number?] ((num . 0) (exp . b)) : (and (number? exp) (= exp num))
+-- -- #f
+-- -- [make-sum] ((a1 * a (+ x x)) (a2 . b)) : (and (number? a1) (number? a2))
+-- -- #f
+-- [make-sum] ((a1 * a (+ x x)) (a2 . b)) : (list '+ a1 a2)
+-- (+ (* a (+ x x)) b)

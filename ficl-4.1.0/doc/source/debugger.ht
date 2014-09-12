@@ -1,0 +1,157 @@
+<?
+ficlPageHeader("ficl debugger")
+
+ficlAddToNavBarAs("Debugger")
+
+?>
+
+<p>Ficl includes a simple step debugger for colon definitions
+and <code>DOES></code> words.
+
+
+<? ficlHeader1("Using The Ficl Debugger") ?>
+
+
+To debug a word, set up the stack with any parameters the word requires,
+then execute:
+<pre><b>DEBUG <i>your-word-name-here</i></b></pre>
+<p>
+
+If the word is unnamed, or all you have is an execution token,
+you can instead use <code>DEBUG-XT</code></b>
+<p>
+
+The debugger invokes <tt>SEE</tt> on the word which prints a crude source
+listing.  It then stops at the first instruction of the definition. There are
+six (case insensitive) commands you can use from here onwards:
+
+<dl>
+
+<dt>
+<b>I</b> (step <b>I</b>n)
+<dd>If the next instruction is a colon defintion or does> word, steps into
+that word's code. If the word is a primitive, simply executes the word.
+
+<dt>
+<b>O</b> (step <b>O</b>ver)
+<dd>
+Executes the next instruction in its entirety.
+
+<dt>
+<b>G</b> (<b>G</b>o)
+<dd>
+Run the word to completion and exit the debugger.
+
+<dt>
+<b>L</b> (<b>L</b>ist)
+<dd>
+Lists the source code of the word presently being stepped.
+
+<dt>
+<b>Q</b> (<b>Q</b>uit)
+<dd>
+Abort the word and exit the debugger, clearing the stacks.
+
+<dt>
+<b>X</b> (e<b>X</b>ecute)
+<dd>
+Interpret the remainder of the line as Ficl words.  Any change
+they make to the stacks will be preserved when the debugged word
+continues execution.
+Any errors will abort the debug session and reset the VM. Usage example:
+<pre>
+X DROP 3 \ change top argument on stack to 3
+</pre>
+
+</dl>
+
+
+Any other character will prints a list of available debugger commands.
+
+
+<? ficlHeader2("The <code>ON-STEP</code> Event") ?>
+
+If there is a defined word named <code>ON-STEP</code> when the debugger starts, that
+word will be executed before every step.  Its intended use is to display the stacks
+and any other VM state you find interesting.  The default <code>ON-STEP</code> is:
+<p>
+
+<pre>
+: ON-STEP  ." S: " .S-SIMPLE CR ;
+</pre>
+
+If you redefine <code>ON-STEP</code>, we recommend you ensure the word has no
+side-effects (for instance, adding or removing values from any stack).
+
+
+
+<? ficlHeader3("Other Useful Words For Debugging And <code>ON-STEP</code>") ?>
+
+<dl>
+
+<dt>
+<code>.ENV  ( -- )</code>
+<dd>
+Prints all environment settings non-destructively.
+
+<dt>
+<code>.S  ( -- )</code>
+<dd>
+Prints the parameter stack non-destructively in a verbose format.
+
+<dt>
+<code>.S-SIMPLE  ( -- )</code>
+<dd>
+Prints the parameter stack non-destructively in a simple single-line format.
+
+<dt>
+<code>F.S  ( -- )</code>
+<dd>
+Prints the float stack non-destructively (only available if <code>FICL_WANT_FLOAT</code> is enabled).
+
+<dt>
+<code>R.S  ( -- )</code>
+<dd>
+Prints a represention of the state of the return stack non-destructively.
+
+
+
+</dl>
+
+<? ficlHeader1("Debugger Internals") ?>
+
+<p>
+The debugger words are mostly located in source file <code>tools.c</code>. There are
+supporting words (<code>DEBUG</code> and <code>ON-STEP</code>) in <code>softcore.fr</code> as well. 
+There are two main words that make the debugger go: <code>debug-xt</code> and <code>step-break</code>. 
+<code>debug-xt</code> takes the execution token of a word to debug (as returned by <code>'</code> for example) ,
+checks to see if it is debuggable (not a primitive), sets a breakpoint at its
+first instruction, and runs <code>see</code> on it.  To set a breakpoint, 
+<code>debug-xt</code>
+replaces the instruction at the breakpoint with the execution token of <code>step-break</code>, and
+stores the original instruction and its address in a static breakpoint
+record. To clear the breakpoint, <code>step-break</code> simply replaces the original
+instruction and adjusts the target virtual machine's instruction pointer
+to run it.
+
+<p>
+
+<code>step-break</code> is responsible for processing debugger commands and setting
+breakpoints at subsequent instructions.
+
+
+<? ficlHeader1("Future Enhancements") ?>
+
+<dl>
+
+<li>
+The debugger needs to exit automatically when it encounters the end of the word
+it was asked to debug.  (Perhaps this could be a special kind of breakpoint?)
+
+<li>Add user-set breakpoints.
+
+<li>Add "step out" command.
+</dl>
+
+
+<? ficlPageFooter() ?>

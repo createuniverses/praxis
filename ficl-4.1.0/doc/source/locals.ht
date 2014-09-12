@@ -1,0 +1,133 @@
+<?
+
+ficlPageHeader("local variables in Ficl")
+
+ficlAddToNavBarAs("Locals")
+
+def entry(definition, description):
+	print "<tr><td bgcolor=#e0e0e0>\n<b>" + definition + "</b>\n</td><td bgcolor=#f0f0f0>\n" + description + "\n</td></tr>\n"
+
+?>
+
+
+<? ficlHeader1("An Overview And A History") ?>
+
+
+
+Named, locally scoped variables came late to Forth.  Purists feel that experienced
+Forth programmers can (and should) write supportable code using only anonymous
+stack variables and good factoring, and they complain that novices use
+global variables too frequently.  But local variables cost little in terms of
+code size and execution speed, and are very convenient for OO programming
+(where stack effects are more complex).
+<p>
+
+Ficl provides excellent support
+for local variables, and the purists be damned&mdash;we use 'em all the time.
+<p>
+
+Local variables can only be declared inside a definition,
+and are only visible in that definition.  Please refer to
+<a href="http://ficl.sourceforge.net/dpans/dpans13.htm">
+the ANS standard for FORTH
+</a> for more general information on local variables.
+
+
+<? ficlHeader1("John-Hopkins Forth Argument Syntax") ?>
+
+ANS Forth does not specify a complete local variable facility.
+Instead, it defines a foundation upon which to build one.  Ficl comes with
+an adaptation of the Johns-Hopkins local variable syntax, as developed by John
+Hayes et al. However, Ficl extends this syntax with support for double-cell and
+floating-point numbers.
+
+<p>
+
+Here's the basic syntax of a JH-local variable declaration:
+<blockquote><code>
+<b>{</b> <i>arguments</i>
+<b>|</b> <i>locals</i>
+<b>--</b> <i>ignored</i>
+<b>}</b>
+</code></blockquote>
+(For experienced FORTH programmers: the declaration is designed to look like a stack comment,
+but it uses curly braces instead of parentheses.)  Each section must list zero or more
+legal Ficl word names; comments and preprocessing are not allowed here.
+Here's what each section denotes:
+
+<ul>
+
+<li>
+The <i>arguments</i> section lists local variables which are initialized from the stack when the word executes.
+Each argument is set to the top value of the stack, starting at the rightmost argument name and moving left.
+You can have zero or more arguments.
+<p>
+
+<li>
+The <i>locals</i> section lists local variables which are set to zero when the word executes.
+You can have zero or more locals.
+<p>
+
+<li>
+Any characters between <code>--</code> and <code>}</code> are treated as a comment, and ignored.
+
+</ul>
+
+(The <code>|</code> and <code>--</code> sections are optional,
+but they must appear in the order shown if they appear at all.)
+<p>
+
+
+<? ficlHeader2("Argument Types") ?>
+
+Every time you specify a local variable (in either the <i>arguments</i> or the <i>locals</i> section),
+you can also specify the <i>type</i> of the local variable.  By default, a local variable
+is a single-cell integer; you can specify that the local be a double-cell integer, and/or a
+floating-point number.
+<p>
+
+To specify the type of a local, specify one or more of the following single-character specifiers,
+followed by a colon (<code>:</code>).
+
+<table>
+
+<? entry("1", "single-cell") ?>
+
+<? entry("2", "double-cell") ?>
+
+<? entry("d", "double-cell") ?>
+
+<? entry("f", "floating-point (use floating stack)") ?>
+
+<? entry("i", "integer (use data stack)") ?>
+
+<? entry("s", "single-cell") ?>
+
+</table>
+
+For instance, the argument <code>f2:foo</code> would specify a double-width floating-point
+number.
+<p>
+
+The type specifiers are read right-to left, and when two specifiers conflict, the rightmost
+one takes priority. So <code>2is1f2:foo</code> would still specifiy a double-width floating-point
+number.
+<p>
+
+Note that this syntax <i>only works</i> for Ficl's JH-locals.  Locals
+defined in some other way (say, with the FORTH standard word <code>LOCALS|</code>)
+will ignore this syntax, and the entire string will be used as the name of
+the local (type and all).
+
+<? ficlHeader2("A Simple Example") ?>
+
+<pre>
+: DEMONSTRATE-JH-LOCALS { c b a  f:float -- a+b f:float*2 }
+	a b +
+	2.0e float f*
+	;
+</pre>
+
+<?
+ficlPageFooter()
+?>
