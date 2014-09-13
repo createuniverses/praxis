@@ -242,8 +242,10 @@ function colors2()
     end
 end
 
-fullscreenMode()
+--fullscreenMode()
 --windowedMode()
+
+windowedMode(0,0,800,600)
 
 playMp3()
 
@@ -251,3 +253,4 @@ playMp3()
 update()
 
 setMaxFramerate(50)
+

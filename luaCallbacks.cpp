@@ -1475,7 +1475,8 @@ int luaCBMidiStart(lua_State * L)
     if(lua_gettop(L) >= 1)
         nPortNum = luaL_checknumber(L, 1);
 
-    g_pWorld->m_midiout->openPort(nPortNum);
+    if(nPortNum >= 0 && nPortNum < g_pWorld->m_midiout->getPortCount())
+        g_pWorld->m_midiout->openPort(nPortNum);
 
     return 0;
 }

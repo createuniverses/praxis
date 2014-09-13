@@ -34,8 +34,9 @@ render = prodrender
 
 initTimeline()
 
-fullscreenMode()
---windowedMode()
+--fullscreenMode()
+windowedMode(0,0,800,600)
 --playMp3()
 
 setMaxFramerate(50)
+

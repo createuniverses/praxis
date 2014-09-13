@@ -37,5 +37,5 @@ lookDown()
 -- setMaxFramerate(20)
 setMaxFramerate(50)
 
-windowedMode()
+windowedMode(0,0,800,600)
 --fullscreenMode()

@@ -228,3 +228,6 @@ lookAt(60,0,-200)
 
 -- update, render and all input callbacks should all call those respective functions
 -- for all registered objects.
+
+windowedMode(0,0,800,600)
+

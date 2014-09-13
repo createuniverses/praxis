@@ -21,3 +21,6 @@ end
 
 function render()
 end
+
+windowedMode(0,0,800,600)
+

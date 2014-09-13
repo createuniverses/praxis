@@ -69,4 +69,7 @@ setMaxFramerate(50)
 --windowedMode()
 --fullscreenMode()
 
-windowedMode(0,0, getWinScreenWidth() * 0.5, getWinScreenHeight())
+--windowedMode(0,0, getWinScreenWidth() * 0.5, getWinScreenHeight())
+
+windowedMode(0,0,800,600)
+
