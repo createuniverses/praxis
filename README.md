@@ -48,5 +48,7 @@ Praxis features a mish-mash of features I've added over a long period of time.
  - Real-time audio generation
  - Midi
  - A voxel engine
- - A programmable text editor similar to emacs
- - other bits I forgot
+ - A programmable text editor
+ - lots more
+
+See the end of luaCallbacks.cpp for available lua commands, and the folders in /prods for examples.
