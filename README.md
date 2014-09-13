@@ -28,7 +28,14 @@ Prerequisites:
 
  - Qt (strictly speaking, only qmake is required, praxis is not dependent on Qt libraries)
 
-Once you have these, you can compile praxis the usual way you would for a qmake based project, either from the command line with qmake then make, or by loading the project in Qt Creator.
+Praxis links against the following static libraries:
+
+ - fmodvc.lib (found in fmodapi375win/lib)
+ - freetype235.lib (found in freetype-2.3.5/objs)
+
+These files need to be copied to a folder called "libs" under the parent of the build folder. For example, if your build folder is in C:\builds\build-praxis-Qt\_5\_3-Release, the path of the libs folder will be C:\builds\libs.
+
+You can compile praxis the usual way you would for a qmake based project, either from the command line with qmake then make, or by loading the project in Qt Creator.
 
 When running praxis, praxis expects to see the following files in the current folder:
 
