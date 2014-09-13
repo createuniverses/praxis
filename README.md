@@ -1,7 +1,7 @@
 praxis
 ======
 
-A live coding environment based on Lua, Lisp and Forth
+A live coding environment based on Lua, Lisp and Forth.
 
 Compiling and running praxis in Linux
 -------------------------------------
@@ -21,3 +21,32 @@ When running praxis, praxis expects to see the following files in the current fo
 
 See the prods folder for runnable examples.
 
+Compiling and running praxis in Windows
+---------------------------------------
+
+Prerequisites:
+
+ - Qt (strictly speaking, only qmake is required, praxis is not dependent on Qt libraries)
+
+Once you have these, you can compile praxis the usual way you would for a qmake based project, either from the command line with qmake then make, or by loading the project in Qt Creator.
+
+When running praxis, praxis expects to see the following files in the current folder:
+
+ - Bitstream-Vera-Sans-Mono.ttf
+ - fmod.dll
+ - music.mp3
+ - prod.lua
+
+See the prods folder for runnable examples.
+
+Features
+--------
+
+Praxis features a mish-mash of features I've added over a long period of time.
+
+ - OpenGL
+ - Real-time audio generation
+ - Midi
+ - A voxel engine
+ - A programmable text editor similar to emacs
+ - other bits I forgot
