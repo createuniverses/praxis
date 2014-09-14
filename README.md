@@ -3,7 +3,8 @@ praxis
 
 A live coding environment based on Lua, Lisp and Forth.
 
-Screen captures:
+Videos
+------
 
 https://www.youtube.com/watch?v=ezWaNu-FMPk
 
