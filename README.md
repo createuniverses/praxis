@@ -3,6 +3,13 @@ praxis
 
 A live coding environment based on Lua, Lisp and Forth.
 
+Screen captures:
+
+https://www.youtube.com/watch?v=ezWaNu-FMPk
+
+https://www.youtube.com/watch?v=0uEBs98PKQE
+
+
 Compiling and running praxis in Linux
 -------------------------------------
 
