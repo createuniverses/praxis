@@ -3,6 +3,8 @@ praxis
 
 A live coding environment based on Lua, Lisp and Forth.
 
+Although mainly Lua at the moment.
+
 Videos
 ------
 
@@ -28,6 +30,11 @@ When running praxis, praxis expects to see the following files in the current fo
  - prod.lua
 
 See the prods folder for runnable examples.
+
+To use the midi commands you need a midi server running. I've been using timidity for this by invoking the following command in a terminal:
+
+timidity -iA -B2,8 -Os1l -s 44100
+
 
 Compiling and running praxis in Windows
 ---------------------------------------
