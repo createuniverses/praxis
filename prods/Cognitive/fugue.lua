@@ -47,7 +47,7 @@ fugue.playing = false
 function fugue.play()
   if fugue.playing == false then
     fugue.playing = true
-    midiLaunchNextEvent(100)
+--    midiLaunchNextEvent(100)
   end
 end
 
@@ -77,52 +77,72 @@ function midiUpdate()
   midiLaunchNextEvent(50) -- Up to 20 notes per second
 end
 
-function midiUpdate()
-  if fugue.playing == true then
-    -- isn't the last note merely the note before the current one??
-    if fugue.currnote <= #fugue.lines[1] then
-      if fugue.p1On == true then
-        local note = fugue.lines[1][fugue.currnote]
-        local midiNote = fugue.makeMidiNote(note)
-        local lastNote = fugue.lines[1][fugue.currnote-1]
-        local lastNoteMidi = fugue.makeMidiNote(lastNote)
-        
-        midiSelectInstrument(fugue.inst1)
-        
-        if lastNoteMidi ~= nil then
-          midiNoteOff(lastNoteMidi)
-        end
-        
-        if note.rest == nil then
-          --print(fugue.currnote, midiNote)
-          
-          midiNoteOn(midiNote)
-          
-          -- play note in the other line.
-          
-          -- local duration = 100 * fugue.rhythms[2][((fugue.currnote - 1) % 4) + 1]
-          -- print(duration)
-        end
-        
-        if note.duration ~= nil then
-          midiLaunchNextEvent(note.duration)
-        else
-          midiLaunchNextEvent(100) -- backward compatibility
-        end
-        
-        fugue.currnote = fugue.currnote + 1
+-- wishful thinking programming style
+
+fugue.tickTime = 50
+fugue.currNote = nil
+fugue.currNoteID = 1
+fugue.noteTimer = 0
+
+function fugue.turnOffNotes()
+  if fugue.currNote ~= nil then
+    fugue.noteTimer = fugue.noteTimer - fugue.tickTime
+    if fugue.noteTimer <= 0 then
+      if fugue.currNote.rest == nil then
+        local midiNote = fugue.makeMidiNote(fugue.currNote)
+        midiNoteOff(midiNote)
       end
-    else
-      local lastNote = fugue.lines[1][fugue.currnote-1]
-      local lastNoteMidi = fugue.makeMidiNote(lastNote)
-      if lastNoteMidi ~= nil then
-        midiNoteOff(lastNoteMidi)
-      end
-      print("no more notes!")
-      fugue.playing = false
+      fugue.currNote = nil
     end
   end
 end
+
+function fugue.turnOnNotes()
+  if fugue.currNote == nil then
+    if fugue.currNoteID <= #fugue.lines[1] then
+      fugue.currNote = fugue.lines[1][fugue.currNoteID]
+      local midiNote = fugue.makeMidiNote(fugue.currNote)
+      
+      midiSelectInstrument(fugue.inst1)
+      
+      if fugue.currNote.rest == nil then
+        midiNoteOn(midiNote)
+      end
+      
+      if fugue.currNote.duration ~= nil then
+        fugue.noteTimer = fugue.currNote.duration
+      else
+        fugue.noteTimer = 300
+      end
+      
+      fugue.currNoteID = fugue.currNoteID + 1
+      
+    end
+  end
+end
+
+function midiUpdate()
+  fugue.turnOffNotes()
+  fugue.turnOnNotes()
+  midiLaunchNextEvent(fugue.tickTime)
+end
+
+-- how do I prevent midiLaunchNextEvent being called
+-- before the 
+
+-- two or more simultaneous midiUpdate chains can occur
+-- how do I ensure there is only one?
+
+-- disregard calls to midiLaunchNextEvent until the
+-- midiUpdate function is called?
+
+
+
+
+
+
+
+
 
 
 -- try always playing the inverse phrase in the 2nd line.
@@ -136,8 +156,8 @@ function fugue.render()
   
   fugue.renderSheet(50, 16)
 
-  fugue.renderGear(80,50,-160, 50, 1, { red = 50, green = 50, blue = 150 + math.random(20) }, 50, 16 )
-  fugue.renderGear(80,50,-262, 50, 2, { red = 150 + math.random(20), green = 50, blue = 50 }, 50, 16 )
+  --fugue.renderGear(80,50,-160, 50, 1, { red = 50, green = 50, blue = 150 + math.random(20) }, 50, 16 )
+  --fugue.renderGear(80,50,-262, 50, 2, { red = 150 + math.random(20), green = 50, blue = 50 }, 50, 16 )
   
   --fugue.renderDemiurge()
   
@@ -147,4 +167,14 @@ function fugue.composeAndPlay()
   fugue.compose()
   fugue.play()
 end
+
+function fugue.play()
+  fugue.tickTime = 50
+  fugue.currNote = nil
+  fugue.currNoteID = 1
+  fugue.noteTimer = 0
+end
+
+--fugue.play()
+--midiLaunchNextEvent(100)
 

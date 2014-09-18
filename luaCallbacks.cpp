@@ -1561,8 +1561,15 @@ int luaCBMidiSelectInstrument(lua_State * L)
 extern CRITICAL_SECTION g_cs;
 extern bool g_bLuaRunning;
 
+// Better yet, a start midi clock and stop midi clock.
+// Leave it like this for now.
+
+bool g_bMidiLaunchOK = true;
+
 void CALLBACK midiPraxisTimerFunc (UINT, UINT, DWORD, DWORD, DWORD)
 {
+    g_bMidiLaunchOK = true;
+
     if(g_bLuaRunning)
     {
         //EnterCriticalSection (&g_cs) ;
@@ -1577,10 +1584,15 @@ extern UINT     uTimerRes;
 int luaCBMidiLaunchNextEvent(lua_State * L)
 {
 #ifdef __PRAXIS_WINDOWS__
-    int nMsec = luaL_checknumber(L, 1);
+    if(g_bMidiLaunchOK)
+    {
+        g_bMidiLaunchOK = false;
 
-    UINT uTimerID = timeSetEvent (max ((UINT) uTimerRes, (UINT) nMsec),
-                                  uTimerRes, midiPraxisTimerFunc, 0, TIME_ONESHOT) ;
+        int nMsec = luaL_checknumber(L, 1);
+
+        UINT uTimerID = timeSetEvent (max ((UINT) uTimerRes, (UINT) nMsec),
+                                      uTimerRes, midiPraxisTimerFunc, 0, TIME_ONESHOT) ;
+    }
 #endif
     return 0;
 }
