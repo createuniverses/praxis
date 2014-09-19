@@ -1,3 +1,15 @@
+fugue.play()
+print(midiGetInterval())
+print(fugue.defaultDuration)
+
+print(midiGetInterval())
+print(midiSetInterval(20))
+print(midiSetInterval(50))
+
+fugue.defaultDuration = 100
+fugue.defaultDuration = 250
+fugue.play()
+
 print2(midiGetPortCount())
 5
 for i=0,midiGetPortCount()-1,1 do
@@ -106,6 +118,8 @@ loadBuffer("patternMatching.scm")
 
 newBuffer()
 loadBuffer("procedureAnnotate2.scm")
+
+
 
 
 

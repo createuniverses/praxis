@@ -64,6 +64,11 @@ extern VoxelBlock *     g_pVoxelBlock;
 
 extern World *          g_pWorld;
 
+extern bool g_bLuaRunning;
+
+int g_nMidiUpdateInterval = 20;
+
+
 int luaCBDrawLine(lua_State *L)
 {
     int n = lua_gettop(L);
@@ -1455,28 +1460,29 @@ extern void StopMidi();
 extern void MidiNoteOn(unsigned char nNote, unsigned char nVolume);
 extern void MidiNoteOff(unsigned char nNote);
 extern void SelectMidiInstrument(unsigned char nInstrument);
+void CALLBACK midiPraxisTimerFunc (UINT, UINT, DWORD, DWORD, DWORD);
+extern UINT uTimerRes;
 #endif
 
 int luaCBMidiStart(lua_State * L)
 {
 #ifdef __PRAXIS_WINDOWS__
-    //StartMidi();
-
-    // 0 is MS wavetable
-    int nPortNum = 0;
+    StartMidi();
+    g_nMidiUpdateInterval = max((UINT) uTimerRes, (UINT) g_nMidiUpdateInterval);
+    timeSetEvent(g_nMidiUpdateInterval, uTimerRes, midiPraxisTimerFunc, 0, TIME_ONESHOT);
 #endif
 
 #ifdef __PRAXIS_LINUX__
     // 0 is midi thru
     // 1 is Timidity
     int nPortNum = 1;
-#endif
 
     if(lua_gettop(L) >= 1)
         nPortNum = luaL_checknumber(L, 1);
 
     if(nPortNum >= 0 && nPortNum < g_pWorld->m_midiout->getPortCount())
         g_pWorld->m_midiout->openPort(nPortNum);
+#endif
 
     return 0;
 }
@@ -1484,10 +1490,12 @@ int luaCBMidiStart(lua_State * L)
 int luaCBMidiStop(lua_State * L)
 {
 #ifdef __PRAXIS_WINDOWS__
-    //StopMidi();
+    StopMidi();
 #endif
 
+#ifdef __PRAXIS_LINUX__
     g_pWorld->m_midiout->closePort();
+#endif
 
     return 0;
 }
@@ -1496,104 +1504,94 @@ int luaCBMidiNoteOn(lua_State * L)
 {
     int n = lua_gettop(L);
 
-#ifdef __PRAXIS_WINDOWS__
-//    if(n==1)
-//    {
-//        unsigned char nNote = luaL_checknumber(L, 1);
-//        MidiNoteOn(nNote, 127);
-//    }
-//    else if(n==2)
-//    {
-//        unsigned char nNote   = luaL_checknumber(L, 1);
-//        unsigned char nVolume = luaL_checknumber(L, 2);
-//        MidiNoteOn(nNote, nVolume);
-//    }
-#endif
-
     unsigned char nNote   = luaL_checknumber(L, 1);
     unsigned char nVolume = 127;
     if(n==2)
         nVolume = luaL_checknumber(L, 2);
 
+#ifdef __PRAXIS_WINDOWS__
+    MidiNoteOn(nNote, nVolume);
+#endif
+
+#ifdef __PRAXIS_LINUX__
     std::vector<unsigned char> msg;
     msg.push_back(0x90);
     msg.push_back(nNote);
     msg.push_back(nVolume);
     g_pWorld->m_midiout->sendMessage(&msg);
+#endif
 
     return 0;
 }
 
 int luaCBMidiNoteOff(lua_State * L)
 {
+    unsigned char nNote = luaL_checknumber(L, 1);
+
 #ifdef __PRAXIS_WINDOWS__
-//    unsigned char nNote = luaL_checknumber(L, 1);
-//    MidiNoteOff(nNote);
+    MidiNoteOff(nNote);
 #endif
 
-    unsigned char nNote   = luaL_checknumber(L, 1);
+#ifdef __PRAXIS_LINUX__
     std::vector<unsigned char> msg;
     msg.push_back(0x90);
     msg.push_back(nNote);
     msg.push_back(0);
     g_pWorld->m_midiout->sendMessage(&msg);
+#endif
 
     return 0;
 }
 
 int luaCBMidiSelectInstrument(lua_State * L)
 {
+    unsigned char nInstrument = luaL_checknumber(L, 1);
+
 #ifdef __PRAXIS_WINDOWS__
-//    unsigned char nInstrument = luaL_checknumber(L, 1);
-//    SelectMidiInstrument(nInstrument);
+    SelectMidiInstrument(nInstrument);
 #endif
 
-    unsigned char nInstrument   = luaL_checknumber(L, 1);
+#ifdef __PRAXIS_LINUX__
     std::vector<unsigned char> msg;
     msg.push_back(0x0C0);
     msg.push_back(nInstrument);
     g_pWorld->m_midiout->sendMessage(&msg);
+#endif
 
     return 0;
 }
 
 #ifdef __PRAXIS_WINDOWS__
-extern CRITICAL_SECTION g_cs;
-extern bool g_bLuaRunning;
-
-// Better yet, a start midi clock and stop midi clock.
-// Leave it like this for now.
-
-bool g_bMidiLaunchOK = true;
-
 void CALLBACK midiPraxisTimerFunc (UINT, UINT, DWORD, DWORD, DWORD)
 {
-    g_bMidiLaunchOK = true;
-
     if(g_bLuaRunning)
-    {
-        //EnterCriticalSection (&g_cs) ;
         luaCall("midiUpdate()");
-        //LeaveCriticalSection (&g_cs) ;
-    }
+
+    timeSetEvent(g_nMidiUpdateInterval, uTimerRes, midiPraxisTimerFunc, 0, TIME_ONESHOT);
 }
 
-extern UINT     uTimerRes;
 #endif
 
+int luaCBMidiGetInterval(lua_State * L)
+{
+    lua_pushnumber(L, g_nMidiUpdateInterval);
+    return 1;
+}
+
+int luaCBMidiSetInterval(lua_State * L)
+{
+    int nInterval = luaL_checknumber(L, 1);
+    g_nMidiUpdateInterval = nInterval;
+#ifdef __PRAXIS_WINDOWS__
+    g_nMidiUpdateInterval = max((UINT) uTimerRes, (UINT) g_nMidiUpdateInterval);
+#endif
+    lua_pushnumber(L, g_nMidiUpdateInterval);
+    return 1;
+}
+
+// Leave it in for now
 int luaCBMidiLaunchNextEvent(lua_State * L)
 {
-#ifdef __PRAXIS_WINDOWS__
-    if(g_bMidiLaunchOK)
-    {
-        g_bMidiLaunchOK = false;
-
-        int nMsec = luaL_checknumber(L, 1);
-
-        UINT uTimerID = timeSetEvent (max ((UINT) uTimerRes, (UINT) nMsec),
-                                      uTimerRes, midiPraxisTimerFunc, 0, TIME_ONESHOT) ;
-    }
-#endif
     return 0;
 }
 
@@ -1611,19 +1609,6 @@ int luaCBMidiGetPortName(lua_State * L)
     lua_pushstring(L, sName.c_str());
     return 1;
 }
-
-//int luaCBMidiOpen(lua_State * L)
-//{
-//    int nPortNumber = luaL_checknumber(L, 1);
-//    g_pWorld->m_midiout->openPort(nPortNumber);
-//    return 0;
-//}
-
-//int luaCBMidiClose(lua_State * L)
-//{
-//    g_pWorld->m_midiout->closePort();
-//    return 0;
-//}
 
 int luaCBLisp(lua_State * L)
 {
@@ -2773,7 +2758,8 @@ void luaInitCallbacks()
     luaCall("function f11Pressed() end");
     luaCall("function f12Pressed() end");
 
-    luaCall("function midiUpdate() print(\"midiUpdate() called\") end");
+    // luaCall("function midiUpdate() print(\"midiUpdate() called\") end");
+    luaCall("function midiUpdate() end");
 
     luaCall("function getProdMp3Name() return \"\" end");
 
@@ -2962,11 +2948,6 @@ void luaInitCallbacks()
     lua_register(g_pLuaState, "edGetFlashRate",         luaCBEdGetFlashRate);
     lua_register(g_pLuaState, "edSetFlashRate",         luaCBEdSetFlashRate);
 
-    // Need commands for audio generation.
-    // Get code from AudioPlay
-    // Port to WinMM.
-    // WinMM callback mechanism rather than events.
-
     lua_register(g_pLuaState, "playSound",              luaCBPlaySound);
     lua_register(g_pLuaState, "stopSound",              luaCBStopSound);
     lua_register(g_pLuaState, "soundPlaying",           luaCBSoundPlaying);
@@ -2987,10 +2968,11 @@ void luaInitCallbacks()
     lua_register(g_pLuaState, "midiSelectInstrument",   luaCBMidiSelectInstrument);
     lua_register(g_pLuaState, "midiLaunchNextEvent",    luaCBMidiLaunchNextEvent);
 
+    lua_register(g_pLuaState, "midiGetInterval",        luaCBMidiGetInterval);
+    lua_register(g_pLuaState, "midiSetInterval",        luaCBMidiSetInterval);
+
     lua_register(g_pLuaState, "midiGetPortCount",       luaCBMidiGetPortCount);
     lua_register(g_pLuaState, "midiGetPortName",        luaCBMidiGetPortName);
-//    lua_register(g_pLuaState, "midiOpen",               luaCBMidiOpen);
-//    lua_register(g_pLuaState, "midiClose",              luaCBMidiClose);
 
     lua_register(g_pLuaState, "turnOnDebugHook",        luaCBTurnOnDebugHook);
     lua_register(g_pLuaState, "turnOffDebugHook",       luaCBTurnOffDebugHook);

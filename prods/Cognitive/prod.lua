@@ -44,7 +44,7 @@ stopSound()
 math.randomseed(os.time())
 
 midiStart()
-midiLaunchNextEvent(100)
+--midiLaunchNextEvent(100)
 
 fugue.compose()
 

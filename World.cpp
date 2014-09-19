@@ -5,7 +5,6 @@
 
 #ifdef __PRAXIS_WINDOWS__
 #include <windows.h>
-extern CRITICAL_SECTION g_cs;
 #endif
 
 #ifdef __PRAXIS_LINUX__
@@ -138,7 +137,6 @@ void World::Update()
     m_bLeftMouseWentDown = false;
     m_bRightMouseWentDown = false;
 
-    //EnterCriticalSection (&g_cs) ;
     if(m_bRunning)
     {
         if(!luaCall("update()"))
@@ -146,7 +144,6 @@ void World::Update()
             m_bRunning = false;
         }
     }
-    //LeaveCriticalSection (&g_cs) ;
 
     GetEditor()->Update();
 
@@ -292,7 +289,6 @@ void World::Render()
 
     glColor4ub(255,255,255,255);
 
-    //EnterCriticalSection (&g_cs) ;
     if(m_bRunning)
     {
         if(!luaCall("render()"))
@@ -300,7 +296,6 @@ void World::Render()
             m_bRunning = false;
         }
     }
-    //LeaveCriticalSection (&g_cs) ;
 
     // If there is an error, then stop the automatic lua calls.
 
@@ -329,7 +324,6 @@ void World::Render()
     if(m_bRenderProbesHUD)
         RenderProbes();
 
-    //EnterCriticalSection (&g_cs) ;
     if(m_bRunning)
     {
         if(!luaCall("postrender()"))
@@ -337,7 +331,6 @@ void World::Render()
             m_bRunning = false;
         }
     }
-    //LeaveCriticalSection (&g_cs) ;
 
     glDisable(GL_LIGHTING);
     glDisable(GL_LIGHT0);

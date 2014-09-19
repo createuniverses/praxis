@@ -8,7 +8,6 @@ dofile("fugue_data.lua")
 dofile("fugue_compose.lua")
 dofile("fugue_render.lua")
 
-fugue.tickTime = 50
 fugue.currNote = nil
 fugue.nextNoteID = 1
 fugue.noteCountdown = 0
@@ -45,7 +44,7 @@ end
 
 function fugue.turnOffNotes()
   if fugue.currNote ~= nil then
-    fugue.noteCountdown = fugue.noteCountdown - fugue.tickTime
+    fugue.noteCountdown = fugue.noteCountdown - midiGetInterval()
     if fugue.noteCountdown <= 0 then
       if fugue.currNote.rest == nil then
         local midiNote = fugue.makeMidiNote(fugue.currNote)
@@ -84,11 +83,9 @@ function midiUpdate()
   if fugue.playing == true then
     fugue.turnOnNotes()
   end
-  midiLaunchNextEvent(fugue.tickTime)
 end
 
 function fugue.play()
-  fugue.tickTime = 50
   fugue.nextNoteID = 1
   fugue.noteCountdown = 0
   fugue.playing = true
