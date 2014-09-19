@@ -39,9 +39,14 @@ setCamPos(0,90,100)
 playSound()
 stopSound()
 
+-- midiLaunchNextEvent is called to start the midi "engine"
+
+math.randomseed(os.time())
+
 midiStart()
---midiLaunchNextEvent(1000)
 midiLaunchNextEvent(100)
+
+fugue.compose()
 
 --setFloorGrid(false)
 --setProbesHUD(false)
