@@ -8,7 +8,9 @@ Although mainly Lua at the moment.
 Videos
 ------
 
-An Introduction to Praxis: https://www.youtube.com/watch?v=1VRtRazMYSA
+Introduction: https://www.youtube.com/watch?v=1VRtRazMYSA
+
+Running the examples: https://www.youtube.com/watch?v=6rB39AXPmQQ
 
 Camera control: https://www.youtube.com/watch?v=ezWaNu-FMPk
 
