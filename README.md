@@ -8,12 +8,15 @@ Although mainly Lua at the moment.
 Videos
 ------
 
-https://www.youtube.com/watch?v=ezWaNu-FMPk
+Introduction: https://www.youtube.com/watch?v=1VRtRazMYSA
 
-https://www.youtube.com/watch?v=0uEBs98PKQE
+Running the examples: https://www.youtube.com/watch?v=6rB39AXPmQQ
 
-https://www.youtube.com/watch?v=PGNEuq3XL7c
+Camera control: https://www.youtube.com/watch?v=ezWaNu-FMPk
 
+Lua and audio demo: https://www.youtube.com/watch?v=0uEBs98PKQE
+
+Lisp demo: https://www.youtube.com/watch?v=PGNEuq3XL7c
 
 Compiling and running praxis in Linux
 -------------------------------------
@@ -94,3 +97,8 @@ Usage guide
  - getFunction returns 2 items - the function text and the debug info.
  - Inspect the 2nd parameter like this: s,t = getFunction("update") print2(inspect(t))
  - The function keys can be redefined. f1Pressed() to f12Pressed() are the functions that get called when you press a function key. These can be freely inspected (using the tip above) and redefined.
+
+Blog
+----
+
+http://createuniverses.wordpress.com/
