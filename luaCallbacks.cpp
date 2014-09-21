@@ -1677,6 +1677,28 @@ int luaCBGetLispTraceVerbosity(lua_State * L)
     return 1;
 }
 
+int luaCBGetCurrentDir(lua_State * L)
+{
+    return 0;
+}
+
+#ifdef __PRAXIS_LINUX__
+#include <unistd.h>
+int luaCBSetCurrentDir(lua_State * L)
+{
+    std::string sDir = luaL_checkstring(L, 1);
+    chdir(sDir.c_str());
+    return 0;
+}
+#endif
+
+#ifdef __PRAXIS_WINDOWS__
+int luaCBSetCurrentDir(lua_State * L)
+{
+    return 0;
+}
+#endif
+
 int luaCBQtQuit(lua_State * L)
 {
     //QCoreApplication::quit();
@@ -2984,6 +3006,9 @@ void luaInitCallbacks()
 
     lua_register(g_pLuaState, "setLispTraceVerbosity",  luaCBSetLispTraceVerbosity);
     lua_register(g_pLuaState, "getLispTraceVerbosity",  luaCBGetLispTraceVerbosity);
+
+    lua_register(g_pLuaState, "getCurrentDir",          luaCBGetCurrentDir);
+    lua_register(g_pLuaState, "setCurrentDir",          luaCBSetCurrentDir);
 
     lua_register(g_pLuaState, "qtQuit",                 luaCBQtQuit);
 

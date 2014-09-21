@@ -459,8 +459,10 @@ int g_nLastClickTime = 0;
 void World::OnLButtonDown(int nX, int nY)
 {
     // Need to implement double click detection a different way for Linux
+    int nDblClickTime = 500;
 #ifdef __PRAXIS_WINDOWS__
-    int nDblClickTime = ::GetDoubleClickTime();
+    nDblClickTime = ::GetDoubleClickTime();
+#endif
 
     int nCurrClickTime = glutGet(GLUT_ELAPSED_TIME);
     int nTimeBwClicks = nCurrClickTime - g_nLastClickTime;
@@ -470,7 +472,6 @@ void World::OnLButtonDown(int nX, int nY)
         OnDoubleClick();
         return;
     }
-#endif
 
     stringstream ss;
     ss << "LMBDown(" << nX << "," << nY << ")";
@@ -915,23 +916,23 @@ void World::RenderFloorGrid()
 
     // Need something more like a HUD showing the coordinates currently being looked at.
 
-    glColor3f(0.0f, 1.0f, 0.0f);
+//    glColor3f(0.0f, 1.0f, 0.0f);
 
-    for(int i = 0; i <= nNumLines; i = i + 2)
-    {
-        mlVector3D pos(-fSize + i * fWidth, 0, -fSize - 25);
-        stringstream ss;
-        ss << pos.x;
-        DrawText3DStroked(pos, ss.str());
-    }
+//    for(int i = 0; i <= nNumLines; i = i + 2)
+//    {
+//        mlVector3D pos(-fSize + i * fWidth, 0, -fSize - 25);
+//        stringstream ss;
+//        ss << pos.x;
+//        DrawText3DStroked(pos, ss.str());
+//    }
 
-    for(int i = 0; i <= nNumLines; i = i + 2)
-    {
-        mlVector3D pos(-fSize - fWidth, 0, -fSize + i * fWidth);
-        stringstream ss;
-        ss << pos.z;
-        DrawText3DStroked(pos, ss.str());
-    }
+//    for(int i = 0; i <= nNumLines; i = i + 2)
+//    {
+//        mlVector3D pos(-fSize - fWidth, 0, -fSize + i * fWidth);
+//        stringstream ss;
+//        ss << pos.z;
+//        DrawText3DStroked(pos, ss.str());
+//    }
 }
 
 void World::RenderMousePickSphere()
@@ -982,7 +983,96 @@ void World::RenderMousePickSphere()
 
     glutWireSphere(fRadius, 15, 15);
 
+    float fTextScale = 0.1f;
+    float fAxisScale = 3.0f;
+
+    glDisable(GL_DEPTH_TEST);
+
+    glBegin(GL_LINES);
+
+    glColor4ub(255,0,0, 255);
+    glVertex3f(0,0,0);
+    glVertex3f(fRadius * fAxisScale, 0,0);
+
+    glColor4ub(0,0,255, 255);
+    glVertex3f(0,0,0);
+    glVertex3f(0, fRadius * fAxisScale, 0);
+
+    glColor4ub(0,255,0, 255);
+    glVertex3f(0,0,0);
+    glVertex3f(0,0, fRadius * fAxisScale);
+
+    glEnd();
+
+    {
+        stringstream ss; ss << std::setprecision(2) << std::fixed << "x=" << vPoint.x;
+        glColor4ub(255,0,0, 255);
+        glPushMatrix();
+        glTranslatef(fRadius * fAxisScale, 0, 0);
+        glScalef(fRadius * fTextScale, fRadius * fTextScale, fRadius * fTextScale);
+        DrawText3DStroked(mlVector3DZero, ss.str());
+        glPopMatrix();
+    }
+
+    {
+        stringstream ss; ss << std::setprecision(2) << std::fixed << "y=" << vPoint.y;
+        glColor4ub(0,0,255, 255);
+        glPushMatrix();
+        glTranslatef(0, fRadius * fAxisScale, 0);
+        glScalef(fRadius * fTextScale, fRadius * fTextScale, fRadius * fTextScale);
+        DrawText3DStroked(mlVector3DZero, ss.str());
+        glPopMatrix();
+    }
+
+    {
+        stringstream ss; ss << std::setprecision(2) << std::fixed << "z=" << vPoint.z;
+        glColor4ub(0,255,0, 255);
+        glPushMatrix();
+        glTranslatef(0, 0, fRadius * fAxisScale);
+        glScalef(fRadius * fTextScale, fRadius * fTextScale, fRadius * fTextScale);
+        DrawText3DStroked(mlVector3DZero, ss.str());
+        glPopMatrix();
+    }
+
     glPopMatrix();
+
+    {
+        glPushMatrix();
+
+        // Use the camera transform moved to the pick position.
+
+        mlTransform transform = m_trnCamera;
+        transform.SetTranslation(vPoint);
+
+        mlMatrix4x4 mat(transform.GetMatrix());
+
+        mlFloat * pMat = reinterpret_cast<mlFloat*>(&mat);
+
+        glMultMatrixf(pMat);
+
+        // Rotations required because DrawText3DStroked draws text along the Z axis
+        glRotatef(90.0f, 0.0, 1.0f, 0.0f);
+        glRotatef(90.0f, 0.0, 0.0f, 1.0f);
+
+        // Move text beneath the pick sphere
+        glTranslatef(fRadius * -2.0f, 0, 0);
+
+        // Use fRadius to scale it so it remains a constant size
+        glScalef(fRadius * fTextScale, fRadius * fTextScale, fRadius * fTextScale);
+
+        glColor4ub(255,255,0, 255);
+
+        stringstream ss; ss << std::setprecision(2) << std::fixed << "(" << vPoint.x << "," << vPoint.y << "," << vPoint.z << ")";
+        DrawText3DStroked(mlVector3DZero, ss.str());
+
+        glPopMatrix();
+    }
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
+    glColor4ub(0,255,0, 255);
+
     }
 
     vPoint = m_vMouseFloorPickPosition;
