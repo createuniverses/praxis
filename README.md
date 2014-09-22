@@ -98,6 +98,14 @@ Usage guide
  - Inspect the 2nd parameter like this: s,t = getFunction("update") print2(inspect(t))
  - The function keys can be redefined. f1Pressed() to f12Pressed() are the functions that get called when you press a function key. These can be freely inspected (using the tip above) and redefined.
 
+Editing
+-------
+
+ - F2 opens a new buffer
+ - Use the function setBufferName(<filename>) to set the name of the current buffer being edited
+ - Ctrl-S saves the buffer
+ - getSelectedText() returns selected text
+
 Blog
 ----
 

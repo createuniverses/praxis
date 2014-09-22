@@ -998,6 +998,31 @@ int luaCBWindowedMode(lua_State *L)
     return 0;
 }
 
+int luaCBGetWindowRect(lua_State * L)
+{
+    int x = glutGet(GLUT_WINDOW_X);
+    int y = glutGet(GLUT_WINDOW_Y);
+    int w = glutGet(GLUT_WINDOW_WIDTH);
+    int h = glutGet(GLUT_WINDOW_HEIGHT);
+
+#ifdef __PRAXIS_WINDOWS__
+    //DWORD flags = GetWindowLong(glutGetWindowHandle(), GWL_STYLE);
+    //if(flags & WS_OVERLAPPEDWINDOW)
+    {
+        x -= GetSystemMetrics( SM_CXSIZEFRAME );
+        y -= GetSystemMetrics( SM_CYSIZEFRAME ) + GetSystemMetrics( SM_CYCAPTION );
+        w += GetSystemMetrics( SM_CXSIZEFRAME ) * 2;
+        h += GetSystemMetrics( SM_CYSIZEFRAME ) * 2 + GetSystemMetrics( SM_CYCAPTION );
+    }
+#endif
+
+    lua_pushnumber(L, x);
+    lua_pushnumber(L, y);
+    lua_pushnumber(L, w);
+    lua_pushnumber(L, h);
+    return 4;
+}
+
 int luaCBSetBufferVisColumns(lua_State * L)
 {
     int arg = luaL_checknumber(L,1);
@@ -1695,6 +1720,8 @@ int luaCBSetCurrentDir(lua_State * L)
 #ifdef __PRAXIS_WINDOWS__
 int luaCBSetCurrentDir(lua_State * L)
 {
+    std::string sDir = luaL_checkstring(L, 1);
+    ::SetCurrentDirectory(sDir.c_str());
     return 0;
 }
 #endif
@@ -2839,6 +2866,8 @@ void luaInitCallbacks()
     lua_register(g_pLuaState, "getScreenHeight",       luaCBGetScreenHeight);
     lua_register(g_pLuaState, "getWindowWidth",        luaCBGetWindowWidth);
     lua_register(g_pLuaState, "getWindowHeight",       luaCBGetWindowHeight);
+
+    lua_register(g_pLuaState, "getWindowRect",         luaCBGetWindowRect);
 
     lua_register(g_pLuaState, "getWinScreenWidth",     luaCBWinGetScreenWidth);
     lua_register(g_pLuaState, "getWinScreenHeight",    luaCBWinGetScreenHeight);
