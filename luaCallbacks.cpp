@@ -542,6 +542,34 @@ int luaCBGLPopMatrix(lua_State * L)
     return 0;
 }
 
+int luaCBGLScale(lua_State * L)
+{
+    float x = luaL_checknumber(L, 1);
+    float y = luaL_checknumber(L, 2);
+    float z = luaL_checknumber(L, 3);
+    glScalef(x,y,z);
+    return 0;
+}
+
+int luaCBGLTranslate(lua_State * L)
+{
+    float x = luaL_checknumber(L, 1);
+    float y = luaL_checknumber(L, 2);
+    float z = luaL_checknumber(L, 3);
+    glTranslatef(x,y,z);
+    return 0;
+}
+
+int luaCBGLRotate(lua_State * L)
+{
+    float a = luaL_checknumber(L, 1);
+    float x = luaL_checknumber(L, 2);
+    float y = luaL_checknumber(L, 3);
+    float z = luaL_checknumber(L, 4);
+    glRotatef(a,x,y,z);
+    return 0;
+}
+
 int luaCBGLApplyTransform(lua_State * L)
 {
     int n = lua_gettop(L);
@@ -1014,6 +1042,10 @@ int luaCBGetWindowRect(lua_State * L)
         w += GetSystemMetrics( SM_CXSIZEFRAME ) * 2;
         h += GetSystemMetrics( SM_CYSIZEFRAME ) * 2 + GetSystemMetrics( SM_CYCAPTION );
     }
+#endif
+#ifdef __PRAXIS_LINUX__
+    x -= 3;
+    y -= 24;
 #endif
 
     lua_pushnumber(L, x);
@@ -2977,6 +3009,9 @@ void luaInitCallbacks()
     lua_register(g_pLuaState, "glMatrixModeModelView",  luaCBGLMatrixModeModelView);
     lua_register(g_pLuaState, "glPushMatrix",           luaCBGLPushMatrix);
     lua_register(g_pLuaState, "glPopMatrix",            luaCBGLPopMatrix);
+    lua_register(g_pLuaState, "glScale",                luaCBGLScale);
+    lua_register(g_pLuaState, "glTranslate",            luaCBGLTranslate);
+    lua_register(g_pLuaState, "glRotate",               luaCBGLRotate);
     lua_register(g_pLuaState, "glApplyTransform",       luaCBGLApplyTransform);
     lua_register(g_pLuaState, "glLoadIdentity",         luaCBGLLoadIdentity);
     lua_register(g_pLuaState, "glPerspective",          luaCBGLPerspective);
