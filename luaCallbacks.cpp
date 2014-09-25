@@ -575,7 +575,7 @@ int luaCBGLApplyTransform(lua_State * L)
     int n = lua_gettop(L);
     if(n!=1) luaL_error(L, "1 arguments expected.");
 
-    mlTransform * t = (mlTransform *)luaL_checkudata(L, 1, "LiveCode.transform");
+    mlTransform * t = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
 
     glMatrixMode(GL_MODELVIEW);
 
@@ -760,9 +760,9 @@ int luaCBGetMp3Time(lua_State * L)
     if(g_pMp3Stream)
     {
         float fTimeMSec = FSOUND_Stream_GetTime(g_pMp3Stream);
-        fTimeMSec *= 0.001f;
+        float fTimeSec = fTimeMSec * 0.001f;
 
-        lua_pushnumber(L, fTimeMSec);
+        lua_pushnumber(L, fTimeSec);
     }
     else
     {
@@ -806,12 +806,10 @@ int luaCBGetMp3Length(lua_State * L)
     {
         lua_pushnumber(L, 0.0f);
     }
-
-    return 1;
 #else
     lua_pushnumber(L, 0.0f);
-    return 1;
 #endif
+    return 1;
 }
 
 int luaCBGetScreenWidth(lua_State *L)
@@ -2109,12 +2107,35 @@ int luaCBTextureSetRenderFunction(lua_State * L)
 
 int luaCBTransformNew(lua_State * L)
 {
-    mlTransform * t = (mlTransform *)lua_newuserdata(L, sizeof(mlTransform));
+    mlTransform ** t = (mlTransform **)lua_newuserdata(L, sizeof(mlTransform *));
 
-    *t = mlTransformIdentity;
+    *t = new mlTransform();
 
-    // This is available now too:
-    // t->SetIdentity();
+    luaL_getmetatable(L, "LiveCode.transform");
+    lua_setmetatable(L, -2);
+
+    return 1;
+}
+
+int luaCBTransformCamera(lua_State * L)
+{
+    mlTransform ** t = (mlTransform **)lua_newuserdata(L, sizeof(mlTransform *));
+
+    // Refer to the existing camera.
+    (*t) = g_pWorld->GetCameraTransform();
+
+    luaL_getmetatable(L, "LiveCode.transform");
+    lua_setmetatable(L, -2);
+
+    return 1;
+}
+
+int luaCBTransformCameraBase(lua_State * L)
+{
+    mlTransform ** t = (mlTransform **)lua_newuserdata(L, sizeof(mlTransform *));
+
+    // Refer to the existing camera base.
+    (*t) = g_pWorld->GetCameraTransformBase();
 
     luaL_getmetatable(L, "LiveCode.transform");
     lua_setmetatable(L, -2);
@@ -2127,7 +2148,7 @@ int luaCBTransformSetTranslation(lua_State * L)
     int n = lua_gettop(L);
     if(n!=4) luaL_error(L, "4 arguments expected.");
 
-    mlTransform * t = (mlTransform *)luaL_checkudata(L, 1, "LiveCode.transform");
+    mlTransform * t = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
 
     mlVector3D vTranslation(luaL_checknumber(L, 2), luaL_checknumber(L, 3), luaL_checknumber(L, 4));
 
@@ -2141,7 +2162,7 @@ int luaCBTransformGetTranslation(lua_State * L)
     int n = lua_gettop(L);
     if(n!=1) luaL_error(L, "1 argument expected.");
 
-    mlTransform * t = (mlTransform *)luaL_checkudata(L, 1, "LiveCode.transform");
+    mlTransform * t = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
 
     mlVector3D vTranslation = t->GetTranslation();
 
@@ -2157,7 +2178,7 @@ int luaCBTransformApplyTranslation(lua_State * L)
     int n = lua_gettop(L);
     if(n!=4) luaL_error(L, "4 arguments expected.");
 
-    mlTransform * t = (mlTransform *)luaL_checkudata(L, 1, "LiveCode.transform");
+    mlTransform * t = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
 
     mlVector3D vTranslation(luaL_checknumber(L, 2), luaL_checknumber(L, 3), luaL_checknumber(L, 4));
 
@@ -2171,7 +2192,7 @@ int luaCBTransformGetScale(lua_State * L)
     int n = lua_gettop(L);
     if(n!=1) luaL_error(L, "1 argument expected.");
 
-    mlTransform * t = (mlTransform *)luaL_checkudata(L, 1, "LiveCode.transform");
+    mlTransform * t = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
 
     mlVector3D vScale = t->GetScale();
 
@@ -2187,7 +2208,7 @@ int luaCBTransformSetScale(lua_State * L)
     int n = lua_gettop(L);
     if(n == 4)
     {
-        mlTransform * t = (mlTransform *)luaL_checkudata(L, 1, "LiveCode.transform");
+        mlTransform * t = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
 
         mlVector3D vScale(luaL_checknumber(L, 2), luaL_checknumber(L, 3), luaL_checknumber(L, 4));
 
@@ -2195,7 +2216,7 @@ int luaCBTransformSetScale(lua_State * L)
     }
     else if(n == 2)
     {
-        mlTransform * t = (mlTransform *)luaL_checkudata(L, 1, "LiveCode.transform");
+        mlTransform * t = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
 
         float fScale = luaL_checknumber(L, 2);
 
@@ -2214,7 +2235,7 @@ int luaCBTransformApplyScale(lua_State * L)
     int n = lua_gettop(L);
     if(n == 4)
     {
-        mlTransform * t = (mlTransform *)luaL_checkudata(L, 1, "LiveCode.transform");
+        mlTransform * t = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
 
         mlVector3D vScale(luaL_checknumber(L, 2), luaL_checknumber(L, 3), luaL_checknumber(L, 4));
 
@@ -2222,7 +2243,7 @@ int luaCBTransformApplyScale(lua_State * L)
     }
     else if(n == 2)
     {
-        mlTransform * t = (mlTransform *)luaL_checkudata(L, 1, "LiveCode.transform");
+        mlTransform * t = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
 
         float fScale = luaL_checknumber(L, 2);
 
@@ -2236,16 +2257,44 @@ int luaCBTransformApplyScale(lua_State * L)
     return 0;
 }
 
+int luaCBTransformUp(lua_State * L)
+{
+    int n = lua_gettop(L);
+    if(n!=1) luaL_error(L, "1 argument expected.");
+
+    mlTransform * t = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
+
+    lua_pushnumber(L, t->GetMatrix().J.x);
+    lua_pushnumber(L, t->GetMatrix().J.y);
+    lua_pushnumber(L, t->GetMatrix().J.z);
+
+    return 3;
+}
+
 int luaCBTransformForward(lua_State * L)
 {
     int n = lua_gettop(L);
     if(n!=1) luaL_error(L, "1 argument expected.");
 
-    mlTransform * t = (mlTransform *)luaL_checkudata(L, 1, "LiveCode.transform");
+    mlTransform * t = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
 
-    lua_pushnumber(L, t->GetMatrix().J.x);
-    lua_pushnumber(L, t->GetMatrix().J.y);
-    lua_pushnumber(L, t->GetMatrix().J.z);
+    lua_pushnumber(L, t->GetMatrix().K.x);
+    lua_pushnumber(L, t->GetMatrix().K.y);
+    lua_pushnumber(L, t->GetMatrix().K.z);
+
+    return 3;
+}
+
+int luaCBTransformSide(lua_State * L)
+{
+    int n = lua_gettop(L);
+    if(n!=1) luaL_error(L, "1 argument expected.");
+
+    mlTransform * t = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
+
+    lua_pushnumber(L, t->GetMatrix().I.x);
+    lua_pushnumber(L, t->GetMatrix().I.y);
+    lua_pushnumber(L, t->GetMatrix().I.z);
 
     return 3;
 }
@@ -2255,13 +2304,12 @@ int luaCBTransformLookAt(lua_State * L)
     int n = lua_gettop(L);
     if(n!=4) luaL_error(L, "4 arguments expected.");
 
-    mlTransform * t = (mlTransform *)luaL_checkudata(L, 1, "LiveCode.transform");
+    mlTransform * t = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
 
     mlVector3D vFocalPoint(luaL_checknumber(L, 2), luaL_checknumber(L, 3), luaL_checknumber(L, 4));
 
-    // Make this change so that forward will be along the +Z instead of -Z
-    //mlVector3D vForward = vFocalPoint - t->GetTranslation();
-    mlVector3D vForward = t->GetTranslation() - vFocalPoint;
+    mlVector3D vForward = vFocalPoint - t->GetTranslation();
+    //mlVector3D vForward = t->GetTranslation() - vFocalPoint;
 
     vForward.Normalise();
 
@@ -2279,7 +2327,7 @@ int luaCBTransformRotate(lua_State * L)
 
     // Should add a roll to this too...
 
-    mlTransform * t = (mlTransform *)luaL_checkudata(L, 1, "LiveCode.transform");
+    mlTransform * t = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
 
     float yaw   = luaL_checknumber(L, 2);
     float pitch = luaL_checknumber(L, 3);
@@ -2298,7 +2346,7 @@ int luaCBTransformLocalToGlobal(lua_State * L)
     int n = lua_gettop(L);
     if(n!=4) luaL_error(L, "4 arguments expected.");
 
-    mlTransform * t = (mlTransform *)luaL_checkudata(L, 1, "LiveCode.transform");
+    mlTransform * t = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
 
     mlVector3D v1(luaL_checknumber(L, 2), luaL_checknumber(L, 3), luaL_checknumber(L, 4));
 
@@ -2316,7 +2364,7 @@ int luaCBTransformGlobalToLocal(lua_State * L)
     int n = lua_gettop(L);
     if(n!=4) luaL_error(L, "4 arguments expected.");
 
-    mlTransform * t = (mlTransform *)luaL_checkudata(L, 1, "LiveCode.transform");
+    mlTransform * t = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
 
     mlVector3D v1(luaL_checknumber(L, 2), luaL_checknumber(L, 3), luaL_checknumber(L, 4));
 
@@ -2327,6 +2375,19 @@ int luaCBTransformGlobalToLocal(lua_State * L)
     lua_pushnumber(L, v2.z);
 
     return 3;
+}
+
+int luaCBTransformCopyFrom(lua_State * L)
+{
+    int n = lua_gettop(L);
+    if(n!=2) luaL_error(L, "2 arguments expected.");
+
+    mlTransform * t1 = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
+    mlTransform * t2 = *(mlTransform **)luaL_checkudata(L, 2, "LiveCode.transform");
+
+    (*t1) = (*t2);
+
+    return 0;
 }
 
 int luaCBShowTrace(lua_State * L)
@@ -2793,18 +2854,11 @@ void luaInitCallbacks()
               "end "
             "end");
 
-    // print2 always puts the output at the end
-    // A more sophisticated version would insert the text at the cursor.
-
-    // Pressing Ctrl-Enter should also add a line, as though enter was pressed.
-    // When the text is added at the cursor, it is added at the new line just created.
-
-    // old commands
-    // "setBufferText(getBufferText() .. s .. \"\\n\") "
-    // "gotoBufferEnd() "
-
-    luaCall("function print2(s) "
-              "insertBufferText(s .. \"\\n\") "
+    luaCall("function print2(...) "
+              "local arg = {...} "
+              "for i,v in ipairs(arg) do "
+                "insertBufferText(v .. \"\\n\") "
+              "end "
             "end");
 
     luaCall("function LMBDown(x,y) end");
@@ -2861,11 +2915,20 @@ void luaInitCallbacks()
     lua_register(g_pLuaState, "orbitCamPP",            luaCBOrbitCamPP);
     lua_register(g_pLuaState, "orbitCamOP",            luaCBOrbitCamOP);
 
+    // glBegin
     lua_register(g_pLuaState, "beginTriGL",            luaCBBeginTrianglesGL);
+    lua_register(g_pLuaState, "glBeginTriangles",      luaCBBeginTrianglesGL);
     lua_register(g_pLuaState, "beginQuadGL",           luaCBBeginQuadsGL);
+    lua_register(g_pLuaState, "glBeginQuads",          luaCBBeginQuadsGL);
     lua_register(g_pLuaState, "beginLinGL",            luaCBBeginLinesGL);
+    lua_register(g_pLuaState, "glBeginLines",          luaCBBeginLinesGL);
+    // glEnd
     lua_register(g_pLuaState, "endGL",                 luaCBEndGL);
+    lua_register(g_pLuaState, "glEnd",                 luaCBEndGL);
+    // glVertex
     lua_register(g_pLuaState, "vectorGL",              luaCBVectorGL);
+    lua_register(g_pLuaState, "glVertex",              luaCBVectorGL);
+
     lua_register(g_pLuaState, "texGL",                 luaCBTexGL);
     lua_register(g_pLuaState, "colorGL",               luaCBColorGL);
     lua_register(g_pLuaState, "getColorGL",            luaCBGetColorGL);
@@ -3089,6 +3152,8 @@ void luaInitCallbacks()
 
     const struct luaL_Reg lua_transformlib [] = {
         {"new",               luaCBTransformNew},
+        {"camera",            luaCBTransformCamera},
+        {"cameraBase",        luaCBTransformCameraBase},
         {"getTranslation",    luaCBTransformGetTranslation},
         {"setTranslation",    luaCBTransformSetTranslation},
         {"applyTranslation",  luaCBTransformApplyTranslation},
@@ -3096,10 +3161,13 @@ void luaInitCallbacks()
         {"setScale",          luaCBTransformSetScale},
         {"applyScale",        luaCBTransformApplyScale},
         {"forward",           luaCBTransformForward},
+        {"up",                luaCBTransformUp},
+        {"side",              luaCBTransformSide},
         {"lookAt",            luaCBTransformLookAt},
         {"rotate",            luaCBTransformRotate},
         {"localToGlobal",     luaCBTransformLocalToGlobal},
         {"globalToLocal",     luaCBTransformGlobalToLocal},
+        {"copy",              luaCBTransformCopyFrom},
         {NULL, NULL}
     };
 

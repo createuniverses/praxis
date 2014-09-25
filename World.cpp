@@ -95,6 +95,11 @@ mlTransform * World::GetCameraTransform()
 	return &m_trnCamera;
 }
 
+mlTransform * World::GetCameraTransformBase()
+{
+    return &m_trnCameraBase;
+}
+
 void World::Init()
 {
     luaCall("dofile(\"prod.lua\")");
@@ -793,6 +798,8 @@ void World::BuildGLMatrices()
     //gluPerspective(m_fFieldOfView, fAspect, 0.01f, 1000.0f);
     //gluPerspective(m_fFieldOfView, fAspect, 0.1f, 1000.0f);
     gluPerspective(m_fFieldOfView, fAspect, 1.0f, 1000.0f);
+    // gluPerspective makes a "-Z is in" matrix. I prefer +Z.
+    glScalef(1,1,-1);
 
     // Modelview Matrix
     glMatrixMode(GL_MODELVIEW);
@@ -1244,19 +1251,20 @@ void World::PanCamera(float fX, float fY)
 
 void World::RotateCamera(float fHeading, float fPitch)
 {
-    m_trnCamera.ApplyRotation(mlQuaternion(mlVector3D(0,1,0), -fHeading));
+    m_trnCamera.ApplyRotation(mlQuaternion(GetBaseUp(), fHeading));
 
-	mlVector3D vSide = m_trnCamera.TransformVector(mlVector3D(1,0,0));
+    mlVector3D vSide = m_trnCamera.TransformVector(GetBaseSide());
 
-    m_trnCamera.ApplyRotation(mlQuaternion(vSide, fPitch));
+    m_trnCamera.ApplyRotation(mlQuaternion(vSide, -fPitch));
 }
 
 void World::PositionPreservingOrbitCamera(mlVector3D & vCenter, float fHeading, float fPitch)
 {
     // Constants
-    mlVector3D vGlobalUp(0,1,0);
-    mlVector3D vGlobalDown(0,-1,0);
-    mlVector3D vGlobalSide(1,0,0);
+    mlVector3D vGlobalUp = GetBaseUp();
+    mlVector3D vGlobalDown = vGlobalUp * -1.0f;
+    mlVector3D vGlobalSide = GetBaseSide();
+    mlVector3D vGlobalForward = GetBaseForward();
 
     // The current camera orientation
     mlQuaternion rotCurrent = m_trnCamera.GetRotation();
@@ -1295,12 +1303,12 @@ void World::PositionPreservingOrbitCamera(mlVector3D & vCenter, float fHeading, 
     mlQuaternion rotToPointChanged = rotToPoint;
     mlVector3D vToPointAfterMove;
     {
-        rotToPointChanged = rotToPointChanged * mlQuaternion(vGlobalUp,   -fHeading);
-        rotToPointChanged = rotToPointChanged * mlQuaternion(vGlobalSide,  fPitch);
+        rotToPointChanged = rotToPointChanged * mlQuaternion(vGlobalUp,    fHeading);
+        rotToPointChanged = rotToPointChanged * mlQuaternion(vGlobalSide, -fPitch);
 
         rotToPointChanged.Normalise();
 
-        vToPointAfterMove = rotToPointChanged.TransformVector(mlVector3D(0,0,-1));
+        vToPointAfterMove = rotToPointChanged.TransformVector(vGlobalForward);
     }
 
     // If the proposed angle is too acute, do nothing
@@ -1330,7 +1338,7 @@ void World::PositionPreservingOrbitCamera(mlVector3D & vCenter, float fHeading, 
     m_trnCamera.SetTranslation(vCenter);
 
     // Now the rotation quaternion is ready, and may be used to make the push back vector
-    mlVector3D vPushBack = rotToPointChanged.TransformVector(mlVector3D(0, 0, -fRadius));
+    mlVector3D vPushBack = rotToPointChanged.TransformVector(vGlobalForward * fRadius);
 
     // Push back the camera. Note that the rotation still hasn't altered.
     // The "topoint" rotation was used to make the push back vector (just a reminder)
@@ -1420,8 +1428,10 @@ void World::DrawText3DStroked(mlVector3D vPos, const std::string & sText)
     //glScalef(0.03f, 1.0f, 0.02f); // height, _, width
     //glScalef(0.04f, 1.0f, 0.03f); // height, _, width
     glScalef(0.06f, 1.0f, 0.04f); // height, _, width
-    glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
-    glRotatef(-90.0f, 0.0f, 0.0f, 1.0f);
+    //glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
+    //glRotatef(-90.0f, 0.0f, 0.0f, 1.0f);
+    glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
+    glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
 
     glutStrokeString(GLUT_STROKE_MONO_ROMAN, (unsigned char *)sText.c_str());
 

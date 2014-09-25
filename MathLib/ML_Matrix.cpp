@@ -619,36 +619,20 @@ mlVector4D	mlMatrix4x4::TransformVector(const mlVector4D &v) const
 				);
 }
 
-// Up is along the positive Y axis (vUp in global coordinates)
-// Forward is along the NEGATIVE Z axis (negative, remember! Its the opengl standard, its what the camera uses, and so it can be what objects use)
-// Right is along the positive X axis.
 void mlMatrixUtility::MatrixFromDirection(mlMatrix3x3 & result, const mlVector3D & vForward, const mlVector3D & vUp)
 {
-	// This produces an identity matrix when vForward is along the Z axis, and vUp is along the Y axis.
-	// Alternative - an identity matrix when vForward is along the -ve Z axis, and vUp is along the Y axis.
-
-	// Compute our new look at vector, which will be
-	//   the new negative Z axis of our transformed object.
+    // Forward
 	result.K = vForward;
-	result.K.Normalise();
+    //result.K *= -1.0f; // Not needed since we're using "+Z is in" instead of OpenGL default "-Z is in".
+    result.K.Normalise();
 
-	// Cross product of the new look at vector and the current
-	//   up vector will produce a vector which is the new
-	//   positive X axis of our transformed object.
-	result.I = mlVectorCross(result.K, vUp);
-	//result.I = mlVectorCross(vUp, result.K); // new
-	result.I.Normalise();
+    // Side
+    result.I = mlVectorCross(vUp, result.K);
+    result.I.Normalise();
 
-	// Calculate the new up vector, which will be the
-	//   positive Y axis of our transformed object. Note
-	//   that it will lie in the same plane as the new
-	//   look at vector and the old up vector.
-	result.J = mlVectorCross(result.I, result.K);
-	//result.J = mlVectorCross(result.K, result.I); // new
-
-	// Account for the fact that the geometry will be defined to
-	//   point along the negative Z axis.
-    result.K *= -1.0f;
+    // Up
+    result.J = mlVectorCross(result.K, result.I);
+    result.J.Normalise();
 }
 
 void mlMatrixUtility::MatrixFromVectorProduct(mlMatrix3x3 & result, const mlVector3D & a, const mlVector3D & b)

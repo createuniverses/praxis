@@ -54,6 +54,11 @@ public:
     // Camera
 
     mlTransform * GetCameraTransform();
+    mlTransform * GetCameraTransformBase();
+
+    mlVector3D GetBaseUp()      { return m_trnCameraBase.GetMatrix().J; }
+    mlVector3D GetBaseForward() { return m_trnCameraBase.GetMatrix().K; }
+    mlVector3D GetBaseSide()    { return m_trnCameraBase.GetMatrix().I; }
 
     void PanCamera(float fX, float fY);
     void RotateCamera(float fHeading, float fPitch);
@@ -144,6 +149,7 @@ private:
     // wasn't necessary for Flashback demo
 
 	mlTransform m_trnCamera;
+    mlTransform m_trnCameraBase;
     float m_fFieldOfView;
 
 	mlVector3D m_vMouse2DPosition;

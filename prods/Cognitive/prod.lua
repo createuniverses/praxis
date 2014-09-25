@@ -123,6 +123,8 @@ windowedMode(0,100,700,600)
 -- turnOnBorders is called.
 
 loadBuffer("s7test.lua")
+loadBuffer("transformtest2.lua")
 
 edSetRenderMode(2)
+
 

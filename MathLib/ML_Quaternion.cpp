@@ -197,10 +197,6 @@ TransformVector(const mlVector3D &v) const
 						w * ViQ.z +  z * ViQ.w + x * ViQ.y - y * ViQ.x );
 }
 
-// The coordinate system returned is:
-// Up is along the positive Y axis (vUp in global coordinates)
-// Forward is along the NEGATIVE Z axis (negative, remember! Its the opengl standard, its what the camera uses, and so it can be what objects use)
-// Right is along the positive X axis.
 mlQuaternion mlQuaternionFromDirection(const mlVector3D & vForward, const mlVector3D & vUp)
 {
 	mlMatrix3x3 result;
