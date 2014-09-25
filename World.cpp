@@ -1011,11 +1011,13 @@ void World::RenderMousePickSphere()
 
     glEnd();
 
+    // Next step: change this to use the base coordinate system instead of this hardcoded one.
+
     {
         stringstream ss; ss << std::setprecision(2) << std::fixed << "x=" << vPoint.x;
         glColor4ub(255,0,0, 255);
         glPushMatrix();
-        glTranslatef(fRadius * fAxisScale, 0, 0);
+        glTranslatef(fRadius * fAxisScale + fRadius * fTextScale * 0.1f, 0, 0);
         glScalef(fRadius * fTextScale, fRadius * fTextScale, fRadius * fTextScale);
         DrawText3DStroked(mlVector3DZero, ss.str());
         glPopMatrix();
@@ -1025,7 +1027,7 @@ void World::RenderMousePickSphere()
         stringstream ss; ss << std::setprecision(2) << std::fixed << "y=" << vPoint.y;
         glColor4ub(0,0,255, 255);
         glPushMatrix();
-        glTranslatef(0, fRadius * fAxisScale, 0);
+        glTranslatef(fRadius * fTextScale * 0.1f, fRadius * fAxisScale, 0);
         glScalef(fRadius * fTextScale, fRadius * fTextScale, fRadius * fTextScale);
         DrawText3DStroked(mlVector3DZero, ss.str());
         glPopMatrix();
@@ -1035,7 +1037,7 @@ void World::RenderMousePickSphere()
         stringstream ss; ss << std::setprecision(2) << std::fixed << "z=" << vPoint.z;
         glColor4ub(0,255,0, 255);
         glPushMatrix();
-        glTranslatef(0, 0, fRadius * fAxisScale);
+        glTranslatef(fRadius * fTextScale * 2.0f, 0, fRadius * fAxisScale);
         glScalef(fRadius * fTextScale, fRadius * fTextScale, fRadius * fTextScale);
         DrawText3DStroked(mlVector3DZero, ss.str());
         glPopMatrix();
@@ -1058,11 +1060,10 @@ void World::RenderMousePickSphere()
         glMultMatrixf(pMat);
 
         // Rotations required because DrawText3DStroked draws text along the Z axis
-        glRotatef(90.0f, 0.0, 1.0f, 0.0f);
-        glRotatef(90.0f, 0.0, 0.0f, 1.0f);
+        glRotatef(-90.0f, 1.0, 0.0f, 0.0f);
 
         // Move text beneath the pick sphere
-        glTranslatef(fRadius * -2.0f, 0, 0);
+        glTranslatef(0,0,fRadius * -2.0f);
 
         // Use fRadius to scale it so it remains a constant size
         glScalef(fRadius * fTextScale, fRadius * fTextScale, fRadius * fTextScale);
@@ -1427,10 +1428,10 @@ void World::DrawText3DStroked(mlVector3D vPos, const std::string & sText)
     //glScalef(0.015f, 1.0f, 0.01f); // height, _, width
     //glScalef(0.03f, 1.0f, 0.02f); // height, _, width
     //glScalef(0.04f, 1.0f, 0.03f); // height, _, width
-    glScalef(0.06f, 1.0f, 0.04f); // height, _, width
+    glScalef(0.06f, 0.06f, 0.04f); // height, _, width
     //glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
     //glRotatef(-90.0f, 0.0f, 0.0f, 1.0f);
-    glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
+    //glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
     glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
 
     glutStrokeString(GLUT_STROKE_MONO_ROMAN, (unsigned char *)sText.c_str());
