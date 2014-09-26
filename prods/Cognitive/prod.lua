@@ -124,7 +124,10 @@ windowedMode(0,100,700,600)
 
 loadBuffer("s7test.lua")
 loadBuffer("transformtest2.lua")
+loadBuffer("slidertest.lua")
+loadBuffer("camerabasetest.lua")
 
 edSetRenderMode(2)
+
 
 

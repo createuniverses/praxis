@@ -53,6 +53,7 @@ World::World()
 
     m_bMouseMovesCamera = true;
     m_bUsePositionPreservingOrbitCamera = true;
+    //m_bUsePositionPreservingOrbitCamera = false;
 
     m_bUpdatePickPosition = true;
     m_bRenderMousePickSphere = true;
@@ -1254,7 +1255,8 @@ void World::RotateCamera(float fHeading, float fPitch)
 {
     m_trnCamera.ApplyRotation(mlQuaternion(GetBaseUp(), fHeading));
 
-    mlVector3D vSide = m_trnCamera.TransformVector(GetBaseSide());
+    //mlVector3D vSide = m_trnCamera.TransformVector(GetBaseSide());
+    mlVector3D vSide = m_trnCamera.TransformVector(mlVector3D(1,0,0));
 
     m_trnCamera.ApplyRotation(mlQuaternion(vSide, -fPitch));
 }
@@ -1265,7 +1267,9 @@ void World::PositionPreservingOrbitCamera(mlVector3D & vCenter, float fHeading, 
     mlVector3D vGlobalUp = GetBaseUp();
     mlVector3D vGlobalDown = vGlobalUp * -1.0f;
     mlVector3D vGlobalSide = GetBaseSide();
-    mlVector3D vGlobalForward = GetBaseForward();
+    //mlVector3D vGlobalSide = mlVector3D(1,0,0);
+    //mlVector3D vGlobalForward = GetBaseForward();
+    mlVector3D vGlobalForward = mlVector3D(0,0,1);
 
     // The current camera orientation
     mlQuaternion rotCurrent = m_trnCamera.GetRotation();
@@ -1313,7 +1317,7 @@ void World::PositionPreservingOrbitCamera(mlVector3D & vCenter, float fHeading, 
     }
 
     // If the proposed angle is too acute, do nothing
-    //if(false)
+    if(false)
     {
         float fNewAngleToDown = vGlobalDown.AngleToVector(vToPointAfterMove);
         float fNewAngleToUp = vGlobalUp.AngleToVector(vToPointAfterMove);
