@@ -3,7 +3,7 @@ transform.rotate(t, math.pi * 0.01, 0,0,1)
 
 t2 = transform.cameraBase()
 transform.rotate(t2, math.pi*0.3,0)
-transform.rotate(t2, 0,-math.pi*0.25)
+transform.rotate(t2, 0,-math.pi*0.05)
 
 transform.copy(t2, Widgets[1].lspace)
 transform.copy(t2, transform.new())

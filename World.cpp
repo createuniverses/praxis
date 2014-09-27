@@ -1264,12 +1264,12 @@ void World::RotateCamera(float fHeading, float fPitch)
 void World::PositionPreservingOrbitCamera(mlVector3D & vCenter, float fHeading, float fPitch)
 {
     // Constants
-    mlVector3D vGlobalUp = GetBaseUp();
-    mlVector3D vGlobalDown = vGlobalUp * -1.0f;
-    mlVector3D vGlobalSide = GetBaseSide();
-    //mlVector3D vGlobalSide = mlVector3D(1,0,0);
-    //mlVector3D vGlobalForward = GetBaseForward();
-    mlVector3D vGlobalForward = mlVector3D(0,0,1);
+    mlVector3D vGlobalUp     = GetBaseUp();
+    mlVector3D vGlobalDown   = vGlobalUp * -1.0f;
+
+    mlVector3D vLocalSide    = mlVector3D(1,0,0);
+    mlVector3D vLocalUp      = mlVector3D(0,1,0);
+    mlVector3D vLocalForward = mlVector3D(0,0,1);
 
     // The current camera orientation
     mlQuaternion rotCurrent = m_trnCamera.GetRotation();
@@ -1308,16 +1308,16 @@ void World::PositionPreservingOrbitCamera(mlVector3D & vCenter, float fHeading, 
     mlQuaternion rotToPointChanged = rotToPoint;
     mlVector3D vToPointAfterMove;
     {
-        rotToPointChanged = rotToPointChanged * mlQuaternion(vGlobalUp,    fHeading);
-        rotToPointChanged = rotToPointChanged * mlQuaternion(vGlobalSide, -fPitch);
+        rotToPointChanged = rotToPointChanged * mlQuaternion(vLocalUp,    fHeading);
+        rotToPointChanged = rotToPointChanged * mlQuaternion(vLocalSide, -fPitch);
 
         rotToPointChanged.Normalise();
 
-        vToPointAfterMove = rotToPointChanged.TransformVector(vGlobalForward);
+        vToPointAfterMove = rotToPointChanged.TransformVector(vLocalForward);
     }
 
     // If the proposed angle is too acute, do nothing
-    if(false)
+    //if(false)
     {
         float fNewAngleToDown = vGlobalDown.AngleToVector(vToPointAfterMove);
         float fNewAngleToUp = vGlobalUp.AngleToVector(vToPointAfterMove);
@@ -1343,7 +1343,7 @@ void World::PositionPreservingOrbitCamera(mlVector3D & vCenter, float fHeading, 
     m_trnCamera.SetTranslation(vCenter);
 
     // Now the rotation quaternion is ready, and may be used to make the push back vector
-    mlVector3D vPushBack = rotToPointChanged.TransformVector(vGlobalForward * fRadius);
+    mlVector3D vPushBack = rotToPointChanged.TransformVector(vLocalForward * fRadius);
 
     // Push back the camera. Note that the rotation still hasn't altered.
     // The "topoint" rotation was used to make the push back vector (just a reminder)

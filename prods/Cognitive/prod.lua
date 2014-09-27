@@ -126,8 +126,7 @@ loadBuffer("s7test.lua")
 loadBuffer("transformtest2.lua")
 loadBuffer("slidertest.lua")
 loadBuffer("camerabasetest.lua")
+loadBuffer("randomwidget.lua")
 
 edSetRenderMode(2)
-
-
 
