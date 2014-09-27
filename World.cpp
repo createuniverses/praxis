@@ -948,6 +948,9 @@ void World::RenderMousePickSphere()
     // Convert screen radius to 3D radius
 
     mlVector3D vPoint = m_vMousePickPosition;
+    mlVector3D vPointBase = m_trnCameraBase.TransformPointInverse(vPoint);
+    bool bEq = (vPoint - vPointBase).Magnitude() < 1.0f;
+
     int nRadius = 15;
 
     {
@@ -979,6 +982,17 @@ void World::RenderMousePickSphere()
     glPushMatrix();
 
     glTranslatef(vPoint.x, vPoint.y, vPoint.z);
+
+    //glPushMatrix();
+
+    mlTransform transform = m_trnCameraBase;
+    transform.SetTranslation(mlVector3DZero);
+
+    mlMatrix4x4 mat(transform.GetMatrix());
+
+    mlFloat * pMat = reinterpret_cast<mlFloat*>(&mat);
+
+    glMultMatrixf(pMat);
 
     glColor4ub(
         0,
@@ -1015,7 +1029,11 @@ void World::RenderMousePickSphere()
     // Next step: change this to use the base coordinate system instead of this hardcoded one.
 
     {
-        stringstream ss; ss << std::setprecision(2) << std::fixed << "x=" << vPoint.x;
+        stringstream ss;
+        if(bEq)
+            ss << std::setprecision(2) << std::fixed << "x=" << vPoint.x;
+        else
+            ss << std::setprecision(2) << std::fixed << "x=" << vPointBase.x << std::endl << "  " << vPoint.x;
         glColor4ub(255,0,0, 255);
         glPushMatrix();
         glTranslatef(fRadius * fAxisScale + fRadius * fTextScale * 0.1f, 0, 0);
@@ -1025,7 +1043,11 @@ void World::RenderMousePickSphere()
     }
 
     {
-        stringstream ss; ss << std::setprecision(2) << std::fixed << "y=" << vPoint.y;
+        stringstream ss;
+        if(bEq)
+            ss << std::setprecision(2) << std::fixed << "y=" << vPoint.y;
+        else
+            ss << std::setprecision(2) << std::fixed << "y=" << vPointBase.y << std::endl << "  " << vPoint.y;
         glColor4ub(0,0,255, 255);
         glPushMatrix();
         glTranslatef(fRadius * fTextScale * 0.1f, fRadius * fAxisScale, 0);
@@ -1035,7 +1057,11 @@ void World::RenderMousePickSphere()
     }
 
     {
-        stringstream ss; ss << std::setprecision(2) << std::fixed << "z=" << vPoint.z;
+        stringstream ss;
+        if(bEq)
+            ss << std::setprecision(2) << std::fixed << "z=" << vPoint.z;
+        else
+            ss << std::setprecision(2) << std::fixed << "z=" << vPointBase.z << std::endl << "  " << vPoint.z;
         glColor4ub(0,255,0, 255);
         glPushMatrix();
         glTranslatef(fRadius * fTextScale * 2.0f, 0, fRadius * fAxisScale);
@@ -1071,7 +1097,13 @@ void World::RenderMousePickSphere()
 
         glColor4ub(255,255,0, 255);
 
-        stringstream ss; ss << std::setprecision(2) << std::fixed << "(" << vPoint.x << "," << vPoint.y << "," << vPoint.z << ")";
+        stringstream ss;
+        if(bEq)
+            ss << std::setprecision(2) << std::fixed << "(" << vPoint.x << "," << vPoint.y << "," << vPoint.z << ")";
+        else
+            ss << std::setprecision(2) << std::fixed << "(" << vPointBase.x << "," << vPointBase.y << "," << vPointBase.z << ")" << std::endl
+                                                            << vPoint.x     << "," << vPoint.y     << "," << vPoint.z     << ")";
+
         DrawText3DStroked(mlVector3DZero, ss.str());
 
         glPopMatrix();
@@ -1081,6 +1113,8 @@ void World::RenderMousePickSphere()
     glDepthFunc(GL_LESS);
 
     glColor4ub(0,255,0, 255);
+
+    //glPopMatrix();
 
     }
 
