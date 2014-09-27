@@ -108,11 +108,17 @@ end
 function WidgetLib.callAllInRange(fnname)
   local x,y,z = getMouseCursorPos()
   for k,v in pairs(Widgets) do
-    local lx,ly,lz = transform.globalToLocal(v.lspace, x, y, z)
-    if lx > 0 and lx < v.width and
-       ly > -v.height and ly < v.height and
-       lz > 0 and lz < v.depth then
-      v[fnname](v,lx,ly,lz)
+    if v.rangecheck == nil then
+      local lx,ly,lz = transform.globalToLocal(v.lspace, x, y, z)
+      if lx > 0 and lx < v.width and
+         ly > -v.height and ly < v.height and
+         lz > 0 and lz < v.depth then
+        v[fnname](v,lx,ly,lz)
+      end
+    else
+      if v.rangecheck(v) then
+        v[fnname](v,lx,ly,lz)
+      end
     end
   end
 end

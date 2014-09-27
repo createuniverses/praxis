@@ -352,7 +352,7 @@ void World::Render()
         GetEditor()->Render();
         qt_restore_gl_state();
 
-        DrawText2D(mlVector3D(10,5), std::string("Buffer: ") + GetEditor()->GetName());
+        DrawText2D(mlVector3D(5,2), std::string("Buffer: ") + GetEditor()->GetName());
     }
 
     // Need to implement FPS measuring a different way for Linux
@@ -1102,7 +1102,7 @@ void World::RenderMousePickSphere()
             ss << std::setprecision(2) << std::fixed << "(" << vPoint.x << "," << vPoint.y << "," << vPoint.z << ")";
         else
             ss << std::setprecision(2) << std::fixed << "(" << vPointBase.x << "," << vPointBase.y << "," << vPointBase.z << ")" << std::endl
-                                                            << vPoint.x     << "," << vPoint.y     << "," << vPoint.z     << ")";
+                                                     << "(" << vPoint.x     << "," << vPoint.y     << "," << vPoint.z     << ")";
 
         DrawText3DStroked(mlVector3DZero, ss.str());
 

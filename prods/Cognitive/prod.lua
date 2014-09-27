@@ -69,7 +69,8 @@ dofile("scratch.lua")
 
 function lookDown()
   pos = { getCamPos() }
-  pos[1] = pos[1] + 10
+  -- pos[1] = pos[1] + 10 -- look along x
+  pos[3] = pos[3] + 10 -- look along z
   lookAt(table.unpack(pos))
   rotateCam(0, math.pi * -0.5)
 end
@@ -111,10 +112,6 @@ end
 --moveWindowFull()
 moveWindowLeft()
 
--- left
-
--- right
-
 turnOnBorders()
 --windowedMode(100,50,800,600)
 windowedMode(0,100,700,600)
@@ -123,10 +120,16 @@ windowedMode(0,100,700,600)
 -- turnOnBorders is called.
 
 loadBuffer("s7test.lua")
+newBuffer()
 loadBuffer("transformtest2.lua")
+newBuffer()
 loadBuffer("slidertest.lua")
+newBuffer()
 loadBuffer("camerabasetest.lua")
+newBuffer()
 loadBuffer("randomwidget.lua")
+newBuffer()
+loadBuffer("camtransformwidget.lua")
 
 edSetRenderMode(2)
 
