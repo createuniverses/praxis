@@ -114,7 +114,8 @@ moveWindowLeft()
 
 turnOnBorders()
 --windowedMode(100,50,800,600)
-windowedMode(0,100,700,600)
+--windowedMode(0,100,700,600)
+windowedMode(1200,400,700,600)
 -- Calling turnOnBoarders after could result in bad
 -- window size, because the size hasn't been set by the time
 -- turnOnBorders is called.

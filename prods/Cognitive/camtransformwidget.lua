@@ -1,44 +1,15 @@
-function WidgetLib.newCamAligned()
-  local w = WidgetLib.newSimple()
-  w.update = function(w)
-    transform.copy(w.lspace, transform.camera())
-    transform.applyTranslation(w.lspace, 0,0,10)
-  end
-  w.render = function(w)
-    beginQuadGL()
-      colorGL(255,155,0,255)
-      vectorGL(0, 0,0)
-      vectorGL(10,0,0)
-      vectorGL(10,5,0)
-      vectorGL( 0,5,0)
-    endGL()
-  end
-  return w
-end
+-- todo:
+-- buttons and other sorts of widgets
+-- mouse enter and mouse leave events for widgets
+--  this is doable in the global mousemove handler
 
-Widgets = {}
-clearError()
-continue()
-
-graphWidget = WidgetLib.newCamAligned()
-
-
-transform.applyTranslation(graphWidget.lspace, 0,10,0)
-
-                          
-graphWidget.update = function (w) end
-
-
-print2(getFunction("graphWidget.update"))
-
-print2(graphWidget.depth)
-print2(graphWidget.height)
-print2(graphWidget.width)
-
-clearError()
-continue()
+t2 = transform.cameraBase()
+ts = transform.new()
+graphWidget = WidgetLib.newSimple()
 
 do
+  --graphWidget = WidgetLib.newSimple()
+
   graphWidget.depth = 10
   graphWidget.height = 5
   graphWidget.width = 10
@@ -50,8 +21,9 @@ do
   graphWidget.yRange = graphWidget.yMax - graphWidget.yMin
   graphWidget.xScale = graphWidget.width / graphWidget.xRange
   graphWidget.yScale = graphWidget.height / graphWidget.yRange
-  graphWidget.xOff = 1
+  graphWidget.xOff = 2
   graphWidget.yOff = 1
+  graphWidget.mousepos = vec3d(0,0,0)
   graphWidget.update = function(w)
     transform.copy(w.lspace, transform.camera())
     do
@@ -61,6 +33,13 @@ do
                            w.xOff,w.yOff,w.depth))
     local p = p2 - p1
     transform.applyTranslation(w.lspace, p.x, p.y, p.z)
+    end
+    if w.rangecheck(w) == true then
+      disableStdMouseCam()
+      transform.copy(t2, w.lspace)
+    else
+      enableStdMouseCam()
+      transform.copy(t2, ts)
     end
   end
   graphWidget.render = function(w)
@@ -87,7 +66,6 @@ do
                       0,0,0)
     glPopMatrix()
   end
-  graphWidget.mousepos = vec3d(0,0,0)
   graphWidget.l2 = transform.new()
   graphWidget.mousemove = function (w,x,y,z)
     transform.copy(w.l2, transform.camera())
@@ -123,37 +101,5 @@ do
   end
   --graphWidget.rangecheck = nil
 end
-
-graphWidget.height = 5
-transform.copy(transform.cameraBase(), transform.new())
-clearError()
-
-
-
-
-
-
-
-
-
-
-
-clearError()
-continue()
-
-
-
-
-
-
-
-
-print2(getFPS())
-
-
-
-
-
-
 
 

@@ -480,6 +480,16 @@ int luaCBGetColorGL(lua_State * L)
     return 4;
 }
 
+int luaCBGlutWireSphere(lua_State * L)
+{
+    return 0;
+}
+
+int luaCBGlutWireCube(lua_State * L)
+{
+    return 0;
+}
+
 int luaCBGlutStrokeString(lua_State * L)
 {
     int n = lua_gettop(L);
@@ -2863,6 +2873,8 @@ void luaInitCallbacks()
                 "drawLine(i,0,0,  0,0,100-i )"
               "end "
             "end");
+
+    luaCall("function rendercursor() end");
 
     luaCall("function print2(...) "
               "local arg = {...} "
