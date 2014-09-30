@@ -764,6 +764,59 @@ int luaCBGLClear(lua_State * L)
     return 0;
 }
 
+int luaCBGLBuildStencil(lua_State * L)
+{
+    bool bInverted = luaL_checkinteger(L, 1);
+    //GLenum eGLError = glGetError();
+
+    glEnable(GL_STENCIL_TEST);
+
+    if(bInverted)
+        glClearStencil(1);
+    else
+        glClearStencil(0);
+
+    // glClearStencil doesn't actually clear the stencil, it just sets what the clear value is when you call glClear
+    // So here is the call to glClear to actually clear the stencil
+    glClear(GL_STENCIL_BUFFER_BIT);
+
+    glColorMask(0,0,0,0);
+    glStencilFunc(GL_ALWAYS, 1, 1);
+
+    if(bInverted)
+        glStencilOp(GL_KEEP, GL_KEEP, GL_ZERO);
+    else
+        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+    glDisable(GL_DEPTH_TEST);
+
+    return 0;
+}
+
+int luaCBGLDrawWithinStencil(lua_State * L)
+{
+    glColorMask(1,1,1,1);								// Set Color Mask to TRUE, TRUE, TRUE, TRUE
+    glStencilFunc(GL_EQUAL, 1, 1);       				// We Draw Only Where The Stencil Is 1
+                                                        // (I.E. Where The stencil Was Drawn)
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);				// Don't Change The Stencil Buffer
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
+    return 0;
+}
+
+int luaCBGLRemoveStencil(lua_State * L)
+{
+    glDisable(GL_STENCIL_TEST);							// We Don't Need The Stencil Buffer Any More (Disable)
+    return 0;
+}
+
+int luaCBGLShowStencil(lua_State * L)
+{
+    return 0;
+}
+
 int luaCBGetMp3Time(lua_State * L)
 {
 #ifdef __PRAXIS_WINDOWS__
@@ -3103,6 +3156,11 @@ void luaInitCallbacks()
     lua_register(g_pLuaState, "glOrtho",                luaCBGLOrtho);
     lua_register(g_pLuaState, "glViewport",             luaCBGLViewport);
     lua_register(g_pLuaState, "glClear",                luaCBGLClear);
+
+    lua_register(g_pLuaState, "glBuildStencil",         luaCBGLBuildStencil);
+    lua_register(g_pLuaState, "glDrawWithinStencil",    luaCBGLDrawWithinStencil);
+    lua_register(g_pLuaState, "glRemoveStencil",        luaCBGLRemoveStencil);
+    lua_register(g_pLuaState, "glShowStencil",          luaCBGLShowStencil);
 
     lua_register(g_pLuaState, "edGetTopPosition",       luaCBEdGetTopPosition);
     lua_register(g_pLuaState, "edGetBottomPosition",    luaCBEdGetBottomPosition);
