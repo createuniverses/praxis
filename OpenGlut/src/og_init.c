@@ -102,6 +102,10 @@ SOG_State ogState =
 };
 
 
+#ifdef __PRAXIS_LINUX__
+Display * g_pAppDisplay;
+#endif
+
 /* -- PRIVATE FUNCTIONS ---------------------------------------------------- */
 
 /*
@@ -111,6 +115,8 @@ static void ogInitializeDisplay( const char *displayName )
 {
 #if TARGET_HOST_UNIX_X11
     ogDisplay.Display = XOpenDisplay( displayName );
+
+    g_pAppDisplay = ogDisplay.Display;
 
     if( ogDisplay.Display == NULL )
         ogError( "Failed to open display '%s'.", XDisplayName( displayName ) );

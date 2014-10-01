@@ -15,6 +15,22 @@ extern "C"
 }
 #endif
 
+//extern "C"
+//{
+//    extern int g_nLastBreakTime;
+//}
+
+#ifdef __PRAXIS_LINUX__
+#include <X11/Xlib.h>
+#include "SDL.h"
+#include "GL/openglut.h"
+int g_nLastBreakTime = 0;
+extern "C"
+{
+    extern Display * g_pAppDisplay;
+}
+#endif
+
 lua_State * g_pLuaState = 0;
 
 std::string g_sLuaOutput;
@@ -56,9 +72,10 @@ void luaInit()
     lua_register(g_pLuaState, "print",  cbLuaPrint);
 
     luaL_dostring(g_pLuaState,
-                  "function onerror(s)"
-                    "endGL()"
-                    "return s .. \"\\n\" .. debug.traceback()"
+                  "function onerror(s) "
+                    "endGL() "
+                    "glResetStencil() "
+                    "return s .. \"\\n\" .. debug.traceback() "
                   "end");
 
     lua_sethook(g_pLuaState, cbLuaBreakHook, LUA_MASKCOUNT, 1000);
@@ -229,6 +246,46 @@ void cbLuaBreakHook(lua_State *L, lua_Debug *ar)
     // SDLK_q
     //
     // Calling SDL_PumpEvents shouldn't have side effects because SDL isn't being used for OpenGL
+
+    char keys_return[32];
+
+    //glutMainLoopEvent();
+    XQueryKeymap(g_pAppDisplay, keys_return);
+
+#if 0
+    bool bNonZero = false;
+    for (int i = 0; i < 32; i++)
+    {
+        if(keys_return[i] != 0)
+            bNonZero = true;
+    }
+
+    if(bNonZero)
+    {
+        for (int i = 0; i < 32; i++)
+        {
+            printf("%d ", (unsigned int)keys_return[i]);
+        }
+        printf("\n");
+    }
+#endif
+
+    if(keys_return[3] == 1 && keys_return[4] == 32)
+    {
+        // Break detected. Check the time since last break.
+
+        // If its too low, ignore.
+        int nTime = glutGet(GLUT_ELAPSED_TIME);
+        if(nTime < (g_nLastBreakTime + 200))
+            return;
+
+        // If its high enough, then break.
+        g_nLastBreakTime = nTime;
+
+        lua_pushstring(L, "User break.");
+        lua_error(L);
+        return;
+    }
 #endif
 
     return;

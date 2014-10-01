@@ -7,7 +7,7 @@ function print2(...)
       --s = inspect(v)
       --s = ""
     else
-    insertBufferText(s .. "\n")
+      insertBufferText(s .. "\n")
     end
   end
 end

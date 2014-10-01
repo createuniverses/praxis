@@ -809,6 +809,19 @@ int luaCBGLDrawWithinStencil(lua_State * L)
 int luaCBGLRemoveStencil(lua_State * L)
 {
     glDisable(GL_STENCIL_TEST);							// We Don't Need The Stencil Buffer Any More (Disable)
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    return 0;
+}
+
+int luaCBGLResetStencil(lua_State * L)
+{
+    glClearStencil(1);
+    glClear(GL_STENCIL_BUFFER_BIT);
+    glColorMask(1,1,1,1);
+    glDisable(GL_STENCIL_TEST);							// We Don't Need The Stencil Buffer Any More (Disable)
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
     return 0;
 }
 
@@ -2932,7 +2945,7 @@ void luaInitCallbacks()
     luaCall("function print2(...) "
               "local arg = {...} "
               "for i,v in ipairs(arg) do "
-                "insertBufferText(v .. \"\\n\") "
+                "if type(v) ~= \"table\" then insertBufferText(v .. \"\\n\") end "
               "end "
             "end");
 
@@ -3161,6 +3174,7 @@ void luaInitCallbacks()
     lua_register(g_pLuaState, "glDrawWithinStencil",    luaCBGLDrawWithinStencil);
     lua_register(g_pLuaState, "glRemoveStencil",        luaCBGLRemoveStencil);
     lua_register(g_pLuaState, "glShowStencil",          luaCBGLShowStencil);
+    lua_register(g_pLuaState, "glResetStencil",         luaCBGLResetStencil);
 
     lua_register(g_pLuaState, "edGetTopPosition",       luaCBEdGetTopPosition);
     lua_register(g_pLuaState, "edGetBottomPosition",    luaCBEdGetBottomPosition);
