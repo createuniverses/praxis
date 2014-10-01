@@ -1,3 +1,7 @@
+-- you control the universe not with widgets, but with
+-- typed programs and commands.
+-- spells and incantations
+
 function drawPlane(h)
   glBeginQuads()
     colorGL(55,155,40,255)
@@ -7,6 +11,16 @@ function drawPlane(h)
     glVertex(-500, h, -500)
   glEnd()
 end
+
+print2(getFunction("WidgetLib.callAll"))
+function WidgetLib.callAll(fnname)
+  for k,v in pairs(Widgets) do
+    if v[fnname] ~= nil then
+      v[fnname](v)
+    end
+  end
+end
+
 
 function render()
   glBuildStencil(0)
@@ -46,10 +60,3 @@ function render()
   glRemoveStencil()
   
 end
-
-
-
-
-
-
-

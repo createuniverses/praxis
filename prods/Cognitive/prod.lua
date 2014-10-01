@@ -133,7 +133,10 @@ newBuffer()
 loadBuffer("camtransformwidget.lua")
 newBuffer()
 loadBuffer("stenciltest.lua")
+newBuffer()
+loadBuffer("portalwidget.lua")
 
 edSetRenderMode(2)
+
 
 
