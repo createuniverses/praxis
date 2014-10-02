@@ -1,7 +1,8 @@
-t2 = transform.cameraBase()
-transform.copy(t2, transform.new())
+
+transform.copy(transform.cameraBase(), transform.identity())
+
 portal = WidgetLib.newPortal()
-Widgets = {}
+--Widgets = {}
 
 function WidgetLib.newPortal()
   local w = {}
@@ -19,7 +20,8 @@ function WidgetLib.newPortal()
   w.anchored = false  -- I forget the meaning of this
   
   w.render = function (o)
-  --o.renderStencil(o)
+  
+  -- Grid
   glBeginLines()
     colorGL(0,255,0,255)
     for i=0,o.width+1,5 do
@@ -31,26 +33,13 @@ function WidgetLib.newPortal()
       glVertex(o.width, 0.1, i)
     end
   glEnd()
+  
   glBuildStencil(0)
-  glBeginQuads()
-    colorGL(255,155,0,255)
-    vectorGL(0,       0, 0)
-    vectorGL(o.width, 0, 0)
-    vectorGL(o.width, 0, o.depth)
-    vectorGL(0,       0, o.depth)
-  glEnd()
-  glBeginLines()
-    colorGL(0,0,0,255)
-    for i=0,o.width+1,5 do
-      glVertex(i, 0.1, 0)
-      glVertex(i, 0.1, o.depth)
-    end
-    for i=0,o.depth+1,5 do
-      glVertex(0,       0.1, i)
-      glVertex(o.width, 0.1, i)
-    end
-  glEnd()
+  
+  o:renderStencil()
+  
   glDrawWithinStencil()
+  
   glBeginQuads()
     colorGL(255,0,0,255)
     vectorGL(0,       -20, 0)
@@ -58,7 +47,7 @@ function WidgetLib.newPortal()
     vectorGL(o.width, -20, o.depth)
     vectorGL(0,       -20, o.depth)
   glEnd()
-  drawLine(0,0,0,100,-100,100)
+  
   glRemoveStencil()
   end
   
@@ -74,7 +63,7 @@ function WidgetLib.newPortal()
   
   w.update = function (o) end
   w.lmbdown = function (o,x,y,z)
-    transform.copy(t2, o.lspace)
+    transform.copy(transform.cameraBase(), o.lspace)
   end
   
   w.lmbup = function (o,x,y,z) end
@@ -114,8 +103,11 @@ end
 
 function render()
   WidgetLib.renderAll()
+  
   glBuildStencil(1)
+  
   WidgetLib.renderAllStencils()
+  
   glDrawWithinStencil()
   
   drawPlane(-5)

@@ -2193,6 +2193,22 @@ int luaCBTransformNew(lua_State * L)
     return 1;
 }
 
+mlTransform g_trnIdentity;
+
+int luaCBTransformIdentity(lua_State * L)
+{
+    mlTransform ** t = (mlTransform **)lua_newuserdata(L, sizeof(mlTransform *));
+
+    (*t) = &g_trnIdentity;
+
+    luaL_getmetatable(L, "LiveCode.transform");
+    lua_setmetatable(L, -2);
+
+    g_trnIdentity = mlTransform();
+
+    return 1;
+}
+
 int luaCBTransformCamera(lua_State * L)
 {
     mlTransform ** t = (mlTransform **)lua_newuserdata(L, sizeof(mlTransform *));
@@ -3246,6 +3262,7 @@ void luaInitCallbacks()
 
     const struct luaL_Reg lua_transformlib [] = {
         {"new",               luaCBTransformNew},
+        {"identity",          luaCBTransformIdentity},
         {"camera",            luaCBTransformCamera},
         {"cameraBase",        luaCBTransformCameraBase},
         {"getTranslation",    luaCBTransformGetTranslation},
