@@ -135,8 +135,8 @@ newBuffer()
 loadBuffer("stenciltest.lua")
 newBuffer()
 loadBuffer("portalwidget.lua")
+newBuffer()
+loadBuffer("findtest.lua")
 
 edSetRenderMode(2)
-
-
 

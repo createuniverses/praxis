@@ -1946,6 +1946,10 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
         window->State.MouseX = mouse_pos.x;
         window->State.MouseY = mouse_pos.y;
 
+        /* GregS 6-Oct-2014 */
+        printf("WM_KEYDOWN wParam = %#02x\n", wParam);
+        fflush(stdout);
+
         /* Convert the Win32 keystroke codes to GLUTtish way */
 #       define KEY(a,b) case a: keypress = b; break;
 
@@ -2037,6 +2041,10 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
         window->State.MouseX = mouse_pos.x;
         window->State.MouseY = mouse_pos.y;
 
+        /* GregS 6-Oct-2014 */
+        printf("WM_KEYUP wParam = %#02x\n", wParam);
+        fflush(stdout);
+
         /*
          * Convert the Win32 keystroke codes to GLUTtish way.
          * "KEY(a,b)" was defined under "WM_KEYDOWN"
@@ -2109,6 +2117,10 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
               window->State.IgnoreKeyRepeat==GL_TRUE ) &&
             ( HIWORD( lParam ) & KF_REPEAT ) )
             break;
+
+        /* GregS 6-Oct-2014 */
+        printf("WM_CHAR wParam = %#02x\n", wParam);
+        fflush(stdout);
 
         // TAB will only be handled in the WM_KEYDOWN section,
         // (where it wasn't previously)

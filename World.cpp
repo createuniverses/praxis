@@ -554,8 +554,19 @@ void World::OnKeyDown(unsigned char nKey, int nX, int nY)
     bShiftEnter = (glutGetModifiers() & GLUT_ACTIVE_SHIFT && nKey == '\r');
 #endif
 
-    std::cout << "bCtrlEnter  = " << (bCtrlEnter  ? "true" : "false") << std::endl;
-    std::cout << "bShiftEnter = " << (bShiftEnter ? "true" : "false") << std::endl;
+//    if(glutGetModifiers() & GLUT_ACTIVE_SHIFT)
+//        std::cout << "GLUT_ACTIVE_SHIFT : ON"  << std::endl;
+//    else
+//        std::cout << "GLUT_ACTIVE_SHIFT : OFF" << std::endl;
+
+//    if(glutGetModifiers() & GLUT_ACTIVE_CTRL)
+//        std::cout << "GLUT_ACTIVE_CTRL  : ON"  << std::endl;
+//    else
+//        std::cout << "GLUT_ACTIVE_CTRL  : OFF" << std::endl;
+
+
+//    std::cout << "bCtrlEnter  = " << (bCtrlEnter  ? "true" : "false") << std::endl;
+//    std::cout << "bShiftEnter = " << (bShiftEnter ? "true" : "false") << std::endl;
 
     if(bCtrlEnter)
     {

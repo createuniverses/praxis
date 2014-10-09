@@ -482,11 +482,43 @@ int luaCBGetColorGL(lua_State * L)
 
 int luaCBGlutWireSphere(lua_State * L)
 {
+    float radius = luaL_checknumber(L, 1);
+    float slices = 15;
+    float stacks = 15;
+    if(lua_gettop(L) > 1)
+    {
+        float slices = luaL_checknumber(L, 2);
+        float stacks = luaL_checknumber(L, 3);
+    }
+    glutWireSphere(radius, slices, stacks);
+    return 0;
+}
+
+int luaCBGlutSolidSphere(lua_State * L)
+{
+    float radius = luaL_checknumber(L, 1);
+    float slices = 15;
+    float stacks = 15;
+    if(lua_gettop(L) > 1)
+    {
+        float slices = luaL_checknumber(L, 2);
+        float stacks = luaL_checknumber(L, 3);
+    }
+    glutSolidSphere(radius, slices, stacks);
     return 0;
 }
 
 int luaCBGlutWireCube(lua_State * L)
 {
+    float size = luaL_checknumber(L, 1);
+    glutWireCube(size);
+    return 0;
+}
+
+int luaCBGlutSolidCube(lua_State * L)
+{
+    float size = luaL_checknumber(L, 1);
+    glutSolidCube(size);
     return 0;
 }
 
@@ -3248,6 +3280,12 @@ void luaInitCallbacks()
     lua_register(g_pLuaState, "setCurrentDir",          luaCBSetCurrentDir);
 
     lua_register(g_pLuaState, "qtQuit",                 luaCBQtQuit);
+
+    lua_register(g_pLuaState, "glutWireSphere",         luaCBGlutWireSphere);
+    lua_register(g_pLuaState, "glutWireCube",           luaCBGlutWireCube);
+
+    lua_register(g_pLuaState, "glutSolidSphere",        luaCBGlutSolidSphere);
+    lua_register(g_pLuaState, "glutSolidCube",          luaCBGlutSolidCube);
 
     const struct luaL_Reg lua_texturelib [] = {
         {"new",                   luaCBTextureNew},
