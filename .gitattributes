@@ -1,2 +1,9 @@
 
 * text eol=lf
+
+*.mp3 binary
+*.pdf binary
+*.ttf binary
+*.lib binary
+*.dll binary
+

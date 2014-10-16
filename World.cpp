@@ -168,8 +168,8 @@ void World::Update()
     // Step 1: Refer to Win32 book to see example of how to access the clipboard.
     // The clipboard is Chapter 12 in Petzold.
 
-    luaCall("if string.sub(getClipboardText(), 1, 7) == \"praxis:\" then "
-               "local sCmd = string.sub(getClipboardText(), 8) "
+    luaCall("if string.sub(getClipboardText(), 1, 10) == \"-- praxis:\" then "
+               "local sCmd = string.sub(getClipboardText(), 11) "
                "clearClipboardText() "
                "luaCall(sCmd) "
             "end");

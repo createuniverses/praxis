@@ -172,6 +172,12 @@ string GLEditor::ReadFileToString(const string & sFilename)
         while ( !file.eof() )
         {
             std::getline(file,line);
+
+            // Prune the '\r' if present
+            if(line.length() > 0)
+                if(line[line.length()-1] == '\r')
+                    line = line.substr(0, line.length()-1);
+
             line = line + std::string("\n");
             text = text + line;
         }
