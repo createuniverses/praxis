@@ -1658,6 +1658,7 @@ int luaCBMidiStop(lua_State * L)
 
 #ifdef __PRAXIS_LINUX__
     g_pWorld->m_midiout->closePort();
+    g_pWorld->m_midiin->closePort();
 #endif
 
     return 0;
@@ -1704,6 +1705,52 @@ int luaCBMidiNoteOff(lua_State * L)
 #endif
 
     return 0;
+}
+
+int luaCBMidiOpenInputPort(lua_State * L)
+{
+#ifdef __PRAXIS_WINDOWS__
+#endif
+
+#ifdef __PRAXIS_LINUX__
+    // 0 is midi thru
+    // 1 is Timidity
+    int nPortNum = 1;
+
+    if(lua_gettop(L) >= 1)
+        nPortNum = luaL_checknumber(L, 1);
+
+    if(nPortNum >= 0 && nPortNum < g_pWorld->m_midiin->getPortCount())
+        g_pWorld->m_midiin->openPort(nPortNum);
+#endif
+
+    return 0;
+}
+
+int luaCBMidiGetInputPortCount(lua_State * L)
+{
+    int nCount = g_pWorld->m_midiin->getPortCount();
+    lua_pushnumber(L, nCount);
+    return 1;
+}
+
+int luaCBMidiGetInputPortName(lua_State * L)
+{
+    int nPortNumber = luaL_checknumber(L, 1);
+    std::string sName = g_pWorld->m_midiin->getPortName(nPortNumber);
+    lua_pushstring(L, sName.c_str());
+    return 1;
+}
+
+int luaCBMidiInputPortMessage(lua_State * L)
+{
+    std::vector<unsigned char> message;
+    g_pWorld->m_midiin->getMessage(&message);
+    for(int i = 0; i < message.size(); i++)
+    {
+        lua_pushnumber(L, message[i]);
+    }
+    return message.size();
 }
 
 int luaCBMidiSelectInstrument(lua_State * L)
@@ -3264,6 +3311,11 @@ void luaInitCallbacks()
 
     lua_register(g_pLuaState, "midiGetPortCount",       luaCBMidiGetPortCount);
     lua_register(g_pLuaState, "midiGetPortName",        luaCBMidiGetPortName);
+
+    lua_register(g_pLuaState, "midiOpenInputPort",      luaCBMidiOpenInputPort);
+    lua_register(g_pLuaState, "midiGetInputPortCount",  luaCBMidiGetInputPortCount);
+    lua_register(g_pLuaState, "midiGetInputPortName",   luaCBMidiGetInputPortName);
+    lua_register(g_pLuaState, "midiInputPortMessage",   luaCBMidiInputPortMessage);
 
     lua_register(g_pLuaState, "turnOnDebugHook",        luaCBTurnOnDebugHook);
     lua_register(g_pLuaState, "turnOffDebugHook",       luaCBTurnOffDebugHook);

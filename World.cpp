@@ -80,9 +80,11 @@ World::World()
     // MIDI
 #ifdef __PRAXIS_LINUX__
     m_midiout = new RtMidiOutAlsa("praxis");
+    m_midiin  = new RtMidiInAlsa("praxis");
 #endif
 #ifdef __PRAXIS_WINDOWS__
     m_midiout = new RtMidiOutWinMM("praxis");
+    m_midiin  = 0;
 #endif
 
 }

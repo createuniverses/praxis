@@ -187,6 +187,7 @@ private:
 public:
 
     RtMidiOut* m_midiout;
+    RtMidiIn*  m_midiin;
 };
 
 #endif // WORLD_H
