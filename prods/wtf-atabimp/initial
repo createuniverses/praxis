@@ -1,0 +1,43 @@
+nextScene()
+
+print2(getFunction("update"))
+function produpdate()
+    --if isMp3Playing() == false then
+    --    os.exit()
+    --end
+
+    if isTransitionDue() then
+        nextScene()
+    end
+    
+    timeline[currentTimelineItem].effect.update()
+end
+
+print2(getFunction("timeline[currentTimelineItem].effect.update"))
+function heit.update()
+    t = t + t_spd
+    
+    for i=1,10 do
+         for j=1,10 do
+             heightmap[i][j] = 20*math.sin(t * i * 0.1) + 20*math.sin(t * j * 0.1)
+         end
+    end
+    
+    camAngle = camAngle + camAngleSpeed * math.pi / 180
+    
+    camPos = { x = camOrbitCenter.x + camOrbitRadius * math.cos(camAngle), y = camOrbitCenter.y + camOrbitRadius * math.sin(camAngle) }
+    ahead = { x = camPos.x + -10 * math.sin(camAngle), y = camPos.y + 10 * math.cos(camAngle) }
+    
+    camOrbitRadius = math.sin(camAngle * 0.25) * 15 + 20
+    
+    --setCamPos(camPos.x, camOrbitHeight, camPos.y)
+    --lookAt(ahead.x, camOrbitHeight, ahead.y)
+    
+    --setCamPos(getcellposition(camCellPosI,camCellPosJ))
+    --setCamPos(i * cellsize, heightmap[i][j]+10, j * cellsize)
+    
+    -- shiftcellcam()
+end
+
+edSetRenderMode(2)
+

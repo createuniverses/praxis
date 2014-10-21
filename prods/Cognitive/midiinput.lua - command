@@ -1,0 +1,59 @@
+midiNoteOn(62)
+midiNoteOff(62)
+
+for i=30,60,1 do
+  midiNoteOff(i)
+end
+
+clearTrace()
+setMaxFramerate(100)
+
+beginPlayback()
+beginRecording()
+stopRecorder()
+
+print2(inspect(recorder.notes))
+{ {
+    frame = 0,
+    midi = { 144, 60, 56 }
+  }, {
+    frame = 1,
+    midi = { 128, 60, 64 }
+  }, {
+    frame = 50,
+    midi = { 144, 36, 65 }
+  }, {
+    frame = 66,
+    midi = { 128, 36, 64 }
+  }, {
+    frame = 73,
+    midi = { 144, 38, 51 }
+  }, {
+    frame = 77,
+    midi = { 128, 38, 64 }
+  }, {
+    frame = 86,
+    midi = { 144, 39, 60 }
+  }, {
+    frame = 102,
+    midi = { 128, 39, 64 }
+  }, {
+    frame = 110,
+    midi = { 144, 41, 55 }
+  }, {
+    frame = 117,
+    midi = { 128, 41, 64 }
+  }, {
+    frame = 125,
+    midi = { 144, 43, 60 }
+  }, {
+    frame = 141,
+    midi = { 128, 43, 64 }
+  }, {
+    frame = 165,
+    midi = { 144, 36, 54 }
+  }, {
+    frame = 180,
+    midi = { 128, 36, 64 }
+  } }
+
