@@ -6,4 +6,5 @@
 *.ttf binary
 *.lib binary
 *.dll binary
+*.jpg binary
 
