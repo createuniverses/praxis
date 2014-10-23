@@ -799,18 +799,30 @@ int luaCBGLClear(lua_State * L)
 int luaCBGLBuildStencil(lua_State * L)
 {
     bool bInverted = luaL_checkinteger(L, 1);
+#if 0
     //GLenum eGLError = glGetError();
 
     glEnable(GL_STENCIL_TEST);
 
     if(bInverted)
-        glClearStencil(1);
+    {
+        //glClearStencil(1);
+        glStencilMask(0x00);
+        //glClear(GL_STENCIL_BUFFER_BIT);
+    }
     else
-        glClearStencil(0);
+    {
+        //glClearStencil(0);
+        glStencilMask(0xFF);
+        //glClear(GL_STENCIL_BUFFER_BIT);
+    }
 
     // glClearStencil doesn't actually clear the stencil, it just sets what the clear value is when you call glClear
     // So here is the call to glClear to actually clear the stencil
     glClear(GL_STENCIL_BUFFER_BIT);
+
+    glStencilFunc(GL_NEVER, 1, 0xFF);
+    glStencilOp(GL_REPLACE, GL_KEEP, GL_KEEP);  // draw 1s on test fail (always)
 
     glColorMask(0,0,0,0);
     glStencilFunc(GL_ALWAYS, 1, 1);
@@ -821,12 +833,29 @@ int luaCBGLBuildStencil(lua_State * L)
         glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
     glDisable(GL_DEPTH_TEST);
+#endif
+
+    //glClear(GL_DEPTH_BUFFER_BIT);
+
+    //glDisable(GL_DEPTH_TEST);
+    glEnable(GL_STENCIL_TEST);
+    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    //glDepthMask(GL_FALSE);
+    //glStencilFunc(GL_NEVER, 1, 0xFF);
+    glStencilFunc(GL_ALWAYS, 1, 0xFF);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+    //glStencilOp(GL_REPLACE, GL_KEEP, GL_KEEP);  // draw 1s on test fail (always)
+
+    // draw stencil pattern
+    glStencilMask(0xFF);
+    glClear(GL_STENCIL_BUFFER_BIT);  // needs mask=0xFF
 
     return 0;
 }
 
 int luaCBGLDrawWithinStencil(lua_State * L)
 {
+#if 0
     glColorMask(1,1,1,1);								// Set Color Mask to TRUE, TRUE, TRUE, TRUE
     glStencilFunc(GL_EQUAL, 1, 1);       				// We Draw Only Where The Stencil Is 1
                                                         // (I.E. Where The stencil Was Drawn)
@@ -834,15 +863,32 @@ int luaCBGLDrawWithinStencil(lua_State * L)
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
+#endif
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    glDepthMask(GL_TRUE);
+    glStencilMask(0xFF);
+    // fill 0s
+    //glStencilFunc(GL_EQUAL, 0, 0xFF);
+    /* (nothing to draw) */
+    // fill 1s
+    glStencilFunc(GL_EQUAL, 1, 0xFF);
 
     return 0;
 }
 
 int luaCBGLRemoveStencil(lua_State * L)
 {
+#if 0
     glDisable(GL_STENCIL_TEST);							// We Don't Need The Stencil Buffer Any More (Disable)
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
+#endif
+
+    glDisable(GL_STENCIL_TEST);
+
     return 0;
 }
 

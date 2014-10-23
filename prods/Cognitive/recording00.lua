@@ -1,7 +1,7 @@
 --setBufferName("recording00.lua")
 --print2(inspect(recorder.notes))
 
-{ {
+recorder.notes = { {
     frame = 40,
     midi = { 144, 72, 58 }
   }, {
@@ -344,3 +344,4 @@
     frame = 469,
     midi = { 128, 48, 64 }
   } }
+

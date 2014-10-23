@@ -1,4 +1,3 @@
-midiOpenInputPort()
 
 function printMidiMessage()
   local midiin = {midiInputPortMessage()}
@@ -7,8 +6,6 @@ function printMidiMessage()
     print(midiin[i])
   end
 end
-
-printMidiMessage()
 
 function initRecorder()
   recorder = {}
@@ -23,8 +20,8 @@ function initRecorder()
       --if r.framenum == note.frame then
         if note.midi[1] == 144 then -- note on
           --print("Note on: ".. note.midi[2])
-          --midiNoteOn(note.midi[2], note.midi[3])
-          midiNoteOn(note.midi[2])
+          midiNoteOn(note.midi[2], note.midi[3])
+          --midiNoteOn(note.midi[2])
         end
         if note.midi[1] == 128 then -- note off
           --print("Note off: ".. note.midi[2])
@@ -111,13 +108,10 @@ do recorderWidget.update = function ()
   end
 end
 
-print(#Widgets)
+--print(#Widgets)
 
-beginRecording()
-beginPlayback()
-stopRecorder()
+--beginRecording()
+--beginPlayback()
+--stopRecorder()
 
-clearTrace()
-clearError()
-continue()
-print2(getErrorText())
+

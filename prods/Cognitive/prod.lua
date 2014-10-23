@@ -44,6 +44,8 @@ stopSound()
 math.randomseed(os.time())
 
 midiStart()
+--midiOpenInputPort()
+
 --midiLaunchNextEvent(100)
 
 fugue.compose()
@@ -139,4 +141,6 @@ newBuffer()
 loadBuffer("findtest.lua")
 
 edSetRenderMode(2)
+
+
 
