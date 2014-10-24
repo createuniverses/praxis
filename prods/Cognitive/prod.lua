@@ -44,7 +44,7 @@ stopSound()
 math.randomseed(os.time())
 
 midiStart()
---midiOpenInputPort()
+midiOpenInputPort()
 
 --midiLaunchNextEvent(100)
 
@@ -137,10 +137,15 @@ newBuffer()
 loadBuffer("stenciltest.lua")
 newBuffer()
 loadBuffer("portalwidget.lua")
-newBuffer()
-loadBuffer("findtest.lua")
+--newBuffer()
+--loadBuffer("findtest.lua")
+
+dofile("portalwidget.lua")
+
+portal = WidgetLib.newPortal()
+portal = WidgetLib.newPortal()
+portal = WidgetLib.newPortal()
+
+hideEditor()
 
 edSetRenderMode(2)
-
-
-

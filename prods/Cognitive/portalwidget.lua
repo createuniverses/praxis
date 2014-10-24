@@ -1,5 +1,4 @@
-
-portal = WidgetLib.newPortal()
+--portal = WidgetLib.newPortal()
 
 function WidgetLib.newPortal()
   local w = {}
@@ -86,4 +85,3 @@ function WidgetLib.renderAllStencils()
     end
   end
 end
-
