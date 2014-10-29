@@ -305,6 +305,12 @@ void World::Render()
         }
     }
 
+    // Restore a sane render state in case render left it in a bad condition
+    glDisable(GL_STENCIL_TEST);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glColorMask(1,1,1,1);
+
     // If there is an error, then stop the automatic lua calls.
 
     UseMainWindowContext();
@@ -339,6 +345,12 @@ void World::Render()
             m_bRunning = false;
         }
     }
+
+    // Restore a sane render state in case postrender left it in a bad condition
+    glDisable(GL_STENCIL_TEST);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glColorMask(1,1,1,1);
 
     glDisable(GL_LIGHTING);
     glDisable(GL_LIGHT0);
