@@ -29,6 +29,23 @@ function WidgetLib.newPortal()
     end
   glEnd()
   
+  -- pressable areas
+  glBeginQuads()
+    colorGL(255,0,255,255)
+    vectorGL(0, 0, 0)
+    vectorGL(5, 0, 0)
+    vectorGL(5, 0, 5)
+    vectorGL(0, 0, 5)
+  glEnd()
+  
+  glBeginQuads()
+    colorGL(0,255,0,255)
+    vectorGL(5,  0, 0)
+    vectorGL(10, 0, 0)
+    vectorGL(10, 0, 5)
+    vectorGL(5,  0, 5)
+  glEnd()
+  
   glBuildStencil(0)
   
   o:renderStencil()
@@ -58,7 +75,12 @@ function WidgetLib.newPortal()
   
   w.update = function (o) end
   w.lmbdown = function (o,x,y,z)
-    transform.copy(transform.cameraBase(), o.lspace)
+    if x<5 and y<5 then
+      transform.copy(transform.cameraBase(), o.lspace)
+    end
+    if x<10 and x>5 and y<5 then
+      transform.copy(transform.cameraBase(), transform.identity())
+    end
   end
   
   w.lmbup = function (o,x,y,z) end
