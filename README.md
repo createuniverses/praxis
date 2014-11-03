@@ -12,6 +12,8 @@ Introduction: https://www.youtube.com/watch?v=1VRtRazMYSA
 
 Running the examples: https://www.youtube.com/watch?v=6rB39AXPmQQ
 
+Midi recording: https://www.youtube.com/watch?v=0ftGZW-QnHY
+
 Camera control: https://www.youtube.com/watch?v=ezWaNu-FMPk
 
 Lua and audio demo: https://www.youtube.com/watch?v=0uEBs98PKQE
