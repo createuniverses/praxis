@@ -369,7 +369,9 @@ void World::Render()
         DrawText2D(mlVector3D(5,2), std::string("Buffer: ") + GetEditor()->GetName());
     }
 
-    // Need to implement FPS measuring a different way for Linux
+    bool bRenderFPS = true;
+
+    if(bRenderFPS)
     {
 #ifdef __PRAXIS_WINDOWS__
         int nCurrentTime = ::timeGetTime();
@@ -377,9 +379,13 @@ void World::Render()
 #ifdef __PRAXIS_LINUX__
         int nCurrentTime = glutGet(GLUT_ELAPSED_TIME);
 #endif
-        int nTimeDelta = nCurrentTime - g_nLastFrameTime;
-        g_nLastFrameTime = nCurrentTime;
-        g_fFPS = 1000.0f / (float)nTimeDelta;
+        if(m_nRenderCount % 10 == 0)
+        {
+            int nTimeDelta = nCurrentTime - g_nLastFrameTime;
+            g_nLastFrameTime = nCurrentTime;
+            g_fFPS = 1000.0f / (float)nTimeDelta;
+            g_fFPS *= 10.0f;
+        }
 
         //qt_save_gl_state();
         //GetEditor()->Render();

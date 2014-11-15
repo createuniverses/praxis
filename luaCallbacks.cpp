@@ -2573,6 +2573,19 @@ int luaCBTransformCopyFrom(lua_State * L)
     return 0;
 }
 
+int luaCBTransformTransform(lua_State * L)
+{
+    int n = lua_gettop(L);
+    if(n!=2) luaL_error(L, "2 arguments expected.");
+
+    mlTransform * t1 = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
+    mlTransform * t2 = *(mlTransform **)luaL_checkudata(L, 2, "LiveCode.transform");
+
+    t1->TransformSelf(*t2);
+
+    return 0;
+}
+
 int luaCBShowTrace(lua_State * L)
 {
     g_pWorld->ShowOutput();
@@ -3367,6 +3380,9 @@ void luaInitCallbacks()
         {"up",                luaCBTransformUp},
         {"side",              luaCBTransformSide},
         {"lookAt",            luaCBTransformLookAt},
+        {"transform",         luaCBTransformTransform},
+        {"translate",         luaCBTransformApplyTranslation},
+        {"scale",             luaCBTransformApplyScale},
         {"rotate",            luaCBTransformRotate},
         {"localToGlobal",     luaCBTransformLocalToGlobal},
         {"globalToLocal",     luaCBTransformGlobalToLocal},
