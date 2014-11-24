@@ -7,4 +7,6 @@
 *.lib binary
 *.dll binary
 *.jpg binary
+*.png binary
+*.jpg binary
 
