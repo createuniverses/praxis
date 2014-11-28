@@ -105,8 +105,8 @@ public:
     void HideError() { m_bRenderError = false; }
     bool ErrorVisible() { return m_bRenderError; }
 
-    void ShowEditor() { m_bRenderEditor = true;  }
-    void HideEditor() { m_bRenderEditor = false; }
+    void ShowEditor() { m_bRenderEditor = true; glutSetKeyRepeat(GLUT_KEY_REPEAT_ON); }
+    void HideEditor() { m_bRenderEditor = false; glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF); }
     bool EditorVisible() { return m_bRenderEditor; }
 
     void Pause()     { m_bRunning = false; }

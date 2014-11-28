@@ -3065,6 +3065,9 @@ void luaInitCallbacks()
     luaCall("function RMBUp(x,y) end");
     luaCall("function OnMouseMove(dx,dy,px,py) end");
 
+    luaCall("function keyDown(k) end");
+    luaCall("function keyUp(k) end");
+
     luaCall("function returnPressed() edInsertNewline() end");
 
     luaCall("function logLiveCode(sCode) end");

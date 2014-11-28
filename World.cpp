@@ -548,6 +548,20 @@ void World::OnRButtonUp(int nX, int nY)
 
 void World::OnKeyDown(unsigned char nKey, int nX, int nY)
 {
+    // When the buffer is visible, sent the keypresses to it.
+    // When the buffer isn't, call the lua function.
+
+    if(!m_bRenderEditor)
+    {
+        string temp(" "); temp[0] = nKey;
+        stringstream ss;
+        ss << "keyDown(\"" << temp.c_str() << "\")";
+        luaCall(ss.str());
+
+        return;
+    }
+
+
     // This is where to handle pressing enter for a command buffer.
     // Do the command, then close
     // Changed my mind. I only want it so I can press enter to submit the command.
@@ -631,6 +645,14 @@ void World::OnKeyDown(unsigned char nKey, int nX, int nY)
 
 void World::OnKeyUp(unsigned char nKey, int nX, int nY)
 {
+    if(!m_bRenderEditor)
+    {
+        string temp(" "); temp[0] = nKey;
+        stringstream ss;
+        ss << "keyUp(\"" << temp.c_str() << "\")";
+        luaCall(ss.str());
+    }
+
     //std::cout <<"OnKeyUp" << endl;
 }
 
