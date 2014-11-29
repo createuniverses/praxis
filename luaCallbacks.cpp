@@ -950,6 +950,34 @@ int luaCBGetWindowHeight(lua_State *L)
     return 1;
 }
 
+int luaCBGetMaximizedWindowWidth(lua_State *L)
+{
+#ifdef __PRAXIS_LINUX__
+    int nWidth = glutGet(GLUT_SCREEN_WIDTH);
+#endif
+
+#ifdef __PRAXIS_WINDOWS__
+    int nWidth = GetSystemMetrics(SM_CXMAXIMIZED);
+#endif
+
+    lua_pushnumber(L, nWidth);
+    return 1;
+}
+
+int luaCBGetMaximizedWindowHeight(lua_State *L)
+{
+#ifdef __PRAXIS_LINUX__
+    int nHeight = glutGet(GLUT_SCREEN_HEIGHT);
+#endif
+
+#ifdef __PRAXIS_WINDOWS__
+    int nHeight = GetSystemMetrics(SM_CYMAXIMIZED);
+#endif
+
+    lua_pushnumber(L, nHeight);
+    return 1;
+}
+
 int luaCBTurnOnBorders(lua_State * L)
 {
 #ifdef __PRAXIS_WINDOWS__
@@ -3054,21 +3082,23 @@ void luaInitCallbacks()
     lua_register(g_pLuaState, "stopMp3",               luaCBStopMp3);
     lua_register(g_pLuaState, "isMp3Playing",          luaCBIsMp3Playing);
 
-    lua_register(g_pLuaState, "getScreenWidth",        luaCBGetScreenWidth);
-    lua_register(g_pLuaState, "getScreenHeight",       luaCBGetScreenHeight);
-    lua_register(g_pLuaState, "getWindowWidth",        luaCBGetWindowWidth);
-    lua_register(g_pLuaState, "getWindowHeight",       luaCBGetWindowHeight);
+    lua_register(g_pLuaState, "getScreenWidth",           luaCBGetScreenWidth);
+    lua_register(g_pLuaState, "getScreenHeight",          luaCBGetScreenHeight);
+    lua_register(g_pLuaState, "getWindowWidth",           luaCBGetWindowWidth);
+    lua_register(g_pLuaState, "getWindowHeight",          luaCBGetWindowHeight);
+    lua_register(g_pLuaState, "getMaximizedWindowWidth",  luaCBGetMaximizedWindowWidth);
+    lua_register(g_pLuaState, "getMaximizedWindowHeight", luaCBGetMaximizedWindowHeight);
 
     lua_register(g_pLuaState, "getWindowRect",         luaCBGetWindowRect);
 
 #ifdef __PRAXIS_LINUX__
-    luaCall("function getWinScreenWidth() return getScreenWidth() - 6 end");
-    luaCall("function getWinScreenHeight() return getScreenHeight() - 60 end");
+    luaCall("function getWinScreenWidth() return getMaximizedWindowWidth() - 6 end");
+    luaCall("function getWinScreenHeight() return getMaximizedWindowHeight() - 60 end");
 #endif
 
 #ifdef __PRAXIS_WINDOWS__
-    luaCall("function getWinScreenWidth() return getScreenWidth() - 8 end");
-    luaCall("function getWinScreenHeight() return getScreenHeight() - 8 end");
+    luaCall("function getWinScreenWidth() return getMaximizedWindowWidth() - 16 end");
+    luaCall("function getWinScreenHeight() return getMaximizedWindowHeight() - 16 end");
 #endif
 
     lua_register(g_pLuaState, "fullscreenMode",        luaCBFullscreenMode);
