@@ -924,71 +924,28 @@ int luaCBGetMp3Length(lua_State * L)
 
 int luaCBGetScreenWidth(lua_State *L)
 {
-#ifdef __PRAXIS_WINDOWS__
-    int nWidth = GetSystemMetrics( SM_CXSCREEN );
-#else
     int nWidth = glutGet(GLUT_SCREEN_WIDTH);
-#endif
     lua_pushnumber(L, nWidth);
     return 1;
 }
 
 int luaCBGetScreenHeight(lua_State *L)
 {
-#ifdef __PRAXIS_WINDOWS__
-    int nHeight = GetSystemMetrics( SM_CYSCREEN );
-#else
     int nHeight = glutGet(GLUT_SCREEN_HEIGHT);
-#endif
     lua_pushnumber(L, nHeight);
     return 1;
 }
 
 int luaCBGetWindowWidth(lua_State *L)
 {
-#ifdef __PRAXIS_WINDOWS__
-    int nWidth = GetSystemMetrics( SM_CXSCREEN );
-#else
     int nWidth = glutGet(GLUT_WINDOW_WIDTH);
-#endif
     lua_pushnumber(L, nWidth);
     return 1;
 }
 
 int luaCBGetWindowHeight(lua_State *L)
 {
-#ifdef __PRAXIS_WINDOWS__
-    int nHeight = GetSystemMetrics( SM_CYSCREEN );
-#else
     int nHeight = glutGet(GLUT_WINDOW_HEIGHT);
-#endif
-    lua_pushnumber(L, nHeight);
-    return 1;
-}
-
-int luaCBWinGetScreenWidth(lua_State *L)
-{
-#ifdef __PRAXIS_WINDOWS__
-    int nWidth = GetSystemMetrics( SM_CXMAXIMIZED );
-//    nWidth -= 16;
-//    int nWidth = GetSystemMetrics( SM_CXSCREEN );
-#else
-    int nWidth = glutGet(GLUT_SCREEN_WIDTH);
-#endif
-    lua_pushnumber(L, nWidth);
-    return 1;
-}
-
-int luaCBWinGetScreenHeight(lua_State *L)
-{
-#ifdef __PRAXIS_WINDOWS__
-    int nHeight = GetSystemMetrics( SM_CYMAXIMIZED );
-//    nHeight += 24;
-//    int nHeight = GetSystemMetrics( SM_CYSCREEN );
-#else
-    int nHeight = glutGet(GLUT_SCREEN_HEIGHT);
-    nHeight -= 60;
-#endif
     lua_pushnumber(L, nHeight);
     return 1;
 }
@@ -1046,54 +1003,7 @@ int luaCBTurnOffBorders(lua_State * L)
 
 int luaCBFullscreenMode(lua_State *L)
 {
-#if 0
-    //glutFullScreen();
-    //glutEnterGameMode();
-    //return 0;
-
-    RECT rect;
-
-    //GetSystemMetrics( SM_CXMAXIMIZED );
-    //GetSystemMetrics( SM_CYMAXIMIZED );
-    //GetSystemMetrics( SM_CXSCREEN );
-    //GetSystemMetrics( SM_CYSCREEN );
-
-    // ok, put it back the way it was, then
-    // add a function to go into this frameless mode
-    // i think that might already exist - game mode - investigate
-    // in this mode, the resize doesn't compensate for the borders.
-    // Add access to system metrics from lua so that the window can be resized from there.
-
-
-    rect.left   = 0;
-    rect.top    = 0;
-    rect.right  = GetSystemMetrics( SM_CXSCREEN );
-    rect.bottom = GetSystemMetrics( SM_CYSCREEN );
-//    rect.right  = GetSystemMetrics( SM_CXMAXIMIZED );
-//    rect.bottom = GetSystemMetrics( SM_CYMAXIMIZED );
-
-    AdjustWindowRect ( &rect, WS_POPUP | WS_CLIPSIBLINGS |
-                              WS_CLIPCHILDREN, FALSE );
-
-    /*
-     * SWP_NOACTIVATE     Do not activate the window
-     * SWP_NOOWNERZORDER  Do not change position in z-order
-     * SWP_NOSENDCHANGING Supress WM_WINDOWPOSCHANGING message
-     * SWP_NOZORDER       Retains the current Z order (ignore 2nd param)
-     */
-    SetWindowPos(
-        glutGetWindowHandle(),
-        HWND_TOP,
-        rect.left,
-        rect.top,
-        rect.right  - rect.left,
-        rect.bottom - rect.top,
-        SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOSENDCHANGING |
-        SWP_NOZORDER
-    );
-#else
     glutFullScreen();
-#endif
 
     return 0;
 }
@@ -1141,25 +1051,11 @@ int luaCBGetWindowRect(lua_State * L)
     int w = glutGet(GLUT_WINDOW_WIDTH);
     int h = glutGet(GLUT_WINDOW_HEIGHT);
 
-#ifdef __PRAXIS_WINDOWS__
-    //DWORD flags = GetWindowLong(glutGetWindowHandle(), GWL_STYLE);
-    //if(flags & WS_OVERLAPPEDWINDOW)
-    {
-        x -= GetSystemMetrics( SM_CXSIZEFRAME );
-        y -= GetSystemMetrics( SM_CYSIZEFRAME ) + GetSystemMetrics( SM_CYCAPTION );
-        w += GetSystemMetrics( SM_CXSIZEFRAME ) * 2;
-        h += GetSystemMetrics( SM_CYSIZEFRAME ) * 2 + GetSystemMetrics( SM_CYCAPTION );
-    }
-#endif
-#ifdef __PRAXIS_LINUX__
-    x -= 3;
-    y -= 24;
-#endif
-
     lua_pushnumber(L, x);
     lua_pushnumber(L, y);
     lua_pushnumber(L, w);
     lua_pushnumber(L, h);
+
     return 4;
 }
 
@@ -3165,8 +3061,15 @@ void luaInitCallbacks()
 
     lua_register(g_pLuaState, "getWindowRect",         luaCBGetWindowRect);
 
-    lua_register(g_pLuaState, "getWinScreenWidth",     luaCBWinGetScreenWidth);
-    lua_register(g_pLuaState, "getWinScreenHeight",    luaCBWinGetScreenHeight);
+#ifdef __PRAXIS_LINUX__
+    luaCall("function getWinScreenWidth() return getScreenWidth() - 6 end");
+    luaCall("function getWinScreenHeight() return getScreenHeight() - 60 end");
+#endif
+
+#ifdef __PRAXIS_WINDOWS__
+    luaCall("function getWinScreenWidth() return getScreenWidth() - 8 end");
+    luaCall("function getWinScreenHeight() return getScreenHeight() - 8 end");
+#endif
 
     lua_register(g_pLuaState, "fullscreenMode",        luaCBFullscreenMode);
     lua_register(g_pLuaState, "windowedMode",          luaCBWindowedMode);

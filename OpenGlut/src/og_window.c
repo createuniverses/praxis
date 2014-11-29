@@ -744,8 +744,8 @@ void ogOpenWindow( SOG_Window *window, const char *title,
          */
         flags = WS_CLIPSIBLINGS | WS_CLIPCHILDREN;// | CS_HREDRAW | CS_VREDRAW;
         flags |= WS_POPUP;
+        flags |= WS_OVERLAPPEDWINDOW; // Uncomment this to start the window with a border
         // flags |= WS_VISIBLE; // Unnecessary, due to call to ShowWindow
-        //flags |= WS_OVERLAPPEDWINDOW;
 
 #if 0
         if( window->IsUnmanaged )
@@ -1509,6 +1509,10 @@ void OGAPIENTRY glutSetIconTitle( const char* title )
     }
 }
 
+#define _NET_WM_STATE_REMOVE        0    /* remove/unset property */
+#define _NET_WM_STATE_ADD           1    /* add/set property */
+#define _NET_WM_STATE_TOGGLE        2    /* toggle property  */
+
 /*!
     \fn
     \brief    Request changing the size of the current window
@@ -1576,6 +1580,37 @@ void OGAPIENTRY glutPositionWindow( int x, int y )
     {
 #if TARGET_HOST_UNIX_X11
 
+        XSetWindowAttributes  xattr;
+        xattr.override_redirect = False;
+        XChangeWindowAttributes ( ogDisplay.Display, ogStructure.Window->Window.Handle, CWOverrideRedirect, &xattr );
+
+        Atom atom = XInternAtom ( ogDisplay.Display, "_NET_WM_STATE_FULLSCREEN", True );
+        XChangeProperty (
+           ogDisplay.Display, ogStructure.Window->Window.Handle,
+           XInternAtom ( ogDisplay.Display, "_NET_WM_STATE", True ),
+           XA_ATOM,  32,  PropModeReplace,
+           (unsigned char*) &atom,  1 );
+
+        //// get identifiers for the provided atom name strings
+        Atom wm_state   = XInternAtom ( ogDisplay.Display, "_NET_WM_STATE", False );
+        Atom fullscreen = XInternAtom ( ogDisplay.Display, "_NET_WM_STATE_FULLSCREEN", False );
+
+        XEvent xev;
+        memset ( &xev, 0, sizeof(xev) );
+
+        xev.type                 = ClientMessage;
+        xev.xclient.window       = ogStructure.Window->Window.Handle;
+        xev.xclient.message_type = wm_state;
+        xev.xclient.format       = 32;
+        xev.xclient.data.l[0]    = _NET_WM_STATE_REMOVE;
+        xev.xclient.data.l[1]    = fullscreen;
+        XSendEvent (                // send an event mask to the X-server
+           ogDisplay.Display,
+           DefaultRootWindow ( ogDisplay.Display ),
+           False,
+           SubstructureNotifyMask,
+           &xev );
+
         XMoveWindow( ogDisplay.Display, ogStructure.Window->Window.Handle,
                      x, y );
         XFlush( ogDisplay.Display ); /*! \todo Shouldn't need this XFlush */
@@ -1642,6 +1677,74 @@ void OGAPIENTRY glutFullScreen( void )
     if( GL_FALSE == ogStructure.Window->State.IsOffscreen )
     {
 #if TARGET_HOST_UNIX_X11
+
+#if 1
+//        typedef struct {
+//                         unsigned long   flags;
+//                         unsigned long   functions;
+//                         unsigned long   decorations;
+//                         long            inputMode;
+//                         unsigned long   status;
+//                       } Hints;
+
+//        Hints   hints;
+//        Atom    property;
+//        hints.flags = 2;        // Specify that we're changing the window decorations.
+//        hints.decorations = 0;  // 0 (false) means that window decorations should go bye-bye.
+//        property = XInternAtom(ogDisplay.Display,"_MOTIF_WM_HINTS",True);
+
+//        XChangeProperty(
+//                    ogDisplay.Display,
+//                    ogStructure.Window->Window.Handle,
+//                    property,property,32,
+//                    PropModeReplace,
+//                    (unsigned char *)&hints,5);
+
+//        XMoveResizeWindow(
+//            ogDisplay.Display,
+//            ogStructure.Window->Window.Handle,
+//            0, 0,
+//            ogDisplay.ScreenWidth,
+//            ogDisplay.ScreenHeight );
+
+//        XFlush( ogDisplay.Display ); /* This is needed */
+
+
+
+        // Now try to tell X to make it fullscreen...
+
+        XSetWindowAttributes  xattr;
+        xattr.override_redirect = True;
+        XChangeWindowAttributes ( ogDisplay.Display, ogStructure.Window->Window.Handle, CWOverrideRedirect, &xattr );
+
+        Atom atom = XInternAtom ( ogDisplay.Display, "_NET_WM_STATE_FULLSCREEN", True );
+        XChangeProperty (
+           ogDisplay.Display, ogStructure.Window->Window.Handle,
+           XInternAtom ( ogDisplay.Display, "_NET_WM_STATE", True ),
+           XA_ATOM,  32,  PropModeReplace,
+           (unsigned char*) &atom,  1 );
+
+        //// get identifiers for the provided atom name strings
+        Atom wm_state   = XInternAtom ( ogDisplay.Display, "_NET_WM_STATE", False );
+        Atom fullscreen = XInternAtom ( ogDisplay.Display, "_NET_WM_STATE_FULLSCREEN", False );
+
+        XEvent xev;
+        memset ( &xev, 0, sizeof(xev) );
+
+        xev.type                 = ClientMessage;
+        xev.xclient.window       = ogStructure.Window->Window.Handle;
+        xev.xclient.message_type = wm_state;
+        xev.xclient.format       = 32;
+        xev.xclient.data.l[0]    = _NET_WM_STATE_ADD;
+        xev.xclient.data.l[1]    = fullscreen;
+        XSendEvent (                // send an event mask to the X-server
+           ogDisplay.Display,
+           DefaultRootWindow ( ogDisplay.Display ),
+           False,
+           SubstructureNotifyMask,
+           &xev );
+
+#else
         int x, y;
         Window w;
 
@@ -1671,6 +1774,8 @@ void OGAPIENTRY glutFullScreen( void )
             );
             XFlush( ogDisplay.Display ); /*! \todo Shouldn't need to XFlush */
         }
+#endif
+
 #elif TARGET_HOST_WIN32
         RECT rect;
 

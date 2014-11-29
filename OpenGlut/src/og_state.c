@@ -537,9 +537,10 @@ int OGAPIENTRY glutGet( GLenum eWhat )
 
             /* we must correct the results we've just received */
 #if !TARGET_HOST_WINCE
-            if ( ( ogStructure.GameMode != ogStructure.Window ) &&
+            /* if ( ( ogStructure.GameMode != ogStructure.Window ) &&
                  ( ogStructure.Window->Parent == NULL ) &&
-                 ( ! ogStructure.Window->IsUnmanaged ) )
+                 ( ! ogStructure.Window->IsUnmanaged ) ) */
+            if(0)
             {
                 winRect.left   += GetSystemMetrics( SM_CXSIZEFRAME );
                 winRect.right  -= GetSystemMetrics( SM_CXSIZEFRAME );

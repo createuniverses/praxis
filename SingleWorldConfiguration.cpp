@@ -11,8 +11,11 @@
 
 World * g_pSingleWorldConfiguration_World = 0;
 
-int g_nSingleWorldWidth = 640;
-int g_nSingleWorldHeight = 480;
+int g_nSingleWorldWidth = 700;
+int g_nSingleWorldHeight = 500;
+
+//int g_nSingleWorldWidth = 800;
+//int g_nSingleWorldHeight = 600;
 
 int g_nSingleWorldTop = 10;
 int g_nSingleWorldLeft = 10;
@@ -106,7 +109,7 @@ void RunSingleWorldConfiguration(
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glutFullScreen();
+    //glutFullScreen();
 
     pYourWorld->Init();
 

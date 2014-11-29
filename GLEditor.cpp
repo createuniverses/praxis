@@ -130,10 +130,10 @@ GLEditor::GLEditor():
     float minX,minY,maxX,maxY; GetBB(minX,minY,maxX,maxY);
     m_PosY = (maxY-minY)/2 - maxY;
 
-    std::cout << minX << "," <<
-                 minY << "," <<
-                 maxX << "," <<
-                 maxY << std::endl;
+//    std::cout << minX << "," <<
+//                 minY << "," <<
+//                 maxX << "," <<
+//                 maxY << std::endl;
 }
 
 GLEditor::~GLEditor()
