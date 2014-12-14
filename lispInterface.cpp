@@ -7,6 +7,9 @@
 
 #ifdef __PRAXIS_LINUX__
 #include <unistd.h>
+#include <X11/Xlib.h>
+#include "GL/openglut.h"
+extern Display * g_pAppDisplay;
 #endif
 
 #ifdef __PRAXIS_WINDOWS__
@@ -24,10 +27,7 @@ std::string g_sLispError;
 
 int g_nLispTraceVerbosity = 0;
 
-extern "C"
-{
-    extern int g_nLastBreakTime;
-}
+extern int g_nLastBreakTime;
 
 static s7_pointer our_sleep(s7_scheme *sc, s7_pointer args)
 {
@@ -46,8 +46,6 @@ void lispInit()
 
     s7_define_function(g_pLisp, "sleep", our_sleep, 0, 0, false, "(sleep) sleeps");
 }
-
-//int g_nLastBreakTime = 0;
 
 void lispEndHook(s7_scheme *sc, bool *all_done)
 {
@@ -104,29 +102,6 @@ void lispBeginHook(s7_scheme *sc, bool *all_done)
         std::cout << "[" << sCaller << "] " << sEnvironment << " : " << sCode << std::endl;
     }
 
-#ifdef __PRAXIS_LINUX__
-    extern bool g_bInterruptLisp;
-    if(g_bInterruptLisp)
-    {
-        // Maybe do the time thing, and disregard if time since last is too low.
-        // Time is something I need to figure out for Linux.
-        // http://www.cplusplus.com/forum/unices/45299/
-        // http://www.cplusplus.com/reference/ctime/
-        // http://www.omnicode.com/qa.php?id=91
-        // http://stackoverflow.com/questions/14783468/is-there-a-standard-library-equivalent-of-timegettime
-        // http://en.cppreference.com/w/cpp/chrono (C++11)
-        // http://www.gamedev.net/topic/315035-linux-timegettime-counterpart/
-        // more boring:
-        // http://unix.derkeiler.com/Newsgroups/comp.unix.programmer/2006-10/msg00535.html
-
-
-        *all_done = true;
-        g_bInterruptLisp = false;
-    }
-#endif
-
-    // Need to do this some other way in Linux
-    // async key press querying in SDL?
 #ifdef __PRAXIS_WINDOWS__
     if(::GetAsyncKeyState(VK_LCONTROL) != 0 && ::GetAsyncKeyState(0x51) != 0) // Ctrl-Q pressed
     {
@@ -141,6 +116,29 @@ void lispBeginHook(s7_scheme *sc, bool *all_done)
         g_nLastBreakTime = nTime;
 
         *all_done = true;
+    }
+#endif
+
+#ifdef __PRAXIS_LINUX__
+    if(g_pAppDisplay)
+    {
+        char keys_return[32];
+        XQueryKeymap(g_pAppDisplay, keys_return);
+
+        if(keys_return[3] == 1 && keys_return[4] == 32)
+        {
+            // Break detected. Check the time since last break.
+
+            // If its too low, ignore.
+            int nTime = glutGet(GLUT_ELAPSED_TIME);
+            if(nTime < (g_nLastBreakTime + 200))
+                return;
+
+            // If its high enough, then break.
+            g_nLastBreakTime = nTime;
+
+            *all_done = true;
+        }
     }
 #endif
 }

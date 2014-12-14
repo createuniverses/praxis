@@ -118,11 +118,7 @@ SOURCES += main.cpp \
     lispCallbacks.cpp \
     lispInterface.cpp \
     audioWave.cpp \
-    RtMidi.cpp
-
-win32 {
-SOURCES += \
-    audioMidi.cpp \
+    RtMidi.cpp \
     forthCallbacks.cpp \
     forthInterface.cpp \
     ficl-4.1.0/bit.c \
@@ -145,7 +141,16 @@ SOURCES += \
     ficl-4.1.0/tools.c \
     ficl-4.1.0/utility.c \
     ficl-4.1.0/vm.c \
-    ficl-4.1.0/word.c \
+    ficl-4.1.0/word.c
+
+unix {
+SOURCES += \
+    ficl-4.1.0/ficlplatform/unix.c
+}
+
+win32 {
+SOURCES += \
+    audioMidi.cpp \
     ficl-4.1.0/ficlplatform/win32.c
 }
 
@@ -209,15 +214,20 @@ HEADERS += \
     lispCallbacks.h \
     lispInterface.h \
     RtMidi.h \
-    RtError.h
-
-win32 {
-HEADERS += \
+    RtError.h \
     forthCallbacks.h \
     forthInterface.h \
     ficl-4.1.0/ficl.h \
     ficl-4.1.0/ficlcompatibility.h \
     ficl-4.1.0/ficllocal.h \
-    ficl-4.1.0/ficltokens.h \
+    ficl-4.1.0/ficltokens.h
+
+unix {
+HEADERS += \
+    ficl-4.1.0/ficlplatform/unix.h
+}
+
+win32 {
+HEADERS += \
     ficl-4.1.0/ficlplatform/win32.h
 }

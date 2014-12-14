@@ -14,10 +14,8 @@
 #include "lispInterface.h"
 #include "lispCallbacks.h"
 
-#ifdef __PRAXIS_WINDOWS__
 #include "forthInterface.h"
 #include "forthCallbacks.h"
-#endif
 
 #include "AI_NeuralNetworkSystem.h"
 
@@ -34,17 +32,9 @@ CRITICAL_SECTION g_cs;
 
 struct sigaction new_act, old_act;
 
-bool g_bInterruptLisp = false;
-bool g_bInterruptLua = false;
-bool g_bInterruptForth = false;
-
 void handle_sigint(int ignored)
 {
     std::cout << "Praxis:SIGINT" << std::endl;
-
-    g_bInterruptLisp = true;
-    g_bInterruptLua = true;
-    g_bInterruptForth = true;
 
     sigaction(SIGINT, &new_act, NULL);
 }
@@ -79,21 +69,6 @@ void * inputthread_function( void *ptr )
             g_bInputThreadNewString = true;
             pthread_mutex_unlock (&g_inputthreadmutex);
         }
-//        else if (n == 0)
-//        {
-//            // EOF
-//            puts("eof, sending code:");
-//            puts(sCode.c_str());
-
-//            pthread_mutex_lock (&g_inputthreadmutex);
-//            g_sInputThreadString = sCode;
-//            g_bInputThreadNewString = true;
-//            pthread_mutex_unlock (&g_inputthreadmutex);
-
-//            sCode = "";
-//        }
-
-//        fflush(stdout);
     }
 }
 
@@ -107,6 +82,8 @@ World *          g_pWorld;
 FSOUND_STREAM * g_pMp3Stream    = 0;
 int             g_nMp3Channel   = 0;
 #endif
+
+int g_nLastBreakTime = 0;
 
 #ifdef __PRAXIS_WINDOWS__
 int CALLBACK WinMain( HINSTANCE hInstance,
@@ -154,11 +131,11 @@ int main()
     lispInit();
     lispInitCallbacks();
 
-#ifdef __PRAXIS_WINDOWS__
     // Forth
     forthInit();
     forthInitCallbacks();
 
+#ifdef __PRAXIS_WINDOWS__
     // FMOD mp3 playing
     // Can we have FMOD mp3 playing on top of synthesizing audio??
     if (!FSOUND_Init(44100, 32, FSOUND_INIT_USEDEFAULTMIDISYNTH))
@@ -189,9 +166,9 @@ int main()
 
     luaClose();
     lispClose();
-#ifdef __PRAXIS_WINDOWS__
     forthClose();
 
+#ifdef __PRAXIS_WINDOWS__
     FSOUND_Stream_Close(g_pMp3Stream);
     FSOUND_Close();
 #endif

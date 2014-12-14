@@ -22,7 +22,6 @@
 #include "MMSystem.h"
 #include "fmod.h"
 #include "fmod_errors.h"
-#include "forthInterface.h"
 #endif
 
 #ifdef __PRAXIS_LINUX__
@@ -40,6 +39,8 @@
 #include "Voxel.h"
 
 #include "lispInterface.h"
+
+#include "forthInterface.h"
 
 extern "C"
 {
@@ -1767,7 +1768,6 @@ int luaCBLisp(lua_State * L)
 
 int luaCBForth(lua_State * L)
 {
-#ifdef __PRAXIS_WINDOWS__
     int n = lua_gettop(L);
     if(n!=1) luaL_error(L, "1 argument expected.");
 
@@ -1782,9 +1782,7 @@ int luaCBForth(lua_State * L)
         sOut = sOut + std::string(" ") + sErr;
 
     lua_pushstring(L, sOut.c_str());
-#else
-    lua_pushstring(L, "not implemented");
-#endif
+
     return 1;
 }
 

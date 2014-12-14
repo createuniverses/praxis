@@ -250,9 +250,17 @@ FICL_PLATFORM_INLINE void ficlStackCheckNospill(ficlStack *stack, ficlCell *top,
 		FLOAT_LOCAL_VARIABLE_REFILL	\
 		LOCALS_LOCAL_VARIABLE_REFILL
 
+#ifdef __PRAXIS_WINDOWS__
 #include <windows.h>
+#endif
 
-int g_nLastBreakTime = 0;
+#ifdef __PRAXIS_LINUX__
+#include <X11/Xlib.h>
+#include "GL/openglut.h"
+extern Display * g_pAppDisplay;
+#endif
+
+extern int g_nLastBreakTime;
 
 void ficlVmInnerLoop(ficlVm *vm, ficlWord *fw)
 {
@@ -298,6 +306,7 @@ void ficlVmInnerLoop(ficlVm *vm, ficlWord *fw)
 
 	for (;;)
 	{
+#ifdef __PRAXIS_WINDOWS__
         if(GetAsyncKeyState(VK_LCONTROL) != 0 && GetAsyncKeyState(0x51) != 0) // Ctrl-Q pressed
         {
             // Break detected. Check the time since last break.
@@ -312,6 +321,30 @@ void ficlVmInnerLoop(ficlVm *vm, ficlWord *fw)
 
             ficlVmThrowError(vm, "User break.");
         }
+#endif
+
+#ifdef __PRAXIS_LINUX__
+    if(g_pAppDisplay)
+    {
+        char keys_return[32];
+        XQueryKeymap(g_pAppDisplay, keys_return);
+
+        if(keys_return[3] == 1 && keys_return[4] == 32)
+        {
+            // Break detected. Check the time since last break.
+
+            // If its too low, ignore.
+            int nTime = glutGet(GLUT_ELAPSED_TIME);
+            if(nTime < (g_nLastBreakTime + 200))
+                goto NOBREAK;
+
+            // If its high enough, then break.
+            g_nLastBreakTime = nTime;
+
+            ficlVmThrowError(vm, "User break.");
+        }
+    }
+#endif
 
 NOBREAK:
 

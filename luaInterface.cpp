@@ -11,20 +11,15 @@
 extern "C"
 {
     extern HWND g_AppHWND;
-    extern int g_nLastBreakTime;
 }
 #endif
 
-//extern "C"
-//{
-//    extern int g_nLastBreakTime;
-//}
+extern int g_nLastBreakTime;
 
 #ifdef __PRAXIS_LINUX__
 #include <X11/Xlib.h>
-#include "SDL.h"
+//#include "SDL.h"
 #include "GL/openglut.h"
-int g_nLastBreakTime = 0;
 extern "C"
 {
     extern Display * g_pAppDisplay;
@@ -199,7 +194,6 @@ bool luaIsCommandComplete(std::string sCmd)
 
 void cbLuaBreakHook(lua_State *L, lua_Debug *ar)
 {
-    // Need some other way to do this in Linux.
 #ifdef __PRAXIS_WINDOWS__
     // Force GetAsyncKeyState to be called for both keys so that
     // their respective statuses are up to date.
@@ -226,49 +220,8 @@ void cbLuaBreakHook(lua_State *L, lua_Debug *ar)
 #endif
 
 #ifdef __PRAXIS_LINUX__
-    // SDL_GetKeyState
-    // http://sdl.beuc.net/sdl.wiki/SDL_GetKeyState
-    //
-    // #include "SDL.h"
-    // Uint8 *SDL_GetKeyState(int *numkeys);
-    //
-    // Example:
-    //
-    // Uint8 *keystate = SDL_GetKeyState(NULL);
-    // if ( keystate[SDLK_RETURN] ) printf("Return Key Pressed.\n");
-    // if ( keystate[SDLK_RIGHT] && keystate[SDLK_UP] ) printf("Right and Up Keys Pressed.\n");
-    //
-    // Note: Use SDL_PumpEvents to update the state array
-    //
-    // http://sdl.beuc.net/sdl.wiki/SDLKey
-    // SDLK_LCTRL
-    // SDLK_RCTRL
-    // SDLK_q
-    //
-    // Calling SDL_PumpEvents shouldn't have side effects because SDL isn't being used for OpenGL
-
     char keys_return[32];
-
-    //glutMainLoopEvent();
     XQueryKeymap(g_pAppDisplay, keys_return);
-
-#if 0
-    bool bNonZero = false;
-    for (int i = 0; i < 32; i++)
-    {
-        if(keys_return[i] != 0)
-            bNonZero = true;
-    }
-
-    if(bNonZero)
-    {
-        for (int i = 0; i < 32; i++)
-        {
-            printf("%d ", (unsigned int)keys_return[i]);
-        }
-        printf("\n");
-    }
-#endif
 
     if(keys_return[3] == 1 && keys_return[4] == 32)
     {
@@ -285,35 +238,6 @@ void cbLuaBreakHook(lua_State *L, lua_Debug *ar)
         lua_pushstring(L, "User break.");
         lua_error(L);
         return;
-    }
-#endif
-
-    return;
-
-#if 0
-    HGLOBAL      hGlobal ;
-    PTSTR        pGlobal ;
-
-    std::string sText;
-
-    OpenClipboard (g_AppHWND) ;
-    if (hGlobal = GetClipboardData (CF_TEXT))
-    {
-         pGlobal = (PTSTR)GlobalLock (hGlobal) ;
-         sText = pGlobal;
-         GlobalUnlock(hGlobal);
-    }
-    CloseClipboard () ;
-
-
-    if(sText == "praxis:STOP")
-    {
-        OpenClipboard (g_AppHWND) ;
-        EmptyClipboard();
-        CloseClipboard () ;
-
-        lua_pushstring(L, "User break.");
-        lua_error(L);
     }
 #endif
 }
