@@ -81,9 +81,14 @@ World *          g_pWorld;
 #ifdef __PRAXIS_WINDOWS__
 FSOUND_STREAM * g_pMp3Stream    = 0;
 int             g_nMp3Channel   = 0;
+extern "C" {
+int g_nLastBreakTime = 0;
+}
 #endif
 
+#ifdef __PRAXIS_LINUX__
 int g_nLastBreakTime = 0;
+#endif
 
 #ifdef __PRAXIS_WINDOWS__
 int CALLBACK WinMain( HINSTANCE hInstance,

@@ -11,10 +11,9 @@
 extern "C"
 {
     extern HWND g_AppHWND;
+    extern int g_nLastBreakTime;
 }
 #endif
-
-extern int g_nLastBreakTime;
 
 #ifdef __PRAXIS_LINUX__
 #include <X11/Xlib.h>
@@ -24,6 +23,7 @@ extern "C"
 {
     extern Display * g_pAppDisplay;
 }
+extern int g_nLastBreakTime;
 #endif
 
 lua_State * g_pLuaState = 0;

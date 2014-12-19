@@ -10,14 +10,15 @@
 #include <X11/Xlib.h>
 #include "GL/openglut.h"
 extern Display * g_pAppDisplay;
+extern int g_nLastBreakTime;
 #endif
 
 #ifdef __PRAXIS_WINDOWS__
 #include <windows.h>
-
 extern "C"
 {
     extern HWND g_AppHWND;
+    extern int g_nLastBreakTime;
 }
 #endif
 
@@ -26,8 +27,6 @@ std::string g_sLispOutput;
 std::string g_sLispError;
 
 int g_nLispTraceVerbosity = 0;
-
-extern int g_nLastBreakTime;
 
 static s7_pointer our_sleep(s7_scheme *sc, s7_pointer args)
 {
