@@ -19,6 +19,7 @@
 #include <windows.h>
 #include <mmsystem.h>
 #include <winuser.h>
+#include <winsock.h>
 #include "MMSystem.h"
 #include "fmod.h"
 #include "fmod_errors.h"
@@ -2957,6 +2958,150 @@ int luaCBGetFPS(lua_State * L)
     return 1;
 }
 
+SOCKET ListeningSocket;
+
+SOCKET SetUpListener(const char* pcAddress, int nPort)
+{
+    u_long nInterfaceAddr = inet_addr(pcAddress);
+    if (nInterfaceAddr != INADDR_NONE) {
+        SOCKET sd = socket(AF_INET, SOCK_STREAM, 0);
+        if (sd != INVALID_SOCKET) {
+            sockaddr_in sinInterface;
+            sinInterface.sin_family = AF_INET;
+            sinInterface.sin_addr.s_addr = nInterfaceAddr;
+            sinInterface.sin_port = nPort;
+            if (bind(sd, (sockaddr*)&sinInterface,
+                    sizeof(sockaddr_in)) != SOCKET_ERROR) {
+                listen(sd, 1);
+                return sd;
+            }
+        }
+    }
+
+    return INVALID_SOCKET;
+}
+
+int luaCBStartServer(lua_State * L)
+{
+    // Start Winsock up
+    WSAData wsaData;
+    int nCode;
+    if ((nCode = WSAStartup(MAKEWORD(1, 1), &wsaData)) != 0) {
+//        cerr << "WSAStartup() returned error code " << nCode << "." <<
+//                endl;
+//        return 255;
+        return 0;
+    }
+
+    // Begin listening for connections
+    cout << "Establishing the listener..." << endl;
+    ListeningSocket = INVALID_SOCKET;
+    u_long nInterfaceAddr = inet_addr("127.0.0.1");
+    if (nInterfaceAddr != INADDR_NONE) {
+        ListeningSocket = socket(AF_INET, SOCK_STREAM, 0);
+        if (ListeningSocket != INVALID_SOCKET) {
+
+            sockaddr_in sinInterface;
+            sinInterface.sin_family = AF_INET;
+            sinInterface.sin_addr.s_addr = nInterfaceAddr;
+            sinInterface.sin_port = htons(4242);
+            if (bind(ListeningSocket, (sockaddr*)&sinInterface,
+                    sizeof(sockaddr_in)) != SOCKET_ERROR) {
+                listen(ListeningSocket, 1);
+            }
+        }
+    }
+
+    if (ListeningSocket == INVALID_SOCKET) {
+//        cout << endl << WSAGetLastErrorMessage("establish listener") <<
+//                endl;
+//        return 3;
+        return 0;
+    }
+
+    u_long iMode = 1;
+    ioctlsocket(ListeningSocket, FIONBIO, &iMode);
+
+    return 0;
+}
+
+int luaCBAcceptConnection(lua_State * L)
+{
+    cout << "Waiting for a connection..." << flush;
+    sockaddr_in sinRemote;
+    int nAddrSize = sizeof(sinRemote);
+    SOCKET sd = accept(ListeningSocket, (sockaddr*)&sinRemote, &nAddrSize);
+    if (sd != INVALID_SOCKET) {
+        cout << "Accepted connection from " <<
+                inet_ntoa(sinRemote.sin_addr) << ":" <<
+                ntohs(sinRemote.sin_port) << "." << endl;
+
+        ListeningSocket = sd;
+    }
+    else {
+//        cout << endl << WSAGetLastErrorMessage(
+//                "accept connection") << endl;
+    }
+
+    // Return whether a connection was accepted
+    return 0;
+}
+
+int luaCBReceiveData(lua_State * L)
+{
+    char buf[64000];
+    buf[0] = '\0';
+    int nBytes = recv(ListeningSocket, buf, 64000, 0);
+    buf[nBytes] = '\0';
+    //std::string sBuf = buf;
+
+    lua_pushstring(L, buf);
+
+    // Return any data received
+    return 1;
+}
+
+int luaCBSendData(lua_State * L)
+{
+    std::string sText = luaL_checkstring(L, 1);
+
+    int nReadBytes = sText.length();
+    char buf[64000];
+    strcpy(buf, sText.c_str());
+
+    int nSentBytes = 0;
+    while (nSentBytes < nReadBytes) {
+        int nTemp = send(ListeningSocket, buf + nSentBytes,
+                nReadBytes - nSentBytes, 0);
+        if (nTemp > 0) {
+            cout << "Sent " << nTemp <<
+                    " bytes back to client." << endl;
+            nSentBytes += nTemp;
+        }
+        else if (nTemp == SOCKET_ERROR) {
+            cout << "Socket error" <<
+                    endl;
+            return 0;
+        }
+        else {
+            // Client closed connection before we could reply to
+            // all the data it sent, so bomb out early.
+            cout << "Peer unexpectedly dropped connection!" <<
+                    endl;
+            return 0;
+        }
+    }
+
+    //send(ListeningSocket, sText.c_str(), sText.length(), 0);
+
+    return 0;
+}
+
+int luaCBShutdownServer(lua_State * L)
+{
+    return 0;
+}
+
 void luaInitCallbacks()
 {
 //    g_luaFont = QFont("Bitstream Vera Sans Mono", 12);
@@ -3287,6 +3432,12 @@ void luaInitCallbacks()
 
     lua_register(g_pLuaState, "glutSolidSphere",        luaCBGlutSolidSphere);
     lua_register(g_pLuaState, "glutSolidCube",          luaCBGlutSolidCube);
+
+    lua_register(g_pLuaState, "svrStart",               luaCBStartServer);
+    lua_register(g_pLuaState, "svrAccept",              luaCBAcceptConnection);
+    lua_register(g_pLuaState, "svrReceive",             luaCBReceiveData);
+    lua_register(g_pLuaState, "svrSend",                luaCBSendData);
+    lua_register(g_pLuaState, "svrShutdown",            luaCBShutdownServer);
 
     const struct luaL_Reg lua_texturelib [] = {
         {"new",                   luaCBTextureNew},

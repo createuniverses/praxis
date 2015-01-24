@@ -17,6 +17,7 @@ win32 {
     INCLUDEPATH += ./fmodapi375win/inc/
     LIBS += ..\\libs\\fmodvc.lib
     LIBS += ..\\libs\\freetype235.lib
+    LIBS += wsock32.lib
 }
 
 unix {
