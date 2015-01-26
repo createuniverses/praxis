@@ -27,6 +27,12 @@
 
 #ifdef __PRAXIS_LINUX__
 #include <X11/Xlib.h>
+
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #endif
 
 #include "luaCallbacks.h"
@@ -2958,6 +2964,12 @@ int luaCBGetFPS(lua_State * L)
     return 1;
 }
 
+#ifdef __PRAXIS_LINUX__
+typedef int SOCKET;
+int INVALID_SOCKET = -1;
+int SOCKET_ERROR = -1;
+#endif
+
 SOCKET ListeningSocket;
 
 SOCKET SetUpListener(const char* pcAddress, int nPort)
@@ -2983,6 +2995,7 @@ SOCKET SetUpListener(const char* pcAddress, int nPort)
 
 int luaCBStartServer(lua_State * L)
 {
+#ifdef __PRAXIS_WINDOWS__
     // Start Winsock up
     WSAData wsaData;
     int nCode;
@@ -2992,6 +3005,7 @@ int luaCBStartServer(lua_State * L)
 //        return 255;
         return 0;
     }
+#endif
 
     // Begin listening for connections
     cout << "Establishing the listener..." << endl;
@@ -3020,7 +3034,8 @@ int luaCBStartServer(lua_State * L)
     }
 
     u_long iMode = 1;
-    ioctlsocket(ListeningSocket, FIONBIO, &iMode);
+    ioctl(ListeningSocket, FIONBIO, &iMode);
+    //ioctlsocket(ListeningSocket, FIONBIO, &iMode);
 
     return 0;
 }
@@ -3030,13 +3045,17 @@ int luaCBAcceptConnection(lua_State * L)
     cout << "Waiting for a connection..." << flush;
     sockaddr_in sinRemote;
     int nAddrSize = sizeof(sinRemote);
-    SOCKET sd = accept(ListeningSocket, (sockaddr*)&sinRemote, &nAddrSize);
+    //SOCKET sd = accept(ListeningSocket, (sockaddr*)&sinRemote, &nAddrSize);
+    SOCKET sd = accept(ListeningSocket, (struct sockaddr*)&sinRemote, (socklen_t *)&nAddrSize);
     if (sd != INVALID_SOCKET) {
         cout << "Accepted connection from " <<
                 inet_ntoa(sinRemote.sin_addr) << ":" <<
                 ntohs(sinRemote.sin_port) << "." << endl;
 
         ListeningSocket = sd;
+
+        u_long iMode = 1;
+        ioctl(ListeningSocket, FIONBIO, &iMode);
     }
     else {
 //        cout << endl << WSAGetLastErrorMessage(

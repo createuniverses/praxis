@@ -30,6 +30,7 @@ unix {
     LIBS += $$system(freetype-config --libs)
     LIBS += $$system(sdl-config --libs)
     LIBS += -lGL -lGLU -lm -lX11 -ldl -lpthread
+    #LIBS += -lsocket -lnsl
     CONFIG += link_pkgconfig
     PKGCONFIG += alsa
 }
