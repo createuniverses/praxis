@@ -3033,9 +3033,15 @@ int luaCBStartServer(lua_State * L)
         return 0;
     }
 
+#ifdef __PRAXIS_WINDOWS__
+    u_long iMode = 1;
+    ioctlsocket(ListeningSocket, FIONBIO, &iMode);
+#endif
+
+#ifdef __PRAXIS_LINUX__
     u_long iMode = 1;
     ioctl(ListeningSocket, FIONBIO, &iMode);
-    //ioctlsocket(ListeningSocket, FIONBIO, &iMode);
+#endif
 
     return 0;
 }
@@ -3045,8 +3051,12 @@ int luaCBAcceptConnection(lua_State * L)
     cout << "Waiting for a connection..." << flush;
     sockaddr_in sinRemote;
     int nAddrSize = sizeof(sinRemote);
-    //SOCKET sd = accept(ListeningSocket, (sockaddr*)&sinRemote, &nAddrSize);
+#ifdef __PRAXIS_WINDOWS__
+    SOCKET sd = accept(ListeningSocket, (sockaddr*)&sinRemote, &nAddrSize);
+#endif
+#ifdef __PRAXIS_LINUX__
     SOCKET sd = accept(ListeningSocket, (struct sockaddr*)&sinRemote, (socklen_t *)&nAddrSize);
+#endif
     if (sd != INVALID_SOCKET) {
         cout << "Accepted connection from " <<
                 inet_ntoa(sinRemote.sin_addr) << ":" <<
@@ -3054,8 +3064,16 @@ int luaCBAcceptConnection(lua_State * L)
 
         ListeningSocket = sd;
 
+#ifdef __PRAXIS_WINDOWS__
+        u_long iMode = 1;
+        ioctlsocket(ListeningSocket, FIONBIO, &iMode);
+#endif
+
+#ifdef __PRAXIS_LINUX__
         u_long iMode = 1;
         ioctl(ListeningSocket, FIONBIO, &iMode);
+#endif
+
     }
     else {
 //        cout << endl << WSAGetLastErrorMessage(
@@ -3112,6 +3130,20 @@ int luaCBSendData(lua_State * L)
     }
 
     //send(ListeningSocket, sText.c_str(), sText.length(), 0);
+
+    return 0;
+}
+
+int luaCBSetBlocking(lua_State * L)
+{
+    u_long iMode = luaL_checknumber(L, 1);
+#ifdef __PRAXIS_WINDOWS__
+        ioctlsocket(ListeningSocket, FIONBIO, &iMode);
+#endif
+
+#ifdef __PRAXIS_LINUX__
+        ioctl(ListeningSocket, FIONBIO, &iMode);
+#endif
 
     return 0;
 }
@@ -3456,6 +3488,7 @@ void luaInitCallbacks()
     lua_register(g_pLuaState, "svrAccept",              luaCBAcceptConnection);
     lua_register(g_pLuaState, "svrReceive",             luaCBReceiveData);
     lua_register(g_pLuaState, "svrSend",                luaCBSendData);
+    lua_register(g_pLuaState, "svrSetBlocking",         luaCBSetBlocking);
     lua_register(g_pLuaState, "svrShutdown",            luaCBShutdownServer);
 
     const struct luaL_Reg lua_texturelib [] = {
