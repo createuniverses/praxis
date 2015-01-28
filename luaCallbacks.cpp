@@ -2995,6 +2995,8 @@ SOCKET SetUpListener(const char* pcAddress, int nPort)
 
 int luaCBStartServer(lua_State * L)
 {
+    bool bSuccess = false;
+
 #ifdef __PRAXIS_WINDOWS__
     // Start Winsock up
     WSAData wsaData;
@@ -3003,7 +3005,8 @@ int luaCBStartServer(lua_State * L)
 //        cerr << "WSAStartup() returned error code " << nCode << "." <<
 //                endl;
 //        return 255;
-        return 0;
+        lua_pushboolean(L, bSuccess);
+        return 1;
     }
 #endif
 
@@ -3030,7 +3033,8 @@ int luaCBStartServer(lua_State * L)
 //        cout << endl << WSAGetLastErrorMessage("establish listener") <<
 //                endl;
 //        return 3;
-        return 0;
+        lua_pushboolean(L, bSuccess);
+        return 1;
     }
 
 #ifdef __PRAXIS_WINDOWS__
@@ -3043,11 +3047,16 @@ int luaCBStartServer(lua_State * L)
     ioctl(ListeningSocket, FIONBIO, &iMode);
 #endif
 
-    return 0;
+    bSuccess = true;
+
+    lua_pushboolean(L, bSuccess);
+    return 1;
 }
 
 int luaCBAcceptConnection(lua_State * L)
 {
+    bool bSuccess = false;
+
     cout << "Waiting for a connection..." << flush;
     sockaddr_in sinRemote;
     int nAddrSize = sizeof(sinRemote);
@@ -3074,14 +3083,18 @@ int luaCBAcceptConnection(lua_State * L)
         ioctl(ListeningSocket, FIONBIO, &iMode);
 #endif
 
+        bSuccess = true;
+
     }
     else {
 //        cout << endl << WSAGetLastErrorMessage(
 //                "accept connection") << endl;
     }
 
+    lua_pushboolean(L, bSuccess);
+
     // Return whether a connection was accepted
-    return 0;
+    return 1;
 }
 
 int luaCBReceiveData(lua_State * L)
