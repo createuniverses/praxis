@@ -2971,7 +2971,7 @@ int SOCKET_ERROR = -1;
 #endif
 
 SOCKET ServerSocket = INVALID_SOCKET;
-SOCKET ClientSocket = INVALID_SOCKET;
+SOCKET g_clientSocket = INVALID_SOCKET;
 
 int luaCBStartServer(lua_State * L)
 {
@@ -3032,37 +3032,42 @@ int luaCBAcceptConnection(lua_State * L)
     sockaddr_in sinRemote;
     int nAddrSize = sizeof(sinRemote);
 #ifdef __PRAXIS_WINDOWS__
-    ClientSocket = accept(ServerSocket, (sockaddr*)&sinRemote, &nAddrSize);
+    SOCKET clientSocket = accept(ServerSocket, (sockaddr*)&sinRemote, &nAddrSize);
 #endif
 #ifdef __PRAXIS_LINUX__
-    ClientSocket = accept(ServerSocket, (struct sockaddr*)&sinRemote, (socklen_t *)&nAddrSize);
+    SOCKET clientSocket = accept(ServerSocket, (struct sockaddr*)&sinRemote, (socklen_t *)&nAddrSize);
 #endif
-    if (ClientSocket != INVALID_SOCKET) {
+    if (clientSocket != INVALID_SOCKET) {
         cout << "Accepted connection from " <<
                 inet_ntoa(sinRemote.sin_addr) << ":" <<
                 ntohs(sinRemote.sin_port) << "." << endl;
 
 #ifdef __PRAXIS_WINDOWS__
         u_long iMode = 1;
-        ioctlsocket(ClientSocket, FIONBIO, &iMode);
+        ioctlsocket(clientSocket, FIONBIO, &iMode);
 #endif
 
 #ifdef __PRAXIS_LINUX__
         u_long iMode = 1;
-        ioctl(ClientSocket, FIONBIO, &iMode);
+        ioctl(clientSocket, FIONBIO, &iMode);
 #endif
-
-        lua_pushboolean(L, true);
-    }
-    else {
-        lua_pushboolean(L, false);
     }
 
+    g_clientSocket = clientSocket;
+
+    lua_pushnumber(L, clientSocket);
     return 1;
 }
 
 int luaCBReceiveDataWithLookahead(lua_State * L)
 {
+    SOCKET clientSocket = g_clientSocket;
+    int n = lua_gettop(L);
+    if(n >= 1)
+    {
+        clientSocket = luaL_checknumber(L, 1);
+    }
+
     char buf[64000];
     buf[0] = '\0';
 
@@ -3071,7 +3076,7 @@ int luaCBReceiveDataWithLookahead(lua_State * L)
 
     do
     {
-        int nTemp = recv(ClientSocket, buf+nTotalBytes, 64000-nTotalBytes, 0);
+        int nTemp = recv(clientSocket, buf+nTotalBytes, 64000-nTotalBytes, 0);
         if(nTemp > 0)
         {
             nTotalBytes += nTemp;
@@ -3079,10 +3084,10 @@ int luaCBReceiveDataWithLookahead(lua_State * L)
         }
 
 #ifdef __PRAXIS_WINDOWS__
-        ioctlsocket(ClientSocket, FIONREAD, &nBytesWaiting);
+        ioctlsocket(clientSocket, FIONREAD, &nBytesWaiting);
 #endif
 #ifdef __PRAXIS_LINUX__
-        ioctl(ClientSocket, FIONREAD, &nBytesWaiting);
+        ioctl(clientSocket, FIONREAD, &nBytesWaiting);
 #endif
     }
     while(nBytesWaiting > 0);
@@ -3096,10 +3101,17 @@ int luaCBReceiveDataWithLookahead(lua_State * L)
 
 int luaCBReceiveData(lua_State * L)
 {
+    SOCKET clientSocket = g_clientSocket;
+    int n = lua_gettop(L);
+    if(n >= 1)
+    {
+        clientSocket = luaL_checknumber(L, 1);
+    }
+
     char buf[64000];
     buf[0] = '\0';
 
-    int nBytes = recv(ClientSocket, buf, 64000, 0);
+    int nBytes = recv(clientSocket, buf, 64000, 0);
     if(nBytes > 0)
     {
         cout << "Received " << nBytes << " bytes." << endl;
@@ -3116,13 +3128,20 @@ int luaCBSendData(lua_State * L)
 {
     std::string sText = luaL_checkstring(L, 1);
 
+    SOCKET clientSocket = g_clientSocket;
+    int n = lua_gettop(L);
+    if(n >= 2)
+    {
+        clientSocket = luaL_checknumber(L, 2);
+    }
+
     int nReadBytes = sText.length();
     char buf[64000];
     strcpy(buf, sText.c_str());
 
     int nSentBytes = 0;
     while (nSentBytes < nReadBytes) {
-        int nTemp = send(ClientSocket, buf + nSentBytes,
+        int nTemp = send(clientSocket, buf + nSentBytes,
                 nReadBytes - nSentBytes, 0);
         if (nTemp > 0) {
             cout << "Sent " << nTemp << " bytes back to client." << endl;
@@ -3146,13 +3165,20 @@ int luaCBSendData(lua_State * L)
 
 int luaCBSetBlocking(lua_State * L)
 {
+    SOCKET clientSocket = g_clientSocket;
+    int n = lua_gettop(L);
+    if(n >= 1)
+    {
+        clientSocket = luaL_checknumber(L, 1);
+    }
+
     u_long iMode = luaL_checknumber(L, 1);
 #ifdef __PRAXIS_WINDOWS__
-        ioctlsocket(ClientSocket, FIONBIO, &iMode);
+        ioctlsocket(clientSocket, FIONBIO, &iMode);
 #endif
 
 #ifdef __PRAXIS_LINUX__
-        ioctl(ClientSocket, FIONBIO, &iMode);
+        ioctl(clientSocket, FIONBIO, &iMode);
 #endif
 
     return 0;
