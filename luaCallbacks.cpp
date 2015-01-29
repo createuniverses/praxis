@@ -2970,130 +2970,127 @@ int INVALID_SOCKET = -1;
 int SOCKET_ERROR = -1;
 #endif
 
-SOCKET ListeningSocket;
-
-SOCKET SetUpListener(const char* pcAddress, int nPort)
-{
-    u_long nInterfaceAddr = inet_addr(pcAddress);
-    if (nInterfaceAddr != INADDR_NONE) {
-        SOCKET sd = socket(AF_INET, SOCK_STREAM, 0);
-        if (sd != INVALID_SOCKET) {
-            sockaddr_in sinInterface;
-            sinInterface.sin_family = AF_INET;
-            sinInterface.sin_addr.s_addr = nInterfaceAddr;
-            sinInterface.sin_port = nPort;
-            if (bind(sd, (sockaddr*)&sinInterface,
-                    sizeof(sockaddr_in)) != SOCKET_ERROR) {
-                listen(sd, 1);
-                return sd;
-            }
-        }
-    }
-
-    return INVALID_SOCKET;
-}
+SOCKET ServerSocket = INVALID_SOCKET;
+SOCKET ClientSocket = INVALID_SOCKET;
 
 int luaCBStartServer(lua_State * L)
 {
-    bool bSuccess = false;
-
 #ifdef __PRAXIS_WINDOWS__
     // Start Winsock up
     WSAData wsaData;
     int nCode;
     if ((nCode = WSAStartup(MAKEWORD(1, 1), &wsaData)) != 0) {
-//        cerr << "WSAStartup() returned error code " << nCode << "." <<
-//                endl;
-//        return 255;
-        lua_pushboolean(L, bSuccess);
+        cerr << "WSAStartup() returned error code " << nCode << "." <<
+                endl;
+        lua_pushboolean(L, false);
         return 1;
     }
 #endif
 
     // Begin listening for connections
     cout << "Establishing the listener..." << endl;
-    ListeningSocket = INVALID_SOCKET;
+    ServerSocket = INVALID_SOCKET;
     u_long nInterfaceAddr = inet_addr("127.0.0.1");
     if (nInterfaceAddr != INADDR_NONE) {
-        ListeningSocket = socket(AF_INET, SOCK_STREAM, 0);
-        if (ListeningSocket != INVALID_SOCKET) {
+        ServerSocket = socket(AF_INET, SOCK_STREAM, 0);
+        if (ServerSocket != INVALID_SOCKET) {
 
             sockaddr_in sinInterface;
             sinInterface.sin_family = AF_INET;
             sinInterface.sin_addr.s_addr = nInterfaceAddr;
             sinInterface.sin_port = htons(4242);
-            if (bind(ListeningSocket, (sockaddr*)&sinInterface,
+            if (bind(ServerSocket, (sockaddr*)&sinInterface,
                     sizeof(sockaddr_in)) != SOCKET_ERROR) {
-                listen(ListeningSocket, 1);
+                listen(ServerSocket, 1);
             }
         }
     }
 
-    if (ListeningSocket == INVALID_SOCKET) {
-//        cout << endl << WSAGetLastErrorMessage("establish listener") <<
-//                endl;
-//        return 3;
-        lua_pushboolean(L, bSuccess);
+    if (ServerSocket == INVALID_SOCKET)
+    {
+        lua_pushboolean(L, false);
         return 1;
     }
 
 #ifdef __PRAXIS_WINDOWS__
     u_long iMode = 1;
-    ioctlsocket(ListeningSocket, FIONBIO, &iMode);
+    ioctlsocket(ServerSocket, FIONBIO, &iMode);
 #endif
 
 #ifdef __PRAXIS_LINUX__
     u_long iMode = 1;
-    ioctl(ListeningSocket, FIONBIO, &iMode);
+    ioctl(ServerSocket, FIONBIO, &iMode);
 #endif
 
-    bSuccess = true;
-
-    lua_pushboolean(L, bSuccess);
+    lua_pushboolean(L, true);
     return 1;
 }
 
 int luaCBAcceptConnection(lua_State * L)
 {
-    bool bSuccess = false;
-
     cout << "Waiting for a connection..." << flush;
     sockaddr_in sinRemote;
     int nAddrSize = sizeof(sinRemote);
 #ifdef __PRAXIS_WINDOWS__
-    SOCKET sd = accept(ListeningSocket, (sockaddr*)&sinRemote, &nAddrSize);
+    ClientSocket = accept(ServerSocket, (sockaddr*)&sinRemote, &nAddrSize);
 #endif
 #ifdef __PRAXIS_LINUX__
-    SOCKET sd = accept(ListeningSocket, (struct sockaddr*)&sinRemote, (socklen_t *)&nAddrSize);
+    ClientSocket = accept(ServerSocket, (struct sockaddr*)&sinRemote, (socklen_t *)&nAddrSize);
 #endif
-    if (sd != INVALID_SOCKET) {
+    if (ClientSocket != INVALID_SOCKET) {
         cout << "Accepted connection from " <<
                 inet_ntoa(sinRemote.sin_addr) << ":" <<
                 ntohs(sinRemote.sin_port) << "." << endl;
 
-        ListeningSocket = sd;
-
 #ifdef __PRAXIS_WINDOWS__
         u_long iMode = 1;
-        ioctlsocket(ListeningSocket, FIONBIO, &iMode);
+        ioctlsocket(ClientSocket, FIONBIO, &iMode);
 #endif
 
 #ifdef __PRAXIS_LINUX__
         u_long iMode = 1;
-        ioctl(ListeningSocket, FIONBIO, &iMode);
+        ioctl(ClientSocket, FIONBIO, &iMode);
 #endif
 
-        bSuccess = true;
-
+        lua_pushboolean(L, true);
     }
     else {
-//        cout << endl << WSAGetLastErrorMessage(
-//                "accept connection") << endl;
+        lua_pushboolean(L, false);
     }
 
-    lua_pushboolean(L, bSuccess);
+    return 1;
+}
 
-    // Return whether a connection was accepted
+int luaCBReceiveDataWithLookahead(lua_State * L)
+{
+    char buf[64000];
+    buf[0] = '\0';
+
+    int    nTotalBytes = 0;
+    u_long nBytesWaiting = 0;
+
+    do
+    {
+        int nTemp = recv(ClientSocket, buf+nTotalBytes, 64000-nTotalBytes, 0);
+        if(nTemp > 0)
+        {
+            nTotalBytes += nTemp;
+            cout << "Received " << nTemp << " bytes." << endl;
+        }
+
+#ifdef __PRAXIS_WINDOWS__
+        ioctlsocket(ClientSocket, FIONREAD, &nBytesWaiting);
+#endif
+#ifdef __PRAXIS_LINUX__
+        ioctl(ClientSocket, FIONREAD, &nBytesWaiting);
+#endif
+    }
+    while(nBytesWaiting > 0);
+
+    buf[nTotalBytes] = '\0';
+
+    // Return any data received
+    lua_pushstring(L, buf);
     return 1;
 }
 
@@ -3101,13 +3098,17 @@ int luaCBReceiveData(lua_State * L)
 {
     char buf[64000];
     buf[0] = '\0';
-    int nBytes = recv(ListeningSocket, buf, 64000, 0);
-    buf[nBytes] = '\0';
-    //std::string sBuf = buf;
 
-    lua_pushstring(L, buf);
+    int nBytes = recv(ClientSocket, buf, 64000, 0);
+    if(nBytes > 0)
+    {
+        cout << "Received " << nBytes << " bytes." << endl;
+    }
+
+    buf[nBytes] = '\0';
 
     // Return any data received
+    lua_pushstring(L, buf);
     return 1;
 }
 
@@ -3121,16 +3122,14 @@ int luaCBSendData(lua_State * L)
 
     int nSentBytes = 0;
     while (nSentBytes < nReadBytes) {
-        int nTemp = send(ListeningSocket, buf + nSentBytes,
+        int nTemp = send(ClientSocket, buf + nSentBytes,
                 nReadBytes - nSentBytes, 0);
         if (nTemp > 0) {
-            cout << "Sent " << nTemp <<
-                    " bytes back to client." << endl;
+            cout << "Sent " << nTemp << " bytes back to client." << endl;
             nSentBytes += nTemp;
         }
         else if (nTemp == SOCKET_ERROR) {
-            cout << "Socket error" <<
-                    endl;
+            cout << "Socket error" << endl;
             return 0;
         }
         else {
@@ -3142,8 +3141,6 @@ int luaCBSendData(lua_State * L)
         }
     }
 
-    //send(ListeningSocket, sText.c_str(), sText.length(), 0);
-
     return 0;
 }
 
@@ -3151,11 +3148,11 @@ int luaCBSetBlocking(lua_State * L)
 {
     u_long iMode = luaL_checknumber(L, 1);
 #ifdef __PRAXIS_WINDOWS__
-        ioctlsocket(ListeningSocket, FIONBIO, &iMode);
+        ioctlsocket(ClientSocket, FIONBIO, &iMode);
 #endif
 
 #ifdef __PRAXIS_LINUX__
-        ioctl(ListeningSocket, FIONBIO, &iMode);
+        ioctl(ClientSocket, FIONBIO, &iMode);
 #endif
 
     return 0;
