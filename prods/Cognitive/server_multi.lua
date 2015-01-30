@@ -45,20 +45,18 @@ function initServer()
   svrStart()
   coroutine.yield()
   
-  sck1 = 4294967295
-  while sck1 == 4294967295 do
+  repeat
     sck1 = svrAccept()
     coroutine.yield()
-  end
+  until svrIsValidSocket(sck1)
   
   svrSend("You are the lua prompt terminal\n> ", sck1)
   coroutine.yield()
   
-  sck2 = 4294967295
-  while sck2 == 4294967295 do
+  repeat
     sck2 = svrAccept()
     coroutine.yield()
-  end
+  until svrIsValidSocket(sck2)
   
   svrSend("You are the echo terminal", sck2)
 end

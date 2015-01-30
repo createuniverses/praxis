@@ -3028,7 +3028,7 @@ int luaCBStartServer(lua_State * L)
 
 int luaCBAcceptConnection(lua_State * L)
 {
-    cout << "Waiting for a connection..." << flush;
+    //cout << "Waiting for a connection..." << flush;
     sockaddr_in sinRemote;
     int nAddrSize = sizeof(sinRemote);
 #ifdef __PRAXIS_WINDOWS__
@@ -3161,6 +3161,18 @@ int luaCBSendData(lua_State * L)
     }
 
     return 0;
+}
+
+int luaCBIsValidSocket(lua_State * L)
+{
+    SOCKET clientSocket = luaL_checknumber(L, 1);
+
+    if(clientSocket == INVALID_SOCKET)
+        lua_pushboolean(L, false);
+    else
+        lua_pushboolean(L, true);
+
+    return 1;
 }
 
 int luaCBSetBlocking(lua_State * L)
@@ -3525,6 +3537,7 @@ void luaInitCallbacks()
     lua_register(g_pLuaState, "svrReceive",             luaCBReceiveData);
     lua_register(g_pLuaState, "svrSend",                luaCBSendData);
     lua_register(g_pLuaState, "svrSetBlocking",         luaCBSetBlocking);
+    lua_register(g_pLuaState, "svrIsValidSocket",       luaCBIsValidSocket);
     lua_register(g_pLuaState, "svrShutdown",            luaCBShutdownServer);
 
     const struct luaL_Reg lua_texturelib [] = {
