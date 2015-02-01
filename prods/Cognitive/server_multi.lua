@@ -61,9 +61,41 @@ function initServer()
   svrSend("You are the echo terminal", sck2)
 end
 
-if initServerRoutine == nil then
+function initServer()
+  svrStart()
+  print("Server started")
+  coroutine.yield()
+  
+  print("Waiting for terminal client...")
+  repeat
+    sck1 = svrAccept()
+    coroutine.yield()
+  until svrIsValidSocket(sck1)
+  
+  print("Terminal client connected.")
+
+  svrSend("You are the lua prompt terminal\n> ", sck1)
+  coroutine.yield()
+  
+  print("Waiting for echo client...")
+  
+  repeat
+    sck2 = svrAccept()
+    coroutine.yield()
+  until svrIsValidSocket(sck2)
+  
+  print("Echo client connected.")
+  
+  svrSend("You are the echo terminal", sck2)
+end
+
+function restartServer()
   initServerRoutine = coroutine.create(initServer)
   coroutine.resume(initServerRoutine)
+end
+
+if initServerRoutine == nil then
+  restartServer()
 end
 
 function update()
@@ -124,6 +156,8 @@ function update()
   
   --orbitCamPP(60, 20, -120, math.pi * 0.002, 0)
 end
+
+
 
 
 
