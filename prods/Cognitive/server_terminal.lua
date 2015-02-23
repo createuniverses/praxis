@@ -14,4 +14,3 @@ function svrRunLuaPromptServer(sck)
   end
 end
 
--- http://bbs.progrider.org/lounge/read/1423532111

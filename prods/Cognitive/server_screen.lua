@@ -58,9 +58,36 @@ function screen_to_linecol(line,col)
 end
 
 function linecol_to_position(line,col)
+  local state = "walking"
+  local pos = 1
+  local lines = 1
+  while state == "walking" do
+    if s:byte(pos) == 10 then
+      lines = lines + 1
+    end
+    if lines >= line then
+      state = "linefound"
+    else
+      pos = pos + 1
+      if pos >= #s then state = "eof" end
+    end
+  end
+  
+  if state == "linefound" then
+    pos = pos + col
+  end
+  
+  if state == "eof" then
+    pos = #s
+  end
+  
+  if pos >= #s then pos = #s end
+  
+  return pos
 end
 
 function set_position(pos)
+  if pos < 0 then pos = 0 end
   position = pos
   local line = position_to_line(s, position)
   local col  = position_to_col (s, position) 
@@ -68,6 +95,23 @@ function set_position(pos)
 end
 
 function handle_up()
+  local line = position_to_line(s, position)
+  local col  = position_to_col (s, position)
+  line = line - 1
+  if line < 1 then line = 1 end
+  local newpos = linecol_to_position(line, col)
+  set_position(newpos)
+end
+
+function handle_down()
+  local line = position_to_line(s, position)
+  local col  = position_to_col (s, position)
+  line = line + 1
+  local newpos = linecol_to_position(line, col)
+  set_position(newpos)
+end
+
+function handle_up_old()
   first_visible_line = first_visible_line - 1
   if first_visible_line < 1 then
     first_visible_line = 1
@@ -90,7 +134,7 @@ function handle_up()
   
 end
 
-function handle_down()
+function handle_down_old()
   first_visible_line = first_visible_line + 1
   if first_visible_line < 1 then
     first_visible_line = 1
