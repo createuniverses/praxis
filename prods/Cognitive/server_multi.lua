@@ -14,9 +14,12 @@ function svrReceive2()
   return s
 end
 
+print_backup = print
+
 function svrRunLuaPromptServer(sck)
   local s = svrReceive(sck)
   if s ~= "" then
+    print = function(s) svrSend(s, sck) end
     luaCall(s)
     local err = getErrorText()
     if err ~= "" then
@@ -26,8 +29,40 @@ function svrRunLuaPromptServer(sck)
     -- svrSend("Ready.\n")
     --svrSend("\n> ")
     svrSend("> ", sck)
+    print = print_backup
   end
 end
+
+function wordwrap(s, n)
+  local s2 = ""
+  local c  = n
+  s2 = string.sub(s,1,n)
+  while c < #s do
+    s2 = s2 .. "\n" .. string.sub(s, c+1, c+n)
+    c = c + n
+  end
+  if s2:byte(#s2) ~= 10 then s2 = s2 .. "\n" end
+  -- hello
+  return s2
+end
+
+function svrRunLispPromptServer(sck)
+  local s = svrReceive(sck)
+  if s ~= "" then
+    svrSend(wordwrap(lisp(s), 60).."\n", sck)
+    svrSend("> ", sck)
+  end
+end
+
+function svrRunForthPromptServer(sck)
+  local s = svrReceive(sck)
+  if s ~= "" then
+    svrSend(wordwrap(forth(s), 60), sck)
+    svrSend("> ", sck)
+  end
+end
+
+svrRunPromptServer = svrRunLuaPromptServer
 
 function svrRunEchoServer(sck)
   -- echo server
@@ -104,7 +139,7 @@ function update()
   if coroutine.status(initServerRoutine) ~= "dead" then
     coroutine.resume(initServerRoutine)
   else
-    svrRunLuaPromptServer(sck1)
+    svrRunPromptServer(sck1)
     svrRunEchoServer(sck2)
   end
   
