@@ -26,13 +26,17 @@ unix {
     QMAKE_CXXFLAGS += $$system(freetype-config --cflags)
     QMAKE_CXXFLAGS += $$system(sdl-config --cflags)
     QMAKE_CXXFLAGS += -std=c++11
-    message(output from freetype-config --cflags added to QMAKE_CXXFLAGS= $$QMAKE_CXXFLAGS)
+
     LIBS += $$system(freetype-config --libs)
     LIBS += $$system(sdl-config --libs)
     LIBS += -lGL -lGLU -lm -lX11 -ldl -lpthread
     #LIBS += -lsocket -lnsl
     CONFIG += link_pkgconfig
     PKGCONFIG += alsa
+
+    QMAKE_CFLAGS_RELEASE -= -O2
+
+    message(output from freetype-config --cflags added to QMAKE_CXXFLAGS= $$QMAKE_CXXFLAGS)
 }
 
 DEFINES += _CRT_SECURE_NO_WARNINGS
