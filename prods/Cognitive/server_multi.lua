@@ -16,21 +16,15 @@ end
 
 print_backup = print
 
-function svrRunLuaPromptServer(sck)
-  local s = svrReceive(sck)
-  if s ~= "" then
-    print = function(s) svrSend(s, sck) end
-    luaCall(s)
-    local err = getErrorText()
-    if err ~= "" then
-      svrSend(err, sck)
-      clearError()
-    end
-    -- svrSend("Ready.\n")
-    --svrSend("\n> ")
-    svrSend("> ", sck)
-    print = print_backup
+function svrRunLua(sck,s)
+  print = function(s) svrSend(stripnewline(""..s).."\n", sck) end
+  luaCall(s)
+  local err = getErrorText()
+  if err ~= "" then
+    svrSend(err, sck)
+    clearError()
   end
+  print = print_backup
 end
 
 function wordwrap(s, n)
@@ -46,23 +40,63 @@ function wordwrap(s, n)
   return s2
 end
 
-function svrRunLispPromptServer(sck)
+function svrRunLisp(sck,s)
+  if stripspaces(s)~="" then
+    svrSend(stripnewline(wordwrap(lisp(s), 60)).."\n", sck)
+  end
+end
+
+function svrRunForth(sck,s)
+  local result = stripnewline(forth(s))
+  if result ~= "" then result = result .. "\n" end
+  svrSend(result, sck)
+  --svrSend(stripnewline(forth(s)).."\n", sck)
+end
+
+svrRunCode = svrRunLua
+
+function stripspaces(s)
+  local c = string.byte(" ", 1)
+  local s2 = s
+  
+  while string.byte(s2, 1) == c do
+    s2 = string.sub(s2,2,#s2)
+  end
+  
+  return s2
+end
+
+function stripnewline(s)
+  local c1 = string.byte("\n", 1)
+  local c2 = string.byte("\r", 1)
+  
+  local s2 = s
+  
+  if string.byte(s2, #s2)==c1 then s2 = string.sub(s2,1,#s2-1) end
+  if string.byte(s2, #s2)==c2 then s2 = string.sub(s2,1,#s2-1) end
+  if string.byte(s2, #s2)==c1 then s2 = string.sub(s2,1,#s2-1) end
+  if string.byte(s2, #s2)==c2 then s2 = string.sub(s2,1,#s2-1) end
+  
+  return s2
+end
+
+function svrRunPromptServer(sck)
   local s = svrReceive(sck)
   if s ~= "" then
-    svrSend(wordwrap(lisp(s), 60).."\n", sck)
+    --print(s .. " " .. #s)
+    s = stripnewline(s)
+    --print(s .. " " .. #s)
+    if     s == "lua"    then svrRunCode = svrRunLua
+    elseif s == "forth"  then svrRunCode = svrRunForth
+    elseif s == "lisp"   then svrRunCode = svrRunLisp
+    else
+      svrRunCode(sck,s)
+    end
     svrSend("> ", sck)
   end
 end
 
-function svrRunForthPromptServer(sck)
-  local s = svrReceive(sck)
-  if s ~= "" then
-    svrSend(wordwrap(forth(s), 60), sck)
-    svrSend("> ", sck)
-  end
-end
-
-svrRunPromptServer = svrRunLuaPromptServer
+--svrRunPromptServer = svrRunLuaPromptServer
 
 function svrRunEchoServer(sck)
   -- echo server
