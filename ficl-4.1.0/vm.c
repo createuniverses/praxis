@@ -291,13 +291,23 @@ void ficlVmInnerLoop(ficlVm *vm, ficlWord *fw)
 	if (once)
 		count = 1;
 
-	LOCAL_VARIABLE_REFILL;
+    /* GregS: Moving this to after the setjmp call, so when the
+     * FICL_VM_STATUS_OUT_OF_TEXT exception gets thrown by
+     * ficlPrimitiveInterpret, dataTop is defined. */
+
+    /* LOCAL_VARIABLE_REFILL; */
 
     oldExceptionHandler = vm->exceptionHandler;
     vm->exceptionHandler = &exceptionHandler; /* This has to come before the setjmp! */
     except = setjmp(exceptionHandler);
 
-	if (except)
+    /* GregS: Moving this to after the setjmp call, so when the
+     * FICL_VM_STATUS_OUT_OF_TEXT exception gets thrown by
+     * ficlPrimitiveInterpret, dataTop is defined. */
+
+    LOCAL_VARIABLE_REFILL;
+
+    if (except)
 		{
 		LOCAL_VARIABLE_SPILL;
 	    vm->exceptionHandler = oldExceptionHandler;

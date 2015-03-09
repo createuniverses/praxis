@@ -34,7 +34,7 @@ unix {
     CONFIG += link_pkgconfig
     PKGCONFIG += alsa
 
-    QMAKE_CFLAGS_RELEASE -= -O2
+    #QMAKE_CFLAGS_RELEASE -= -O2
 
     message(output from freetype-config --cflags added to QMAKE_CXXFLAGS= $$QMAKE_CXXFLAGS)
 }
