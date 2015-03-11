@@ -91,9 +91,16 @@ static void matchControlTag(ficlVm *vm, char *wantTag)
 
     tag = (char *)ficlStackPopPointer(vm->dataStack);
     /*
-    ** Changed the code below to compare the pointers first (by popular demand)
-    */
-    if ( (tag != wantTag) && strcmp(tag, wantTag) )
+     * Changed the code below to compare the pointers first (by popular demand)
+     */
+    /* GregS - I don't actually see why the strcmp is ever necessary.
+     * A crash is happening for this situation:
+     * : testim 7 ; immediate
+     * : testim2 testim ;
+     * Its happening because it ends up doing a strcmp(colonTag, (char*)(7))
+     * markControlTag only ever pushes a pointer to colonTag, so a strcmp is not necessary.
+     */
+    if ( (tag != wantTag) ) /* GregS - removed && strcmp(tag, wantTag) */
     {
         ficlVmThrowError(vm, "Error -- unmatched control structure \"%s\"", wantTag);
     }
