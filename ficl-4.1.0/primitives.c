@@ -522,7 +522,8 @@ static void ficlPrimitiveDepth(ficlVm *vm)
 
 static void ficlPrimitiveEmit(ficlVm *vm)
 {
-    char *buffer = vm->pad;
+    /* char *buffer = vm->pad; */
+    char buffer[4];
     int i;
 
 
