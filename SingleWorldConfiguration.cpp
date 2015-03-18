@@ -60,7 +60,7 @@ void RunSingleWorldConfiguration(
 	glutInit( &argc, argv );
     glutInitWindowSize(g_nSingleWorldWidth,g_nSingleWorldHeight);
     glutInitWindowPosition(g_nSingleWorldLeft,g_nSingleWorldTop);
-    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_STENCIL);
 
     g_nMainWindowID = glutCreateWindow( sName );
 	
