@@ -3201,6 +3201,49 @@ int luaCBShutdownServer(lua_State * L)
     return 0;
 }
 
+namespace DrawArraysTest
+{
+    struct vertex
+    {
+        GLfloat x, y, z;
+    };
+
+    vertex vertices[3];
+}
+
+int luaCBDrawArraysTest(lua_State * L)
+{
+    using namespace DrawArraysTest;
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+
+    // Assign some values to all 3 points
+    vertices[0].x = 10.0f;
+    vertices[0].y = 5.0f;
+    vertices[0].z = 7.0f;
+
+    // Vertex 2
+    vertices[1].x = -10.0f;
+    vertices[1].y = 3.0f;
+    vertices[1].z = 1.0f;
+
+    // Vertex 3
+    vertices[2].x = 5.0f;
+    vertices[2].y = -5.0f;
+    vertices[2].z = 2.0f;
+
+    int num_indices = 3;
+
+    glVertexPointer( num_indices,      // number of coordinates per vertex (x,y,z)
+                     GL_FLOAT,         // they are floats
+                     sizeof(vertex),   // stride
+                     &vertices);       // the array pointer
+
+    // Render primitives from array-based data
+    glDrawArrays(GL_TRIANGLES, 0, num_indices);
+    return 0;
+}
+
 void luaInitCallbacks()
 {
 //    g_luaFont = QFont("Bitstream Vera Sans Mono", 12);
@@ -3539,6 +3582,8 @@ void luaInitCallbacks()
     lua_register(g_pLuaState, "svrSetBlocking",         luaCBSetBlocking);
     lua_register(g_pLuaState, "svrIsValidSocket",       luaCBIsValidSocket);
     lua_register(g_pLuaState, "svrShutdown",            luaCBShutdownServer);
+
+    lua_register(g_pLuaState, "glDATest",               luaCBDrawArraysTest);
 
     const struct luaL_Reg lua_texturelib [] = {
         {"new",                   luaCBTextureNew},
