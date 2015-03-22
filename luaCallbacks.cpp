@@ -3244,6 +3244,18 @@ int luaCBDrawArraysTest(lua_State * L)
     return 0;
 }
 
+int luaCBSwitchToLisp(lua_State * L)
+{
+    g_pWorld->m_eLanguage = World::LanguageMode_Lisp;
+    return 0;
+}
+
+int luaCBSwitchToForth(lua_State * L)
+{
+    g_pWorld->m_eLanguage = World::LanguageMode_Forth;
+    return 0;
+}
+
 void luaInitCallbacks()
 {
 //    g_luaFont = QFont("Bitstream Vera Sans Mono", 12);
@@ -3584,6 +3596,9 @@ void luaInitCallbacks()
     lua_register(g_pLuaState, "svrShutdown",            luaCBShutdownServer);
 
     lua_register(g_pLuaState, "glDATest",               luaCBDrawArraysTest);
+
+    lua_register(g_pLuaState, "switchToLisp",           luaCBSwitchToLisp);
+    lua_register(g_pLuaState, "switchToForth",          luaCBSwitchToForth);
 
     const struct luaL_Reg lua_texturelib [] = {
         {"new",                   luaCBTextureNew},

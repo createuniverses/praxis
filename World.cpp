@@ -87,6 +87,7 @@ World::World()
     m_midiin  = 0;
 #endif
 
+    m_eLanguage = LanguageMode_Lua;
 }
 
 World::~World()
@@ -602,6 +603,9 @@ void World::OnKeyDown(unsigned char nKey, int nX, int nY)
 //    std::cout << "bCtrlEnter  = " << (bCtrlEnter  ? "true" : "false") << std::endl;
 //    std::cout << "bShiftEnter = " << (bShiftEnter ? "true" : "false") << std::endl;
 
+    // Need to add a Lisp mode and a Forth mode.
+    // Switching is handled by the callbacks for those embedded languages.
+
     if(bCtrlEnter)
     {
         std::string sLine = GetEditor()->GetCurrentLineText();
@@ -1057,6 +1061,10 @@ void World::RenderMousePickSphere()
     //glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, faceColor);
 
     glutWireSphere(fRadius, 15, 15);
+    glPopMatrix();
+    }
+
+#if 0
 
     float fTextScale = 0.1f;
     float fAxisScale = 3.0f;
@@ -1217,6 +1225,7 @@ void World::RenderMousePickSphere()
 
     glPopMatrix();
     }
+#endif
 }
 
 void World::RefreshPickPosition()

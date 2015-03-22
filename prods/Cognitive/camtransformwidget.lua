@@ -3,6 +3,21 @@
 -- mouse enter and mouse leave events for widgets
 --  this is doable in the global mousemove handler
 
+-- what would be simpler, cleaner and more useful is
+-- a function that says "move widget in front of camera"
+-- this function can be called every frame if you want the
+-- widget to move with the camera all the time, or just once
+-- in the case of a stationary camera.
+-- then you can call "move to original position" or something
+-- to put the widget back.
+
+-- I'm wasting time on this server when I have a perfectly good editor here. I'm doing it just for fun I suppose.
+-- 3d text is expensive. Better to send text to a buffer or a terminal.
+
+hideTrace()
+hideError()
+
+
 t2 = transform.cameraBase()
 ts = transform.new()
 graphWidget = WidgetLib.newSimple()
@@ -101,5 +116,6 @@ do
   end
   --graphWidget.rangecheck = nil
 end
+
 
 
