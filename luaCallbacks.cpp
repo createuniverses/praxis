@@ -46,8 +46,8 @@
 #include "Voxel.h"
 
 #include "lispInterface.h"
-
 #include "forthInterface.h"
+#include "ioInterface.h"
 
 extern "C"
 {
@@ -1787,6 +1787,20 @@ int luaCBForth(lua_State * L)
 
     if(sErr != "")
         sOut = sOut + std::string(" ") + sErr;
+
+    lua_pushstring(L, sOut.c_str());
+
+    return 1;
+}
+
+int luaCBIoLang(lua_State * L)
+{
+    int n = lua_gettop(L);
+    if(n!=1) luaL_error(L, "1 argument expected.");
+
+    std::string sCode = luaL_checkstring(L, 1);
+
+    std::string sOut = ioCall(sCode);
 
     lua_pushstring(L, sOut.c_str());
 
@@ -3572,6 +3586,7 @@ void luaInitCallbacks()
 
     lua_register(g_pLuaState, "lisp",                   luaCBLisp);
     lua_register(g_pLuaState, "forth",                  luaCBForth);
+    lua_register(g_pLuaState, "iolang",                 luaCBIoLang);
 
     lua_register(g_pLuaState, "setLispTraceVerbosity",  luaCBSetLispTraceVerbosity);
     lua_register(g_pLuaState, "getLispTraceVerbosity",  luaCBGetLispTraceVerbosity);

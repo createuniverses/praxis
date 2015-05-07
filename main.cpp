@@ -17,6 +17,9 @@
 #include "forthInterface.h"
 #include "forthCallbacks.h"
 
+#include "ioInterface.h"
+#include "ioCallbacks.h"
+
 #include "AI_NeuralNetworkSystem.h"
 
 #ifdef __PRAXIS_WINDOWS__
@@ -140,6 +143,10 @@ int main()
     forthInit();
     forthInitCallbacks();
 
+    // Io
+    ioInit();
+    ioInitCallbacks();
+
 #ifdef __PRAXIS_WINDOWS__
     // FMOD mp3 playing
     // Can we have FMOD mp3 playing on top of synthesizing audio??
@@ -172,6 +179,7 @@ int main()
     luaClose();
     lispClose();
     forthClose();
+    ioClose();
 
 #ifdef __PRAXIS_WINDOWS__
     FSOUND_Stream_Close(g_pMp3Stream);
