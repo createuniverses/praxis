@@ -151,3 +151,8 @@ hideEditor()
 edSetRenderMode(2)
 
 dofile("server_multi.lua")
+
+newBuffer()
+loadBuffer("iolangexample.lua")
+showEditor()
+

@@ -16,6 +16,9 @@
 
 
 #include "luaInterface.h"
+#include "lispInterface.h"
+#include "forthInterface.h"
+#include "ioInterface.h"
 
 #include "World.h"
 
@@ -304,6 +307,8 @@ void World::Render()
         {
             m_bRunning = false;
         }
+
+        ioCall("render()");
     }
 
     // Restore a sane render state in case render left it in a bad condition

@@ -44,6 +44,17 @@ ansi[csi.."B"] = handle_down
 ansi[csi.."C"] = handle_right
 ansi[csi.."D"] = handle_left
 
+-- set the metatable for ansi to one that
+-- will handle printable characters
+
+ansimt = {}
+
+function ansimt.__index(k)
+  if #k == 1 then
+    local b = string.byte(k,1)
+    if b >= 65 and b <
+end
+
 function svrRunEchoServer(sck)
   -- echo server
   local s = svrReceive(sck)

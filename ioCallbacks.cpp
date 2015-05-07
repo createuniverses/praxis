@@ -12,8 +12,23 @@ extern IoState * g_pIoState;
 
 IO_METHOD(IoObject, drawLine)
 {
-    int n, max = IoMessage_argCount(m);
-    IoState *state = IOSTATE;
+    int argcount = IoMessage_argCount(m);
+
+    if(argcount != 6)
+    {
+        IoState_error_(g_pIoState, m, "6 numerical arguments expected for drawLine");
+        return IONIL(self);
+    }
+
+    for(int i = 0; i < 6; i++)
+    {
+        IoObject * v = IoMessage_locals_valueArgAt_(m, locals, i);
+        if(!ISNUMBER(v))
+        {
+            IoState_error_(g_pIoState, m, "Argument %d not a number", i);
+            return IONIL(self);
+        }
+    }
 
     float x1 = IoNumber_asFloat(IoMessage_locals_valueArgAt_(m, locals, 0));
     float y1 = IoNumber_asFloat(IoMessage_locals_valueArgAt_(m, locals, 1));
