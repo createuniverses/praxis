@@ -16,21 +16,15 @@
 
 #include <string>
 
-// #include "ficl-4.1.0/ficl.h"
-
 void ioInit();
 
-std::string ioCall(std::string sCmd);
+void ioCall(std::string sCmd);
+void ioCallWithReply(std::string sCmd);
 
-//std::string & forthGetError();
-//std::string & forthGetOutput();
-
-//void forthClearError();
-//void forthClearOutput();
+std::string & ioGetReply();
+std::string & ioGetTrace();
 
 void ioClose();
-
-//bool forthIsCommandComplete(std::string sCmd);
 
 #endif // IOINTERFACE_H
 

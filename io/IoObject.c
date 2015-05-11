@@ -301,6 +301,12 @@ IoObject *IoObject_new(void *state)
 	return IOCLONE(proto);
 }
 
+IoObject *IoObject_getInstance(void *state)
+{
+    IoObject *proto = IoState_protoWithId_((IoState *)state, protoId);
+    return proto;
+}
+
 IoObject *IoObject_justClone(IoObject *self)
 {
 	return (IoObject_tag(self)->cloneFunc)(self);

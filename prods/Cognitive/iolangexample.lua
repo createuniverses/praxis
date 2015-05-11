@@ -20,3 +20,5 @@ render := method(
 // Press F3 interpret buffer as Io
 // Press F4 to interpret selected text as Io
 ]])
+
+loadBuffer("iorender.io")

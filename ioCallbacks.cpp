@@ -6,11 +6,81 @@
 
 #include "io/IoNumber.h"
 
+#include "io/IoCFunction.h"
+
 #include "World.h"
 
 extern IoState * g_pIoState;
 
-IO_METHOD(IoObject, drawLine)
+static const char *protoId = "Praxis";
+
+class IoPraxis
+{
+public:
+    static IoObject* DrawLine(IoObject *self, IoObject *locals, IoMessage *m);
+
+    static IoObject* proto_tagless(IoState* state);
+
+    static IoObject* proto(IoState* state);
+    static IoObject* rawClone(IoObject* self);
+    static void mark(IoObject* self);
+    static void free(IoObject* self);
+};
+
+IoObject *IoPraxis::proto_tagless(IoState* state)
+{
+    IoMethodTable methods[] = {
+        {"drawLine", DrawLine},
+        {NULL, NULL}};
+
+    IoObject* self = IoObject_new(state);
+    IoObject_setSlot_to_(self, IOSYMBOL("type"), IOSYMBOL(protoId));
+    IoObject_setSlot_to_(state->core, IoState_symbolWithCString_(state, protoId), self);
+
+    IoObject_addMethodTable_(self, methods);
+
+    return self;
+}
+
+IoObject *IoPraxis::proto(IoState* state)
+{
+    IoMethodTable methods[] = {
+        {"drawLine", DrawLine},
+        {NULL, NULL}};
+
+    IoObject* self = IoObject_new(state);
+
+    IoTag* tag = IoTag_newWithName_(protoId);
+    IoTag_state_(tag, state);
+    IoTag_cloneFunc_(tag, (IoTagCloneFunc*) rawClone);
+    IoTag_markFunc_(tag, (IoTagMarkFunc*) mark);
+    IoTag_freeFunc_(tag, (IoTagFreeFunc*) free);
+    IoObject_tag_(self, tag);
+
+    IoState_registerProtoWithId_(state, self, protoId);
+    IoObject_setSlot_to_(state->core, IoState_symbolWithCString_(state, protoId), self);
+
+    IoObject_setDataPointer_(self, 0);
+    IoObject_addMethodTable_(self, methods);
+
+    return self;
+}
+
+IoObject *IoPraxis::rawClone(IoObject *self)
+{
+    IoObject *clone = IoObject_rawClonePrimitive(self);
+    return clone;
+}
+
+void IoPraxis::mark(IoObject *)
+{
+}
+
+void IoPraxis::free(IoObject *)
+{
+}
+
+IoObject* IoPraxis::DrawLine(IoObject *self, IoObject *locals, IoMessage *m)
 {
     int argcount = IoMessage_argCount(m);
 
@@ -49,11 +119,17 @@ IO_METHOD(IoObject, drawLine)
 
 void ioInitCallbacks()
 {
-    IoMethodTable methodTable[] = {
-        {"drawLine", IoObject_drawLine},
-        {NULL, NULL}};
-
-    IoObject *self = IoState_protoWithId_(g_pIoState, "Object");
-    IoObject_addTaglessMethodTable_(self, methodTable);
+    IoPraxis::proto_tagless(g_pIoState);
 }
 
+#if 0
+void ioInitCallbacks()
+{
+    IoMethodTable methodTable[] = {
+        {"drawLine", IoPraxis::DrawLine},
+        {NULL, NULL}};
+
+    IoObject *self = IoObject_getInstance(g_pIoState);
+    IoObject_addTaglessMethodTable_(self, methodTable);
+}
+#endif

@@ -1800,11 +1800,12 @@ int luaCBIoLang(lua_State * L)
 
     std::string sCode = luaL_checkstring(L, 1);
 
-    std::string sOut = ioCall(sCode);
+    ioCallWithReply(sCode);
 
-    lua_pushstring(L, sOut.c_str());
+    lua_pushstring(L, ioGetReply().c_str());
+    lua_pushstring(L, ioGetTrace().c_str());
 
-    return 1;
+    return 2;
 }
 
 int luaCBSetLispTraceVerbosity(lua_State * L)

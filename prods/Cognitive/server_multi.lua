@@ -53,6 +53,20 @@ function svrRunForth(sck,s)
   --svrSend(stripnewline(forth(s)).."\n", sck)
 end
 
+function svrRunIo(sck,s)
+  local reply,trace = iolang(s)
+  do
+  local result = stripnewline(reply)
+  if result ~= "" then result = result .. "\n" end
+  svrSend(result, sck)
+  end
+  do
+  local result = stripnewline(trace)
+  if result ~= "" then result = result .. "\n" end
+  svrSend(result, sck)
+  end
+end
+
 svrRunCode = svrRunLua
 
 function stripspaces(s)
@@ -89,6 +103,7 @@ function svrRunPromptServer(sck)
     if     s == "lua"    then svrRunCode = svrRunLua
     elseif s == "forth"  then svrRunCode = svrRunForth
     elseif s == "lisp"   then svrRunCode = svrRunLisp
+    elseif s == "io"     then svrRunCode = svrRunIo
     else
       svrRunCode(sck,s)
     end

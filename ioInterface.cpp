@@ -8,49 +8,15 @@
 
 IoState * g_pIoState = 0;
 
-std::string g_sIoOutput;
+std::string g_sIoTrace;
+std::string g_sIoReply;
 
-void IoPraxis_UArray_print(const UArray *self)
+void IoPraxis_printCallback(void *, const UArray *self)
 {
-    char buf[1024];
-    char * p = buf;
-    sprintf(p, "");
-
     if(self->encoding == CENCODING_ASCII || self->encoding == CENCODING_UTF8)
     {
-        p += sprintf(p, "%s", self->data);
+        g_sIoTrace += (char *)(self->data);
     }
-    else if(self->encoding != CENCODING_NUMBER)
-    {
-        UARRAY_FOREACH(self, i, v, p += sprintf(p, "%c", (int)v); );
-    }
-    else if(UArray_isFloatType(self))
-    {
-        p += sprintf(p, "[");
-        UARRAY_FOREACH(self, i, v,
-                    p += sprintf(p, "%f", (float)v);
-                    if(i != self->size - 1) p += sprintf(p, ", ");
-                    );
-        p += sprintf(p, "]");
-    }
-    else
-    {
-        p += sprintf(p, "[");
-        UARRAY_FOREACH(self, i, v,
-                    p += sprintf(p, "%i", (int)v);
-                    if(i != self->size - 1) p += sprintf(p, ", ");
-                    );
-        p += sprintf(p, "]");
-    }
-
-    g_sIoOutput += buf;
-}
-
-void IoPraxis_printCallback(void *voidSelf, const UArray *ba)
-{
-    voidSelf;
-
-    IoPraxis_UArray_print(ba);
 }
 
 void ioInit()
@@ -61,29 +27,35 @@ void ioInit()
     IoState_printCallback_(g_pIoState, IoPraxis_printCallback);
 }
 
-std::string ioCall(std::string sCmd)
+void ioCall(std::string sCmd)
 {
-    char buf[1024];
-    g_sIoOutput = "";
+    IoState_doCString_(g_pIoState, sCmd.c_str());
+}
 
-    IoObject * v = IoState_doCString_(g_pIoState, sCmd.c_str());
-    if (ISNUMBER(v))
-    {
-        sprintf(buf, "%f", IoNumber_asFloat(v));
-    }
-    else if(ISSEQ(v))
-    {
-        sprintf(buf, "%s", IoSeq_asCString(v));
-    }
-    else
-    {
-        sprintf(buf, "");
-    }
+void ioCallWithReply(std::string sCmd)
+{
+    g_sIoTrace = "";
+    g_sIoReply = "No reply";
 
-    return std::string("==>") + std::string(buf) + std::string("\n") + g_sIoOutput;
+    IoObject  * v = IoState_doCString_(g_pIoState, sCmd.c_str());
+    IoMessage * m = IoMessage_newWithName_(g_pIoState, IoState_symbolWithCString_(g_pIoState, "asString"));
+    IoObject  * s = IoMessage_locals_performOn_(m, IoState_lobby(g_pIoState), v);
+
+    if(ISSEQ(s))
+        g_sIoReply = IoSeq_asCString(s);
 }
 
 void ioClose()
 {
     IoState_free(g_pIoState);
+}
+
+std::string & ioGetReply()
+{
+    return g_sIoReply;
+}
+
+std::string & ioGetTrace()
+{
+    return g_sIoTrace;
 }
