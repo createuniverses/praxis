@@ -12,57 +12,27 @@
 #include <float.h>
 
 #include "UT_String.h"
-//#include "UT_Functions.h"
 #include "luaInterface.h"
 
 #include "GLEditor.h"
 #include "PolyGlyph.h"
 #include "assert.h"
 
+#include "PraxisTexture.h"
+
+LiveCodeTexture * g_pEditTexture = 0;
+bool g_bEditTextureDirty = true;
+
 // static so we share between workspaces
 string GLEditor::m_CopyBuffer;
 
 int GLEditor::m_nRenderMode = GLEditor::RenderMode_Polyglyph;
 
-float GLEditor::m_fFlashRate(0.7f);
-//float GLEditor::m_fFlashRate(2.7f);
-//float GLEditor::m_fFlashRate(0.05f);
-
-// max time in secs for cursor to "blow up"
-float GLEditor::m_fBlowupFlashes(1.8f);
-
-// Need to make these effects settable from lua obviously.
-bool GLEditor::m_DoEffects(false);
-float GLEditor::m_EffectJiggleSize(0.0);
-
-float GLEditor::m_EffectWaveSize(0.05);
-float GLEditor::m_EffectWaveWavelength(1.0);
-float GLEditor::m_EffectWaveSpeed(20.0);
-float GLEditor::m_EffectWaveTimer(0.0);
-
-float GLEditor::m_EffectRippleSize(0.0);
-float GLEditor::m_EffectRippleCenterX(0.0);
-float GLEditor::m_EffectRippleCenterY(0.0);
-float GLEditor::m_EffectRippleWavelength(1.0);
-float GLEditor::m_EffectRippleSpeed(1.0);
-float GLEditor::m_EffectRippleTimer(0.0);
-
-float GLEditor::m_EffectSwirlSize(0.0);
-float GLEditor::m_EffectSwirlCenterX(0.0);
-float GLEditor::m_EffectSwirlCenterY(0.0);
-float GLEditor::m_EffectSwirlRotation(1.0);
-
 PolyGlyph * GLEditor::m_PolyGlyph = 0;
 
 GLEditor::GLEditor():
-    m_PosX(0),
-    m_PosY(0),
-    m_Scale(1),
-    m_CursorMaxWidth(40.0f),
-    m_CursorMaxHeight(40.0f),
     m_Position(0),
     m_HighlightAnchor(0),
-    m_DesiredXPos(0),
     m_Selection(false),
     m_CursorWidth(0),
     m_CharWidth(0),
@@ -71,42 +41,10 @@ GLEditor::GLEditor():
     m_CloseChars(")]>}"),
     m_TopTextPosition(0),
     m_LeftTextPosition(0),
-    m_CurrentVisibleColumns(0),
-    m_CurrentVisibleLines(0),
     m_Width(0),
     m_Height(0),
-    m_Delta(0.0f),
-    m_Flash(0.0f),
-    m_BlowupCursor(false),
-    m_Blowup(0.0f),
-
-    m_TextColourRed(1),
-    m_TextColourGreen(1),
-    m_TextColourBlue(1),
-    m_TextColourAlpha(1),
-    m_CursorColourRed(1),
-    m_CursorColourGreen(1),
-    m_CursorColourBlue(0),
-    m_CursorColourAlpha(0.5),
-    m_Alpha(1.0),
-
-    //m_DebugBB(true),
-    m_DebugBB(false),
-
-    m_DoAutoScale(false),
-    //m_DoAutoScale(true),
-    m_AutoScaleWidth(70000.0f),
-    m_AutoScaleHeight(50000.0f),
-    m_AutoScaleError(5000.0f),
-    m_AutoScaleDrift(0.9),
-
-    m_MinScale(0.5),
-    m_MaxScale(5.0),
-
-    m_YDrift(1.0),
-
     m_VisibleLines(20),
-    m_VisibleColumns(60)
+    m_VisibleColumns(55)
 {
     if(m_PolyGlyph == 0)
         m_PolyGlyph = new PolyGlyph("Bitstream-Vera-Sans-Mono.ttf");
@@ -123,36 +61,11 @@ GLEditor::GLEditor():
 
     m_sName = "Untitled";
     m_sParentName = "";
-
-    m_CurrentVisibleColumns = m_VisibleColumns;
-    m_CurrentVisibleLines = m_VisibleLines;
-
-    float minX,minY,maxX,maxY; GetBB(minX,minY,maxX,maxY);
-    m_PosY = (maxY-minY)/2 - maxY;
-
-//    std::cout << minX << "," <<
-//                 minY << "," <<
-//                 maxX << "," <<
-//                 maxY << std::endl;
 }
 
 GLEditor::~GLEditor()
 {
     //delete m_PolyGlyph;
-}
-
-void GLEditor::Reset()
-{
-    m_PosX=m_PosY=0;
-    float minX,minY,maxX,maxY; GetBB(minX,minY,maxX,maxY);
-    m_PosY = (maxY-minY)/2 - maxY;
-
-    m_Scale=1;
-    m_TextColourRed=1;
-    m_TextColourGreen=1;
-    m_TextColourBlue=1;
-    m_BlowupCursor=false;
-    m_Blowup=0.0f;
 }
 
 void GLEditor::Load(const string & sFilename)
@@ -290,14 +203,8 @@ void GLEditor::Reshape(unsigned int w,unsigned int h)
     m_Height=h;
 }
 
-void GLEditor::BlowupCursor()
-{
-    m_BlowupCursor=true;
-    m_Blowup=0.0f;
-}
 
-
-int GLEditor::GetCurrentLine()
+int GLEditor::CurrentLine()
 {
     int ret=0;
     for (unsigned int i=0; i<m_Position; i++)
@@ -371,11 +278,6 @@ void GLEditor::SetText(const string& s)
     ProcessTabs();
 
     Update();
-
-//    m_Position=0;
-//    m_PosX=m_PosY=0;
-//    //SetCurrentLine(0);
-//    m_Selection=false;
 }
 
 void GLEditor::InsertText(const string & s)
@@ -393,9 +295,6 @@ void GLEditor::ClearAllText()
 {
     m_Text="";
     m_Position=0;
-    m_PosX=m_PosY=0;
-    float minX,minY,maxX,maxY; GetBB(minX,minY,maxX,maxY);
-    m_PosY = (maxY-minY)/2 - maxY;
     SetCurrentLine(0);
     m_Selection=false;
 }
@@ -422,9 +321,7 @@ void GLEditor::StrokeCharacter(wchar_t c, float dx, float dy)
     switch(m_nRenderMode)
     {
     case RenderMode_Polyglyph:
-        m_PolyGlyph->Render(c,m_TextColourRed,m_TextColourGreen,
-                            m_TextColourBlue,m_TextColourAlpha*m_Alpha,
-                            dx, dy);
+        m_PolyGlyph->Render(c, 1.0f, 1.0f, 1.0f, 1.0f, dx, dy);
         break;
 
     case RenderMode_Stroke:
@@ -537,61 +434,21 @@ void GLEditor::DrawCharBlock()
 
 void GLEditor::DrawCursor()
 {
-    if (m_BlowupCursor)
-    {
-        // set this to zero when starting
-        m_Blowup +=m_Delta;
-        if (m_Blowup >= m_fBlowupFlashes)
-        {
-            m_BlowupCursor = false;
-        }
-        else
-        {
-            float maxCW = (m_fBlowupFlashes - m_Blowup)/m_fBlowupFlashes*(m_CursorMaxWidth*m_CursorWidth*0.5f)+m_CursorWidth*0.5f;
-
-            float maxCH = (m_fBlowupFlashes - m_Blowup)/m_fBlowupFlashes*(m_CursorMaxHeight*m_CharHeight)+m_CharHeight;
-            glColor4f(0,1,0,0.7*m_Blowup/m_fBlowupFlashes);
-            glBegin(GL_QUADS);
-            glVertex2f(maxCW,-0.5f*(maxCH-m_CharHeight));
-            glVertex2f(maxCW,0.5f*(maxCH+m_CharHeight));
-            glVertex2f(-maxCW,0.5f*(maxCH+m_CharHeight));
-            glVertex2f(-maxCW,-0.5f*(maxCH-m_CharHeight));
-            glEnd();
-        }
-    }
-    else
-    {
-#if 0
-        float half = m_CursorWidth/2.0f;
-        glBegin(GL_QUADS);
-        glVertex2f(half,0);
-        glVertex2f(half,m_CharHeight);
-        glVertex2f(-half,m_CharHeight);
-        glVertex2f(-half,0);
-        glEnd();
-#else
-        m_Flash+=m_Delta;
-        if (m_Flash > m_fFlashRate) m_Flash=0;
-
-        if (m_Flash > (m_fFlashRate * 0.5f))
-        {
-            float half = m_CursorWidth/2.0f;
-            glBegin(GL_QUADS);
-            glVertex2f(half,0);
-            glVertex2f(half,m_CharHeight);
-            glVertex2f(-half,m_CharHeight);
-            glVertex2f(-half,0);
-            glEnd();
-        }
-#endif
-    }
+    glColor4f(1.0f, 1.0f, 0.0f, 1.0f);
+    float half = m_CursorWidth/2.0f;
+    glBegin(GL_QUADS);
+    glVertex2f(half,0);
+    glVertex2f(half,m_CharHeight);
+    glVertex2f(-half,m_CharHeight);
+    glVertex2f(-half,0);
+    glEnd();
 }
 
 void GLEditor::GetBB(float &minX, float &minY, float &maxX, float &maxY)
 {
     minX = 0.0f;
-    minY = -(m_CurrentVisibleLines-1) * m_CharHeight;
-    maxX = m_CurrentVisibleColumns * m_CharWidth;
+    minY = -(m_VisibleLines-1) * m_CharHeight;
+    maxX = m_VisibleColumns * m_CharWidth;
     maxY = m_CharHeight;
 }
 
@@ -614,50 +471,11 @@ void GLEditor::Update()
 
     // Set the left text position according to the position of the cursor
     // within the current line
-    int nOffset = OffsetToCurrentLineStart();
+    int nOffset = CurrentColumn();
     if (nOffset>m_VisibleColumns)
         m_LeftTextPosition=nOffset-m_VisibleColumns;
     else
         m_LeftTextPosition=0;
-
-    // Update the bounding box. This used to be done in Render(), but I
-    // don't like Render() having any side effects.
-
-    // I should [it it back in render, because at the moment there
-    // is duplication
-
-#if 0
-//    m_CurrentVisibleColumns = 0;
-//    m_CurrentVisibleLines = 1;
-    m_CurrentVisibleColumns = m_VisibleColumns;
-    m_CurrentVisibleLines   = m_VisibleLines;
-
-    //int n = m_TopTextPosition;
-    int lineCharsCount = 0;
-    int linesCount = 1; // always at least 1 line
-
-    for(int n=GetFirstVisiblePosition(); n < GetLastVisiblePosition(); n++)
-    //while (n<m_Text.size() && m_CurrentVisibleLines<m_VisibleLines)
-    {
-        if(m_Text[n]=='\n')
-        {
-            lineCharsCount = 0;
-            linesCount++;
-        }
-        else
-        {
-            lineCharsCount++;
-        }
-
-        m_CurrentVisibleColumns = max(m_CurrentVisibleColumns, lineCharsCount);
-        m_CurrentVisibleLines   = max(m_CurrentVisibleLines,   linesCount);
-
-        //n++;
-    }
-#endif
-
-    m_CurrentVisibleColumns = m_VisibleColumns;
-    m_CurrentVisibleLines   = m_VisibleLines;
 
     m_LuaBlockHighlight[0]=-1;
     m_LuaBlockHighlight[1]=-1;
@@ -668,159 +486,126 @@ void GLEditor::Update()
 //    m_ParenthesesHighlight[1] = paren.n2;
 
     ParseLuaBlock();
-
-    m_Delta=0.02;
-
-    float minX,minY,maxX,maxY; GetBB(minX,minY,maxX,maxY);
-#if 0
-    //m_PosY=m_PosY*(1-m_YDrift*m_Delta) - (minY+(maxY-minY)/2)*m_YDrift*m_Delta;
-
-    //m_PosY = (minY+(maxY-minY)/2);
-
-    if (m_DoAutoScale)
-    {
-        float boxwidth=(maxX-minX)*m_Scale;
-        float boxheight=(maxY-minY)*m_Scale;
-
-        // Only make it bigger if they are both too small
-        // Always make it smaller if either are too big
-
-        if (boxwidth  > m_AutoScaleWidth+m_AutoScaleError ||
-            boxheight > m_AutoScaleHeight+m_AutoScaleError)
-            m_Scale*=1-m_AutoScaleDrift*m_Delta;
-        else if (boxwidth  < m_AutoScaleWidth-m_AutoScaleError &&
-                 boxheight < m_AutoScaleHeight-m_AutoScaleError)
-            m_Scale*=1+m_AutoScaleDrift*m_Delta;
-    }
-    else
-    {
-        m_Scale=m_MinScale;
-    }
-
-    if (m_Scale>m_MaxScale) m_Scale=m_MaxScale; // clamp
-    if (m_Scale<m_MinScale) m_Scale=m_MinScale; // clamp
-
-    if (m_DoEffects)
-    {
-        m_EffectWaveTimer   += m_Delta * m_EffectWaveSpeed;
-        m_EffectRippleTimer += m_Delta * m_EffectRippleSpeed;
-    }
-
-    m_PosY = (minY+(maxY-minY)/2);
-    m_PosY = (-minY+(maxY-minY)/2);
-    m_PosY = (maxY-minY)/2;
-#endif
-
-    m_Scale=m_MinScale;
 }
-
-#if 1
 
 void GLEditor::Render()
 {
-    glViewport(0, 0, m_Width, m_Height);
+    if(g_pEditTexture == 0)
+    {
+        g_pEditTexture = new LiveCodeTexture();
+    }
+
+    if(g_bEditTextureDirty)
+    {
+        g_pEditTexture->Begin();
+        //g_pEditTexture->Resume();
+        RenderBuffer();
+        g_pEditTexture->End();
+
+        g_bEditTextureDirty = false;
+    }
+
+    RenderTexture();
+
+    //RenderBuffer();
+}
+
+void GLEditor::RenderTexture()
+{
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_ALPHA);
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, g_pEditTexture->nTextureID);
+
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+
+    glLoadIdentity();
+
+    glOrtho(0,m_Width,0,m_Height,0,10);
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+
+    glLoadIdentity();
+
+//    glRasterPos3d(2,5,0);
+//    glDrawPixels(g_pEditTexture->nSize, g_pEditTexture->nSize, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)g_pEditTexture->pixels);
+
+    {
+        int nSize = 512;
+        int nLeftMargin = 10;
+        int nBottomMargin = 35;
+        int nMinX = nLeftMargin;
+        int nMaxX = nMinX + nSize;
+        int nMinY = nBottomMargin;
+        int nMaxY = nMinY + nSize;
+
+        glColor4f(1,1,1,0.5);
+        glBegin(GL_QUADS);
+
+        glTexCoord2f(0,0);
+        glVertex3f( nMinX, nMinY, 0);
+
+        glTexCoord2f(1,0);
+        glVertex3f( nMaxX, nMinY, 0);
+
+        glTexCoord2f(1,1);
+        glVertex3f( nMaxX, nMaxY, 0);
+
+        glTexCoord2f(0,1);
+        glVertex3f( nMinX, nMaxY, 0);
+
+        glEnd();
+    }
+
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+}
+
+void GLEditor::RenderBuffer()
+{
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glPolygonMode(GL_FRONT,GL_FILL);
+
+    float minX,minY,maxX,maxY; GetBB(minX,minY,maxX,maxY);
+
+    glViewport(0, 0, 512, 512);
+
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
-    glOrtho(-50,50,-37.5,37.5,0,10);
+    glOrtho(minX, maxX, minY, maxY, 0,10);
 
     glMatrixMode(GL_MODELVIEW);
-    glDisable(GL_TEXTURE_2D);
-
-
     glPushMatrix();
-    glDisable(GL_LIGHTING);
-    glDisable(GL_DEPTH_TEST);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glPolygonMode(GL_FRONT,GL_FILL);
-
     glLoadIdentity();
-
-    if (m_DebugBB)
-    {
-        glColor3f(1,1,1);
-        glBegin(GL_LINE_LOOP);
-        glVertex3f(-49,-36.5,0);
-        glVertex3f(49,-36.5,0);
-        glVertex3f(49,36.5,0);
-        glVertex3f(-49,36.5,0);
-        glEnd();
-
-        glColor3f(0,1,0);
-        glPushMatrix();
-        glTranslatef(-45,0,0);
-        glScalef(0.001f,0.001f,1);
-        glBegin(GL_LINE_LOOP);
-        glVertex3f(0,-m_AutoScaleHeight/2.0f,0);
-        glVertex3f(m_AutoScaleWidth,-m_AutoScaleHeight/2.0f,0);
-        glVertex3f(m_AutoScaleWidth,m_AutoScaleHeight/2.0f,0);
-        glVertex3f(0,m_AutoScaleHeight/2.0f,0);
-        glEnd();
-        glPopMatrix();
-    }
-
-    glTranslatef(-48,0,0);
-    //glScalef(0.001f*m_Scale,0.001f*m_Scale,1);
-    glScalef(0.001f*m_Scale,0.001f*m_Scale,1);
-
-    // m_PosY is the only one that changes
-    glTranslatef(m_PosX,m_PosY,0);
-
     glPushMatrix();
-
-    if (m_DebugBB)
-    {
-        float minX,minY,maxX,maxY; GetBB(minX,minY,maxX,maxY);
-
-        glColor3f(1,0,0);
-        glBegin(GL_LINE_LOOP);
-        glVertex3f(minX,minY,0);
-        glVertex3f(maxX,minY,0);
-        glVertex3f(maxX,maxY,0);
-        glVertex3f(minX,maxY,0);
-        glEnd();
-    }
-
-    // Draw a background.
-    //if(false)
-    {
-        float minX,minY,maxX,maxY; GetBB(minX,minY,maxX,maxY);
-
-        //glColor3f(0,0,0);
-        glColor4f(0,0,0, 0.7);
-        glBegin(GL_QUADS);
-        glVertex3f(minX,minY,0);
-        glVertex3f(maxX,minY,0);
-        glVertex3f(maxX,maxY,0);
-        glVertex3f(minX,maxY,0);
-        glEnd();
-    }
 
     unsigned int xcount=0;
     float xpos=0;
     float ypos=0;
     bool drawncursor=false;
 
-    //unsigned int n=m_TopTextPosition;
-    //int lineCount=0;
-
     for(int n=GetFirstVisiblePosition(); n < GetLastVisiblePosition(); n++)
-    //while (n<m_Text.size() && lineCount<m_VisibleLines)
     {
-        if (m_Position==n) // draw cursor
-        {
-            glColor4f(m_CursorColourRed,m_CursorColourGreen,m_CursorColourBlue,m_Alpha*m_CursorColourAlpha);
-            DrawCursor();
-            glColor4f(0.7,0.7,0.7,1);
-            drawncursor=true;
-        }
-
         if(m_Text[n]!='\n')
         {
             if ((int)n>=m_ParenthesesHighlight[0] &&
                     (int)n<=m_ParenthesesHighlight[1]) // draw parentheses highlight
             {
-                glColor4f(0,0.5,1,0.5*m_Alpha);
+                glColor4f(0,0,1,0.5f);
                 DrawCharBlock();
                 glColor4f(0.7,0.7,0.7,1);
             }
@@ -828,17 +613,24 @@ void GLEditor::Render()
             if ((int)n>=m_LuaBlockHighlight[0] &&
                     (int)n<=m_LuaBlockHighlight[1]) // draw lua block highlight
             {
-                glColor4f(0,1,0.5,0.2*m_Alpha);
+                glColor4f(0,1,1,0.5f);
                 DrawCharBlock();
                 glColor4f(0.7,0.7,0.7,1);
             }
 
             if (m_Selection && n>=SelectionBegin() && n<SelectionEnd()) // draw selection highlight
             {
-                glColor4f(0,1,0,0.5*m_Alpha);
+                glColor4f(0,1,0,0.5f);
                 DrawCharBlock();
                 glColor4f(0.7,0.7,0.7,1);
             }
+        }
+
+        if (m_Position==n) // draw cursor
+        {
+            DrawCursor();
+            glColor4f(0.7,0.7,0.7,1);
+            drawncursor=true;
         }
 
         if(m_Text[n]=='\n')
@@ -863,75 +655,18 @@ void GLEditor::Render()
                 float dx = 0;
                 float dy = 0;
 
-                if (m_DoEffects)
-                {
-                    // current letter coordinate transformed to viewport
-                    float xp = -48 + 0.001f * m_Scale * (xpos + m_PosX);
-                    float yp = 0.001f * m_Scale * (ypos + m_PosY);
-                    /* jiggle */
-                    if (fabs(m_EffectJiggleSize) > FLT_EPSILON)
-                    {
-                        float jdx = 10000 * ((float)rand() / (float)RAND_MAX - .5);
-                        float jdy = 10000 * ((float)rand() / (float)RAND_MAX - .5);
-                        dx += m_EffectJiggleSize * jdx;
-                        dy += m_EffectJiggleSize * jdy;
-                    }
-
-                    /* wave */
-                    if (fabs(m_EffectWaveSize) > FLT_EPSILON)
-                    {
-                        dy += m_EffectWaveSize * 10000 * sin(m_EffectWaveTimer +
-                                                             .1 * m_EffectWaveWavelength * xp);
-                    }
-
-                    /* ripple */
-                    if (fabs(m_EffectRippleSize) > FLT_EPSILON)
-                    {
-                        // center coordinate transformed to viewport
-                        float cx = -50.0 + 100.0 * m_EffectRippleCenterX / m_Width;
-                        float cy = 37.5 - 75.0 * m_EffectRippleCenterY / m_Height;
-                        float rdx = xp - cx;
-                        float rdy = yp - cy;
-
-                        float d = m_EffectRippleSize * 200 * sin(m_EffectRippleTimer -
-                                                                 .5 * m_EffectRippleWavelength * sqrt(rdx * rdx + rdy * rdy));
-                        dx += d * rdx;
-                        dy += d * rdy;
-                    }
-
-                    /* swirl */
-                    if (fabs(m_EffectSwirlSize) > FLT_EPSILON)
-                    {
-                        float sx = -50.0 + 100.0 * m_EffectSwirlCenterX / m_Width;
-                        float sy = 37.5 - 75.0 * m_EffectSwirlCenterY / m_Height;
-                        float sdx = xp - sx;
-                        float sdy = yp - sy;
-                        float a = m_EffectSwirlRotation * exp( - (sdx * sdx + sdy * sdy) /
-                                                               (m_EffectSwirlSize * m_EffectSwirlSize));
-                        float u =  sdx * cos(a) - sdy * sin(a);
-                        float v =  sdx * sin(a) + sdy * cos(a);
-
-                        dx += (sx + u + 48) / (m_Scale * 0.001f)  - xpos - m_PosX;
-                        dy += (sy + v) / (m_Scale * 0.001f)  - ypos - m_PosY;
-                    }
-                }
-
                 StrokeCharacter(m_Text[n], dx, dy);
 
                 xpos+=m_CharWidth;
-                //std::cout << xpos << std::endl;
             }
 
             xcount++;
         }
-
-        //n++;
     }
 
     // draw cursor if we have no text, or if we're at the end of the buffer
     if (!drawncursor)
     {
-        glColor4f(m_CursorColourRed,m_CursorColourGreen,m_CursorColourBlue,m_Alpha*m_CursorColourAlpha);
         DrawCursor();
         glColor4f(0.7,0.7,0.7,1);
     }
@@ -946,220 +681,6 @@ void GLEditor::Render()
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
 }
-
-#else
-
-void GLEditor::Render()
-{
-    glViewport(0, 0, m_Width, m_Height);
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glOrtho(-50,50,-37.5,37.5,0,10);
-
-    glMatrixMode(GL_MODELVIEW);
-    glDisable(GL_TEXTURE_2D);
-
-
-    glPushMatrix();
-    glDisable(GL_LIGHTING);
-    glDisable(GL_DEPTH_TEST);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glPolygonMode(GL_FRONT,GL_FILL);
-
-    glLoadIdentity();
-
-    if (m_DebugBB)
-    {
-        glColor3f(1,1,1);
-        glBegin(GL_LINE_LOOP);
-        glVertex3f(-49,-36.5,0);
-        glVertex3f(49,-36.5,0);
-        glVertex3f(49,36.5,0);
-        glVertex3f(-49,36.5,0);
-        glEnd();
-
-        glColor3f(0,1,0);
-        glPushMatrix();
-        glTranslatef(-45,0,0);
-        glScalef(0.001f,0.001f,1);
-        glBegin(GL_LINE_LOOP);
-        glVertex3f(0,-m_AutoScaleHeight/2.0f,0);
-        glVertex3f(m_AutoScaleWidth,-m_AutoScaleHeight/2.0f,0);
-        glVertex3f(m_AutoScaleWidth,m_AutoScaleHeight/2.0f,0);
-        glVertex3f(0,m_AutoScaleHeight/2.0f,0);
-        glEnd();
-        glPopMatrix();
-    }
-
-    glTranslatef(-48,0,0);
-    glScalef(0.001f*m_Scale,0.001f*m_Scale,1);
-
-    glTranslatef(m_PosX,m_PosY,0);
-
-    glPushMatrix();
-
-    if (m_DebugBB)
-    {
-        float minX,minY,maxX,maxY; GetBB(minX,minY,maxX,maxY);
-
-        glColor3f(1,0,0);
-        glBegin(GL_LINE_LOOP);
-        glVertex3f(minX,minY,0);
-        glVertex3f(maxX,minY,0);
-        glVertex3f(maxX,maxY,0);
-        glVertex3f(minX,maxY,0);
-        glEnd();
-    }
-
-    unsigned int xcount=0;
-    float xpos=0;
-    float ypos=0;
-    bool drawncursor=false;
-
-    //unsigned int n=m_TopTextPosition;
-    //int lineCount=0;
-
-    for(int n=GetFirstVisiblePosition(); n < GetLastVisiblePosition(); n++)
-    //while (n<m_Text.size() && lineCount<m_VisibleLines)
-    {
-        if (m_Position==n) // draw cursor
-        {
-            glColor4f(m_CursorColourRed,m_CursorColourGreen,m_CursorColourBlue,m_Alpha*m_CursorColourAlpha);
-            DrawCursor();
-            glColor4f(0.7,0.7,0.7,1);
-            drawncursor=true;
-        }
-
-        if ((int)n>=m_ParenthesesHighlight[0] &&
-                (int)n<=m_ParenthesesHighlight[1]) // draw parentheses highlight
-        {
-            glColor4f(0,0.5,1,0.5*m_Alpha);
-            DrawCharBlock();
-            glColor4f(0.7,0.7,0.7,1);
-        }
-
-        if ((int)n>=m_LuaBlockHighlight[0] &&
-                (int)n<=m_LuaBlockHighlight[1]) // draw lua block highlight
-        {
-            glColor4f(0,1,0.5,0.2*m_Alpha);
-            DrawCharBlock();
-            glColor4f(0.7,0.7,0.7,1);
-        }
-
-        if (m_Selection && n>=SelectionBegin() && n<SelectionEnd()) // draw selection highlight
-        {
-            glColor4f(0,1,0,0.5*m_Alpha);
-            DrawCharBlock();
-            glColor4f(0.7,0.7,0.7,1);
-        }
-
-        if(m_Text[n]=='\n')
-        {
-            // Put the matrix back to the top left of the document
-            glPopMatrix();
-            glPushMatrix();
-
-            xpos=0;
-            xcount=0;
-            ypos-=m_CharHeight;
-            //lineCount++;
-
-            // Move the matrix down to the next line to be drawn
-            glTranslatef(0,ypos,0);
-            //glTranslatef(0,-lineCount * m_CharHeight,0);
-        }
-        else
-        {
-            if (xcount>=m_LeftTextPosition)
-            {
-                float dx = 0;
-                float dy = 0;
-
-                if (m_DoEffects)
-                {
-                    // current letter coordinate transformed to viewport
-                    float xp = -48 + 0.001f * m_Scale * (xpos + m_PosX);
-                    float yp = 0.001f * m_Scale * (ypos + m_PosY);
-                    /* jiggle */
-                    if (fabs(m_EffectJiggleSize) > FLT_EPSILON)
-                    {
-                        float jdx = 10000 * ((float)rand() / (float)RAND_MAX - .5);
-                        float jdy = 10000 * ((float)rand() / (float)RAND_MAX - .5);
-                        dx += m_EffectJiggleSize * jdx;
-                        dy += m_EffectJiggleSize * jdy;
-                    }
-
-                    /* wave */
-                    if (fabs(m_EffectWaveSize) > FLT_EPSILON)
-                    {
-                        dy += m_EffectWaveSize * 10000 * sin(m_EffectWaveTimer +
-                                                             .1 * m_EffectWaveWavelength * xp);
-                    }
-
-                    /* ripple */
-                    if (fabs(m_EffectRippleSize) > FLT_EPSILON)
-                    {
-                        // center coordinate transformed to viewport
-                        float cx = -50.0 + 100.0 * m_EffectRippleCenterX / m_Width;
-                        float cy = 37.5 - 75.0 * m_EffectRippleCenterY / m_Height;
-                        float rdx = xp - cx;
-                        float rdy = yp - cy;
-
-                        float d = m_EffectRippleSize * 200 * sin(m_EffectRippleTimer -
-                                                                 .5 * m_EffectRippleWavelength * sqrt(rdx * rdx + rdy * rdy));
-                        dx += d * rdx;
-                        dy += d * rdy;
-                    }
-
-                    /* swirl */
-                    if (fabs(m_EffectSwirlSize) > FLT_EPSILON)
-                    {
-                        float sx = -50.0 + 100.0 * m_EffectSwirlCenterX / m_Width;
-                        float sy = 37.5 - 75.0 * m_EffectSwirlCenterY / m_Height;
-                        float sdx = xp - sx;
-                        float sdy = yp - sy;
-                        float a = m_EffectSwirlRotation * exp( - (sdx * sdx + sdy * sdy) /
-                                                               (m_EffectSwirlSize * m_EffectSwirlSize));
-                        float u =  sdx * cos(a) - sdy * sin(a);
-                        float v =  sdx * sin(a) + sdy * cos(a);
-
-                        dx += (sx + u + 48) / (m_Scale * 0.001f)  - xpos - m_PosX;
-                        dy += (sy + v) / (m_Scale * 0.001f)  - ypos - m_PosY;
-                    }
-                }
-
-                StrokeCharacter(m_Text[n], dx, dy);
-
-                xpos+=m_CharWidth;
-            }
-
-            xcount++;
-        }
-
-        //n++;
-    }
-
-    // draw cursor if we have no text, or if we're at the end of the buffer
-    if (!drawncursor)
-    {
-        glColor4f(m_CursorColourRed,m_CursorColourGreen,m_CursorColourBlue,m_Alpha*m_CursorColourAlpha);
-        DrawCursor();
-        glColor4f(0.7,0.7,0.7,1);
-    }
-
-    glPopMatrix();
-    glPopMatrix();
-
-    glEnable(GL_LIGHTING);
-    glEnable(GL_DEPTH_TEST);
-
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-}
-
-#endif
 
 void GLEditor::MoveViewUp()
 {
@@ -1173,7 +694,7 @@ void GLEditor::MoveCursorUp()
 {
     if ((int)LineStart(m_Position) > 0) // if we're not on the first line
     {
-        int nOffset = OffsetToCurrentLineStart();
+        int nOffset = CurrentColumn();
         m_Position = LineStart(m_Position);
         m_Position--;
         int nLineEnd = m_Position;
@@ -1184,21 +705,13 @@ void GLEditor::MoveCursorUp()
         else
             m_Position = nLineBegin + nOffset;
     }
-
-    // This is jumping 2 lines when at the end of the file - investigate!!
-//    if ((int)LineStart(m_Position) > 0) // if we're not on the first line
-//    {
-//        unsigned int previouslinelength=PreviousLineLength(m_Position);
-//        if (previouslinelength<m_DesiredXPos) m_Position=LineStart(m_Position)-1; // end of previous
-//        else m_Position=LineStart(LineStart(m_Position)-1)+m_DesiredXPos; // start of previous+offset
-//    }
 }
 
 void GLEditor::MoveCursorDown()
 {
     if (LineEnd(m_Position) < m_Text.size()) // if we're not on the last line
     {
-        int nOffset = OffsetToCurrentLineStart();
+        int nOffset = CurrentColumn();
         m_Position = LineEnd(m_Position);
         m_Position++;
         int nLineBegin = m_Position;
@@ -1208,26 +721,16 @@ void GLEditor::MoveCursorDown()
         else
             m_Position = nLineBegin + nOffset;
     }
-
-    // This can't go down to the bottom when on the second last line, and the bottom line doesn't have enough characters!
-//    if (LineEnd(m_Position) < m_Text.size()) // if we're not on the last line
-//    {
-//        unsigned int nextlinelength=NextLineLength(m_Position);
-//        if (nextlinelength<m_DesiredXPos) m_Position=LineEnd(LineEnd(m_Position)+1); // end of next
-//        else m_Position=LineStart(LineEnd(m_Position)+1)+m_DesiredXPos; // start of next+offset
-//    }
 }
 
 void GLEditor::MoveCursorLeft()
 {
     if (m_Position>0) m_Position--;
-    m_DesiredXPos=OffsetToCurrentLineStart();
 }
 
 void GLEditor::MoveCursorRight()
 {
     if (!m_Text.empty()) m_Position++;
-    m_DesiredXPos=OffsetToCurrentLineStart();
 }
 
 void GLEditor::MoveCursorToStart()
@@ -1243,13 +746,11 @@ void GLEditor::MoveCursorToEnd()
 void GLEditor::MoveCursorToStartOfLine()
 {
     m_Position=LineStart(m_Position);
-    m_DesiredXPos=OffsetToCurrentLineStart();
 }
 
 void GLEditor::MoveCursorToEndOfLine()
 {
     m_Position=LineEnd(m_Position);
-    m_DesiredXPos=OffsetToCurrentLineStart()+1;
 }
 
 void GLEditor::MoveCursorUpAPage()
@@ -1345,6 +846,8 @@ int GLEditor::GetIndent(int nPosition)
 
 void GLEditor::Handle(int key, int special)
 {
+    g_bEditTextureDirty = true;
+
     int mod = glutGetModifiers();
 
     // cout << "GLEditor::Handle(" << key << ", " << special << ") mod: " << mod << endl;
@@ -1402,14 +905,6 @@ void GLEditor::Handle(int key, int special)
         case GLEDITOR_SAVE:
             Save();
             break;
-
-        /*case GLEDITOR_PLUS: // zoom in
-            m_Scale*=1.1f;
-        break;
-        case GLEDITOR_MINUS: // zoom out
-            m_Scale/=1.1f;
-        break;*/
-
         default: break;
         }
     }
@@ -1726,31 +1221,9 @@ void GLEditor::ProcessTabs()
 }
 
 
-int GLEditor::OffsetToCurrentLineStart()
+int GLEditor::CurrentColumn()
 {
     return m_Position-LineStart(m_Position);
-}
-
-int GLEditor::NextLineLength(int pos)
-{
-    size_t nextlinestart=m_Text.find("\n",m_Position);
-    if (nextlinestart!=string::npos)
-    {
-        return LineLength(nextlinestart+1);
-    }
-    return 0;
-
-}
-
-int GLEditor::PreviousLineLength(int pos)
-{
-    size_t previouslineend=string::npos;
-    if (pos>0) previouslineend=m_Text.rfind("\n",pos-1);
-    if (previouslineend!=string::npos)
-    {
-        return LineLength(previouslineend);
-    }
-    return 0;
 }
 
 int GLEditor::LineLength(int pos)

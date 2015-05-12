@@ -323,13 +323,11 @@ void World::Render()
 
     glColor4ub(0,255,0,255); // green
 
-    // Always render the 3D version, since its not in the way.
-    // Add an option for this later though.
-    if(m_bRenderOutput)
-        DrawText3DStroked(mlVector3D(-50,0,0  ), SelectEndLines(luaGetOutput(),100));
+    //if(m_bRenderOutput)
+    //    DrawText3DStroked(mlVector3D(-50,0,0  ), SelectEndLines(luaGetOutput(),100));
 
-    if(m_bRenderError)
-        DrawText3DStroked(mlVector3D(-50,0,200), SelectEndLines(luaGetError(),100));
+    //if(m_bRenderError)
+    //    DrawText3DStroked(mlVector3D(-50,0,200), SelectEndLines(luaGetError(),100));
 
     if(m_bRenderFloorPlane)
         RenderFloorPlane();
@@ -403,7 +401,7 @@ void World::Render()
         // A widget for the 2D world
         // Just a camera aligned widget will do.
 
-        stringstream ss; ss << std::setprecision(0) << std::fixed << "FPS: " << g_fFPS;
+        stringstream ss; ss << std::setprecision(0) << std::fixed << g_fFPS << "fps";
         DrawText2D(mlVector3D(90,95), ss.str());
     }
 
@@ -415,11 +413,14 @@ void World::Render()
     // ????
     // PROFIT
 
+    int fHeight = viewport[3];
+    int fWidth = viewport[2];
+
     if(m_bRenderOutput)
-        DrawText2D(mlVector3D(80,90),  SelectEndLines(luaGetOutput(),20));
+        DrawText2D(mlVector3D(10 + 512 + 10, 35 + 512),  SelectEndLines(luaGetOutput(),20), fWidth, fHeight);
 
     if(m_bRenderError)
-        DrawText2D(mlVector3D(10,90),  SelectEndLines(luaGetError(),20));
+        DrawText2D(mlVector3D(10 + 512 + 10, 35 + (512 / 4)),  SelectEndLines(luaGetError(),20), fWidth, fHeight);
 
     m_nRenderCount++;
 }
@@ -554,6 +555,9 @@ void World::OnRButtonUp(int nX, int nY)
 
 void World::OnKeyDown(unsigned char nKey, int nX, int nY)
 {
+    extern bool g_bEditTextureDirty;
+    g_bEditTextureDirty = true;
+
     // When the buffer is visible, sent the keypresses to it.
     // When the buffer isn't, call the lua function.
 
@@ -566,7 +570,6 @@ void World::OnKeyDown(unsigned char nKey, int nX, int nY)
 
         return;
     }
-
 
     // This is where to handle pressing enter for a command buffer.
     // Do the command, then close
@@ -667,6 +670,9 @@ void World::OnKeyUp(unsigned char nKey, int nX, int nY)
 
 void World::OnKeyDownSpecial(unsigned char nKey, int nX, int nY)
 {
+    extern bool g_bEditTextureDirty;
+    g_bEditTextureDirty = true;
+
     // Have this call the lisp and forth functions as well?
     // Or just Lua for now?
     // Or just Lua, which calls other language stuff?
@@ -1563,7 +1569,6 @@ void World::DrawText2D(mlVector3D vPos, const std::string & sText, float fWidth,
 
     glLoadIdentity();
 
-    //glOrtho(-50,50,-37.5,37.5,0,1);
     glOrtho(0,fWidth,0,fHeight,0,1);
 
     glMatrixMode(GL_MODELVIEW);
@@ -1571,14 +1576,10 @@ void World::DrawText2D(mlVector3D vPos, const std::string & sText, float fWidth,
 
     glLoadIdentity();
 
-    glRasterPos2d(vPos.x, vPos.y);
-    glutBitmapStringLeftAligned(GLUT_BITMAP_HELVETICA_18, (unsigned char *)sText.c_str());
-    //glutBitmapStringCenterAligned(GLUT_BITMAP_HELVETICA_18, (unsigned char *)sText.c_str());
-    //glutBitmapStringRightAligned(GLUT_BITMAP_HELVETICA_18, (unsigned char *)sText.c_str());
+    glColor3f(0.7f, 0.7f, 0.7f);
 
-    //glutBitmapString(GLUT_BITMAP_HELVETICA_18, (unsigned char *)sText.c_str());
-    // Get the new raster position
-    // Do the center calculation based on this.
+    glRasterPos2d(vPos.x, vPos.y);
+    glutBitmapStringLeftAligned(GLUT_BITMAP_8_BY_13, (unsigned char *)sText.c_str());
 
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();

@@ -54,10 +54,11 @@ function svrRunForth(sck,s)
 end
 
 function svrRunIo(sck,s)
+  iolang("cli_line := \"\"\"" .. s .. "\"\"\"")
   local reply,trace = iolang(s)
   do
   local result = stripnewline(reply)
-  if result ~= "" then result = result .. "\n" end
+  if result ~= "" then result = "==> " .. result .. "\n" end
   svrSend(result, sck)
   end
   do

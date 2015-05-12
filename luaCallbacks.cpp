@@ -45,6 +45,8 @@
 #include "VoxelBlock.h"
 #include "Voxel.h"
 
+#include "PraxisTexture.h"
+
 #include "lispInterface.h"
 #include "forthInterface.h"
 #include "ioInterface.h"
@@ -724,13 +726,12 @@ int luaCBEdSetRenderMode(lua_State * L)
 
 int luaCBEdGetFlashRate(lua_State * L)
 {
-    lua_pushnumber(L, GLEditor::m_fFlashRate);
+    lua_pushnumber(L, 0);
     return 1;
 }
 
 int luaCBEdSetFlashRate(lua_State * L)
 {
-    GLEditor::m_fFlashRate = luaL_checknumber(L, 1);
     return 0;
 }
 
@@ -1107,14 +1108,6 @@ int luaCBSetBufferVisLines(lua_State * L)
 {
     int arg = luaL_checknumber(L,1);
     g_pWorld->GetEditor()->m_VisibleLines = arg;
-
-    return 0;
-}
-
-int luaCBSetBufferPosY(lua_State * L)
-{
-    int arg = luaL_checknumber(L,1);
-    g_pWorld->GetEditor()->m_PosY = arg;
 
     return 0;
 }
@@ -2001,111 +1994,6 @@ int luaCBDrawText2DCentered(lua_State * L)
     return 0;
 }
 
-class LiveCodeTexture
-{
-public:
-    LiveCodeTexture()
-    {
-        glGenTextures(1,&nTextureID);
-        glBindTexture(GL_TEXTURE_2D,nTextureID);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        //glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        //glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-        //nSize = 512;
-        nSize = 128;
-
-        for(int i = 0; i < nSize * nSize * 3; i++)
-            pixels[i] = rand() % 200;
-
-        glTexImage2D(GL_TEXTURE_2D, 0, 3, nSize, nSize, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
-        //glTexImage2D(GL_TEXTURE_2D, 0, 4, nSize, nSize, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-
-        sRenderFunction = "";
-    }
-
-    void Clear()
-    {
-        for(int i = 0; i < nSize * nSize * 3; i++)
-            pixels[i] = rand() % 200;
-    }
-
-    void UpdateTexture()
-    {
-        // http://www.gamedev.net/page/resources/_/technical/opengl/moving-beyond-opengl-11-for-windows-r1929
-        // http://stackoverflow.com/questions/7808146/gltexsubimage2d-extremely-slow-on-intel-video-card
-        // http://www.clearchain.com/blog/posts/opengl-gltexsubimage2d-very-slow-a-solution
-        // https://developer.palm.com/distribution/viewtopic.php?f=70&t=11066
-        // http://www.khronos.org/message_boards/viewtopic.php?f=4&t=1274
-
-        Begin();
-
-        luaCall(sRenderFunction);
-
-        End();
-    }
-
-    void Begin()
-    {
-        UseOffscreenContext();
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
-
-        glViewport(0,0,nSize,nSize);
-
-//        for(int i = 0; i < nSize * nSize * 3; i++)
-//            pixels[i] = rand() % 200;
-
-        {
-            glMatrixMode(GL_PROJECTION);
-            glPushMatrix();
-
-            glLoadIdentity();
-
-            glOrtho(0,100,0,100,0,10);
-
-            glMatrixMode(GL_MODELVIEW);
-            glPushMatrix();
-
-            glLoadIdentity();
-
-            glTranslatef(0,0,-5);
-
-            glRasterPos3d(0,0,-4);
-            glDrawPixels(nSize, nSize, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid *)pixels);
-            //glutBitmapString(GLUT_BITMAP_HELVETICA_18, (const unsigned char *)"ahoha!");
-
-            glMatrixMode(GL_MODELVIEW);
-            glPopMatrix();
-
-            glMatrixMode(GL_PROJECTION);
-            glPopMatrix();
-        }
-    }
-
-    void End()
-    {
-        glReadPixels(
-            0, 0, nSize,nSize,
-            GL_RGB, GL_UNSIGNED_BYTE, (GLvoid *)pixels);
-
-        UseMainWindowContext();
-
-        glBindTexture(GL_TEXTURE_2D,nTextureID);
-
-        glTexSubImage2D (
-            GL_TEXTURE_2D, 0, 0, 0, nSize, nSize,
-            GL_RGB, GL_UNSIGNED_BYTE, (void *)pixels);
-    }
-
-    GLuint nTextureID;
-    std::string sRenderFunction;
-    int nSize;
-    char pixels [512*512*3];
-    //char pixels [1024*1024*3];
-};
-
 int luaCBTextureNew(lua_State * L)
 {
     // return the GL index of the texture and a pointer to the QImage itself.
@@ -2139,7 +2027,7 @@ int luaCBTextureClear(lua_State * L)
 
     LiveCodeTexture * c = *(LiveCodeTexture **)luaL_checkudata(L, 1, "LiveCode.texture");
 
-    c->Clear();
+    c->Clear(0,0,0);
 
     return 0;
 }
@@ -3482,8 +3370,6 @@ void luaInitCallbacks()
 
     lua_register(g_pLuaState, "setVisColumns",         luaCBSetBufferVisColumns);
     lua_register(g_pLuaState, "setVisLines",           luaCBSetBufferVisLines);
-    lua_register(g_pLuaState, "setBufferPosY",         luaCBSetBufferPosY);
-    lua_register(g_pLuaState, "getBufferBB",           luaCBGetBufferBB);
 
     lua_register(g_pLuaState, "gotoBufferStart",       luaCBGotoBufferStart);
     lua_register(g_pLuaState, "gotoBufferEnd",         luaCBGotoBufferEnd);

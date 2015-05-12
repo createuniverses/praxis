@@ -233,7 +233,8 @@ SOURCES += main.cpp \
     ioInterface.cpp \
     ioCallbacks.cpp \
     io/io_main.c \
-    io/Stack_io.c
+    io/Stack_io.c \
+    PraxisTexture.cpp
 
 unix {
 SOURCES += \
@@ -424,7 +425,8 @@ HEADERS += \
     io/utf8.h \
     io/utf8internal.h \
     ioInterface.h \
-    ioCallbacks.h
+    ioCallbacks.h \
+    PraxisTexture.h
 
 unix {
 HEADERS += \

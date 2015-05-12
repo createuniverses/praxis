@@ -1,15 +1,22 @@
-
 -- Press F1 to set up a simple Io example
 
 function f3Pressed()
-  local s = iolang(getBufferText())
-  print(s)
+  local r,e = iolang(getBufferText())
+  svrSend(r, sck2)
+  svrSend("\n", sck2)
+  svrSend(e, sck2)
+  svrSend("\n", sck2)
 end
 
 function f4Pressed()
-  s = iolang(getSelectedText())
-  print2(s)
+  local r,e = iolang(getSelectedText())
+  svrSend(r, sck2)
+  svrSend("\n", sck2)
+  svrSend(e, sck2)
+  svrSend("\n", sck2)
 end
+
+iolang("appendProto(Praxis)")
 
 newBuffer()
 setBufferText([[
@@ -21,4 +28,6 @@ render := method(
 // Press F4 to interpret selected text as Io
 ]])
 
-loadBuffer("iorender.io")
+-- loadBuffer("iorender.io")
+
+

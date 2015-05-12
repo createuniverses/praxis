@@ -52,7 +52,6 @@ public:
     void InsertKey(int key);
 
 	void Reshape(unsigned int w,unsigned int h);
-	void BlowupCursor();
 
 	string GetText();
 	string GetAllText() { return m_Text; }
@@ -69,7 +68,6 @@ public:
 
 	void SetText(const string& s);
     void InsertText(const string & s);
-	void Reset();
 
     void Load(const string & sFilename);
     void Save();
@@ -83,12 +81,6 @@ public:
 
     static string ReadFileToString(const string & sFilename);
     static string ReadLinesFromString(const string & sText, int nFirstLine, int nLastLine);
-    //static bool   FileExists(const std::string& sFilename);
-
-	float m_PosX,m_PosY;
-	float m_Scale;
-	float m_CursorMaxWidth;
-	float m_CursorMaxHeight;
 
     int m_Width;
     int m_Height;
@@ -98,52 +90,8 @@ public:
 
     static PolyGlyph *m_PolyGlyph;
 
-    float m_TextColourRed;
-    float m_TextColourGreen;
-    float m_TextColourBlue;
-    float m_TextColourAlpha;
-    float m_CursorColourRed;
-    float m_CursorColourGreen;
-    float m_CursorColourBlue;
-    float m_CursorColourAlpha;
-    float m_Alpha;
-
-    bool m_DoAutoScale;
-    float m_AutoScaleWidth;
-    float m_AutoScaleHeight;
-    float m_AutoScaleError;
-
-    float m_AutoScaleDrift;
-    float m_MinScale;
-    float m_MaxScale;
-
-    float m_YDrift;
-
-    unsigned int m_VisibleLines;
-    unsigned int m_VisibleColumns;
-
-    static float m_fFlashRate;
-    static float m_fBlowupFlashes;
-
-    static bool m_DoEffects;
-    static float m_EffectJiggleSize;
-
-    static float m_EffectWaveSize;
-    static float m_EffectWaveWavelength;
-    static float m_EffectWaveSpeed;
-    static float m_EffectWaveTimer;
-
-    static float m_EffectRippleSize;
-    static float m_EffectRippleCenterX;
-    static float m_EffectRippleCenterY;
-    static float m_EffectRippleWavelength;
-    static float m_EffectRippleSpeed;
-    static float m_EffectRippleTimer;
-
-    static float m_EffectSwirlSize;
-    static float m_EffectSwirlCenterX;
-    static float m_EffectSwirlCenterY;
-    static float m_EffectSwirlRotation;
+    int m_VisibleLines;
+    int m_VisibleColumns;
 
     static int m_nRenderMode;
     enum RenderModes
@@ -165,9 +113,6 @@ public:
 	void DrawCharBlock();
 	void DrawCursor();
 	void ProcessTabs();
-	int OffsetToCurrentLineStart();
-	int NextLineLength(int pos);
-	int PreviousLineLength(int pos);
 	int LineLength(int pos);
 	unsigned int LineStart(int pos);
 	unsigned int LineEnd(int pos);
@@ -177,7 +122,9 @@ public:
 
     void ParseLuaBlock();
 
-	int GetCurrentLine();
+    int CurrentLine();
+    int CurrentColumn();
+
 	void SetCurrentLine(int line);
     int GetLinePosition(int line);
     int GetFirstVisiblePosition();
@@ -204,20 +151,16 @@ public:
 
     int GetIndent(int nPosition);
 
-
-    //void BBExpand(float x, float y);
-    //void BBClear() { m_BBMinX=m_BBMinY=m_BBMaxX=m_BBMaxY=0; }
-
     string m_sName;
     string m_sParentName;
 
 	string m_Text;
 	static string m_CopyBuffer;
+
 	unsigned int m_Position;
     unsigned int m_HighlightAnchor;
     unsigned int SelectionBegin() { if(m_Position < m_HighlightAnchor) return m_Position; else return m_HighlightAnchor; }
     unsigned int SelectionEnd() { if(m_Position > m_HighlightAnchor) return m_Position; else return m_HighlightAnchor; }
-	unsigned int m_DesiredXPos;
 	bool m_Selection;
 	float m_CursorWidth;
 	float m_CharWidth;
@@ -229,16 +172,10 @@ public:
 	unsigned int m_LeftTextPosition;
 	unsigned int m_TopTextPosition;
 
-    int m_CurrentVisibleColumns;
-    int m_CurrentVisibleLines;
-
-    bool m_DebugBB;
     void GetBB(float & minX, float & minY, float & maxX, float & maxY);
 
-	float m_Delta;
-	float m_Flash;
-	bool m_BlowupCursor;
-	float m_Blowup;
+    void RenderBuffer();
+    void RenderTexture();
 };
 
 #endif

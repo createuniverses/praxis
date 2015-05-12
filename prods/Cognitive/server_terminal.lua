@@ -40,3 +40,20 @@ end
 
 svrRunCode = svrRunLua
 
+iocommand = ""
+
+function svrRunIo(sck,s)
+  iolang("cli_line := \"\"\"" .. s .. "\"\"\"")
+  local reply,trace = iolang(s)
+  do
+  local result = stripnewline(reply)
+  if result ~= "" then result = "==> " .. result .. "\n" end
+  svrSend(result, sck)
+  end
+  do
+  local result = stripnewline(trace)
+  if result ~= "" then result = result .. "\n" end
+  svrSend(result, sck)
+  end
+end
+

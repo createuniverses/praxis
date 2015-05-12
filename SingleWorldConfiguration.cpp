@@ -33,6 +33,7 @@ void SingleWorldConfiguration_passivemousemove(int x, int y );
 void SingleWorldConfiguration_mousewheel(int wheel, int direction, int x, int y);
 
 int g_nOffscreenWindowSize = 512;
+//int g_nOffscreenWindowSize = 1024;
 int g_nOffscreenWindowID = -1;
 int g_nMainWindowID = -1;
 
@@ -60,7 +61,7 @@ void RunSingleWorldConfiguration(
 	glutInit( &argc, argv );
     glutInitWindowSize(g_nSingleWorldWidth,g_nSingleWorldHeight);
     glutInitWindowPosition(g_nSingleWorldLeft,g_nSingleWorldTop);
-    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_STENCIL);
+    glutInitDisplayMode(GLUT_RGBA | GLUT_ALPHA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_STENCIL);
 
     g_nMainWindowID = glutCreateWindow( sName );
 	
@@ -84,7 +85,7 @@ void RunSingleWorldConfiguration(
 
 	glutMouseWheelFunc( SingleWorldConfiguration_mousewheel );
 
-    glutInitDisplayMode( GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_OFFSCREEN | GLUT_STENCIL );
+    glutInitDisplayMode( GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH | GLUT_STENCIL | GLUT_OFFSCREEN );
     glutInitWindowSize( g_nOffscreenWindowSize, g_nOffscreenWindowSize );
     g_nOffscreenWindowID = glutCreateWindow( "" );
 
