@@ -723,6 +723,18 @@ int luaCBEdSetRenderMode(lua_State * L)
 
     GLEditor::m_PolyGlyph->ClearCache();
 
+    if(GLEditor::m_nRenderMode == GLEditor::RenderMode_Texture_Bitmap)
+    {
+        // Smaller font, so can fit more text in the texture
+        GLEditor::m_VisibleLines    = 30;
+        GLEditor::m_VisibleColumns  = 65;
+    }
+    else
+    {
+        GLEditor::m_VisibleLines    = 20;
+        GLEditor::m_VisibleColumns  = 55;
+    }
+
     return 0;
 }
 

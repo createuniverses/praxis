@@ -417,7 +417,7 @@ void World::Render()
     int fWidth = viewport[2];
 
     if(m_bRenderOutput)
-        DrawText2D(mlVector3D(10 + 512 + 10, 35 + 512),  SelectEndLines(luaGetOutput(),20), fWidth, fHeight);
+        DrawText2D(mlVector3D(10 + 512 + 10, 35 + 512 - 13),  SelectEndLines(luaGetOutput(),20), fWidth, fHeight);
 
     if(m_bRenderError)
         DrawText2D(mlVector3D(10 + 512 + 10, 35 + (512 / 4)),  SelectEndLines(luaGetError(),20), fWidth, fHeight);
@@ -1629,6 +1629,8 @@ std::string World::SelectEndLines(const std::string & sText, int nNumLines)
         if(crpos == string::npos)
             return sText;
     }
+
+    crpos++;
 
     return sText.substr(crpos);
 }

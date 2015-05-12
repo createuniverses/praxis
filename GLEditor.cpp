@@ -30,6 +30,10 @@ int GLEditor::m_nRenderMode = GLEditor::RenderMode_Texture_Polyglyph;
 
 PolyGlyph * GLEditor::m_PolyGlyph = 0;
 
+int GLEditor::m_VisibleLines    = 20;
+int GLEditor::m_VisibleColumns  = 55;
+
+
 GLEditor::GLEditor():
     m_Position(0),
     m_HighlightAnchor(0),
@@ -42,9 +46,7 @@ GLEditor::GLEditor():
     m_TopTextPosition(0),
     m_LeftTextPosition(0),
     m_Width(0),
-    m_Height(0),
-    m_VisibleLines(20),
-    m_VisibleColumns(55)
+    m_Height(0)
 {
     if(m_PolyGlyph == 0)
         m_PolyGlyph = new PolyGlyph("Bitstream-Vera-Sans-Mono.ttf");
@@ -340,6 +342,18 @@ void GLEditor::StrokeCharacter(wchar_t c, float dx, float dy)
         break;
 
     case RenderMode_Texture_Bitmap:
+        glLineWidth(1.0f);
+        glColor3f(1.0f, 1.0f, 1.0f);
+        glPushMatrix();
+
+        SetNaturalRasterPos();
+        glutBitmapCharacter(GLUT_BITMAP_8_BY_13, c);
+
+        glPopMatrix();
+        glTranslatef(StrokeWidth(c),0,0);
+        glLineWidth(1.0f);
+        break;
+
     case RenderMode_Direct_Bitmap:
         glLineWidth(1.0f);
         glColor3f(1.0f, 1.0f, 1.0f);

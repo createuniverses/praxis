@@ -90,8 +90,8 @@ public:
 
     static PolyGlyph *m_PolyGlyph;
 
-    int m_VisibleLines;
-    int m_VisibleColumns;
+    static int m_VisibleLines;
+    static int m_VisibleColumns;
 
     static int m_nRenderMode;
     enum RenderModes
