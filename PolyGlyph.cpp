@@ -26,6 +26,11 @@ PolyGlyph::~PolyGlyph()
     FT_Done_FreeType(m_Library);
 }
 
+void PolyGlyph::ClearCache()
+{
+    m_Cache.clear();
+}
+
 void PolyGlyph::Render(wchar_t ch, float r, float g, float b, float a,
 		float dx /* = 0 */, float dy /* = 0 */)
 {

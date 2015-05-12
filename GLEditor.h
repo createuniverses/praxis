@@ -96,9 +96,12 @@ public:
     static int m_nRenderMode;
     enum RenderModes
     {
-        RenderMode_Polyglyph,
-        RenderMode_Stroke,
-        RenderMode_Bitmap
+        RenderMode_Texture_Polyglyph,
+        RenderMode_Texture_Stroke,
+        RenderMode_Texture_Bitmap,
+        RenderMode_Direct_Polyglyph,
+        RenderMode_Direct_Stroke,
+        RenderMode_Direct_Bitmap
     };
 
 //protected:
@@ -174,7 +177,7 @@ public:
 
     void GetBB(float & minX, float & minY, float & maxX, float & maxY);
 
-    void RenderBuffer();
+    void RenderBuffer(bool bBackground);
     void RenderTexture();
 };
 

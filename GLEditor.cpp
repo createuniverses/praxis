@@ -26,7 +26,7 @@ bool g_bEditTextureDirty = true;
 // static so we share between workspaces
 string GLEditor::m_CopyBuffer;
 
-int GLEditor::m_nRenderMode = GLEditor::RenderMode_Polyglyph;
+int GLEditor::m_nRenderMode = GLEditor::RenderMode_Texture_Polyglyph;
 
 PolyGlyph * GLEditor::m_PolyGlyph = 0;
 
@@ -320,11 +320,13 @@ void GLEditor::StrokeCharacter(wchar_t c, float dx, float dy)
 {
     switch(m_nRenderMode)
     {
-    case RenderMode_Polyglyph:
+    case RenderMode_Texture_Polyglyph:
+    case RenderMode_Direct_Polyglyph:
         m_PolyGlyph->Render(c, 1.0f, 1.0f, 1.0f, 1.0f, dx, dy);
         break;
 
-    case RenderMode_Stroke:
+    case RenderMode_Texture_Stroke:
+    case RenderMode_Direct_Stroke:
         glLineWidth(1.0f);
         glColor3f(1.0f, 1.0f, 1.0f);
         glPushMatrix();
@@ -337,7 +339,8 @@ void GLEditor::StrokeCharacter(wchar_t c, float dx, float dy)
         glLineWidth(1.0f);
         break;
 
-    case RenderMode_Bitmap:
+    case RenderMode_Texture_Bitmap:
+    case RenderMode_Direct_Bitmap:
         glLineWidth(1.0f);
         glColor3f(1.0f, 1.0f, 1.0f);
         glPushMatrix();
@@ -490,24 +493,36 @@ void GLEditor::Update()
 
 void GLEditor::Render()
 {
-    if(g_pEditTexture == 0)
+    if(m_nRenderMode >= RenderMode_Direct_Polyglyph)
     {
-        g_pEditTexture = new LiveCodeTexture();
-    }
+        int nLeftMargin    = m_Width * 0.01f;
+        int nWidth         = m_Width - m_Width * 0.25f;
+        int nBottomMargin  = m_Height * 0.05f;
+        int nHeight        = m_Height - m_Height * 0.1f;
 
-    if(g_bEditTextureDirty)
+        glViewport(nLeftMargin, nBottomMargin, nWidth, nHeight);
+        RenderBuffer(true);
+    }
+    else
     {
-        g_pEditTexture->Begin();
-        //g_pEditTexture->Resume();
-        RenderBuffer();
-        g_pEditTexture->End();
+        if(g_pEditTexture == 0)
+        {
+            g_pEditTexture = new LiveCodeTexture();
+        }
 
-        g_bEditTextureDirty = false;
+        if(g_bEditTextureDirty)
+        {
+            g_pEditTexture->Begin();
+            //g_pEditTexture->Resume();
+            glViewport(0, 0, 512, 512);
+            RenderBuffer(false);
+            g_pEditTexture->End();
+
+            g_bEditTextureDirty = false;
+        }
+
+        RenderTexture();
     }
-
-    RenderTexture();
-
-    //RenderBuffer();
 }
 
 void GLEditor::RenderTexture()
@@ -566,9 +581,11 @@ void GLEditor::RenderTexture()
 
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void GLEditor::RenderBuffer()
+void GLEditor::RenderBuffer(bool bBackground)
 {
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_LIGHTING);
@@ -581,8 +598,6 @@ void GLEditor::RenderBuffer()
 
     float minX,minY,maxX,maxY; GetBB(minX,minY,maxX,maxY);
 
-    glViewport(0, 0, 512, 512);
-
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
@@ -592,6 +607,17 @@ void GLEditor::RenderBuffer()
     glPushMatrix();
     glLoadIdentity();
     glPushMatrix();
+
+    if(bBackground)
+    {
+        glColor4f(0,0,0,0.7f);
+        glBegin(GL_QUADS);
+        glVertex3f( minX, minY, 0);
+        glVertex3f( maxX, minY, 0);
+        glVertex3f( maxX, maxY, 0);
+        glVertex3f( minX, maxY, 0);
+        glEnd();
+    }
 
     unsigned int xcount=0;
     float xpos=0;

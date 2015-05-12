@@ -54,6 +54,8 @@ public:
     float CharacterWidth(wchar_t ch);
     float CharacterHeight(wchar_t ch);
 
+    void ClearCache();
+
 private:
 
 	void BuildGeometry(const FT_GlyphSlot glyph, GlyphGeometry &geo);

@@ -718,8 +718,10 @@ int luaCBEdSetRenderMode(lua_State * L)
 {
     GLEditor::m_nRenderMode = luaL_checknumber(L, 1);
 
-    if(GLEditor::m_nRenderMode < 0 || GLEditor::m_nRenderMode > 2)
+    if(GLEditor::m_nRenderMode < 0 || GLEditor::m_nRenderMode > 5)
         GLEditor::m_nRenderMode = 0;
+
+    GLEditor::m_PolyGlyph->ClearCache();
 
     return 0;
 }
