@@ -24,15 +24,7 @@ extern "C"
 }
 
 void luaInit();
-
 bool luaCall(std::string sCmd);
-
-std::string & luaGetError();
-std::string & luaGetOutput();
-
-void luaClearError();
-void luaClearOutput();
-
 void luaClose();
 
 bool luaIsCommandComplete(std::string sCmd);

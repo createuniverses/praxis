@@ -26,10 +26,14 @@ extern "C"
 extern int g_nLastBreakTime;
 #endif
 
+#include "World.h"
+
+extern World * g_pWorld;
+
 lua_State * g_pLuaState = 0;
 
-std::string g_sLuaOutput;
-std::string g_sLuaError;
+//std::string g_sLuaOutput;
+//std::string g_sLuaError;
 
 //bool g_bLuaBreak = false;
 void cbLuaBreakHook(lua_State *L, lua_Debug *ar);
@@ -88,13 +92,15 @@ bool luaCall(std::string sCmd)
     EnterCriticalSection (&g_cs) ;
 #endif
 
+    std::string & sError = g_pWorld->GetErrorText();
+
     lua_getglobal(g_pLuaState, "onerror");
     int error = (luaL_loadstring(g_pLuaState, sCmd.c_str()) || lua_pcall(g_pLuaState, 0, LUA_MULTRET, -2));
 
     if (error)
     {
-        g_sLuaError += lua_tostring(g_pLuaState, -1);
-        g_sLuaError += "\n";
+        sError += lua_tostring(g_pLuaState, -1);
+        sError += "\n";
 
         lua_pop(g_pLuaState, 1);
     }
@@ -109,25 +115,25 @@ bool luaCall(std::string sCmd)
     return (error == 0);
 }
 
-std::string & luaGetOutput()
-{
-    return g_sLuaOutput;
-}
+//std::string & luaGetOutput()
+//{
+//    return g_sLuaOutput;
+//}
 
-std::string & luaGetError()
-{
-    return g_sLuaError;
-}
+//std::string & luaGetError()
+//{
+//    return g_sLuaError;
+//}
 
-void luaClearError()
-{
-    g_sLuaError = "";
-}
+//void luaClearError()
+//{
+//    g_sLuaError = "";
+//}
 
-void luaClearOutput()
-{
-    g_sLuaOutput = "";
-}
+//void luaClearOutput()
+//{
+//    g_sLuaOutput = "";
+//}
 
 void luaClose()
 {
@@ -148,18 +154,20 @@ void luaClose()
 
 int cbLuaPrint( lua_State *L)
 {
+    std::string & sTrace = g_pWorld->GetTraceText();
+
     int n = lua_gettop(L);
     int i = 0;
     for(i = 1; i <= n; i++)
     {
         if(lua_isstring(L, i))
         {
-            g_sLuaOutput += lua_tostring(L, i);
-            g_sLuaOutput += "\n";
+            sTrace += lua_tostring(L, i);
+            sTrace += "\n";
         }
         else
         {
-            g_sLuaOutput += "Not a string\n";
+            sTrace += "Not a string\n";
         }
     }
 

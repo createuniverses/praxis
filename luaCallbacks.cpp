@@ -2446,13 +2446,14 @@ int luaCBHideTrace(lua_State * L)
 
 int luaCBClearTrace(lua_State * L)
 {
-    luaClearOutput();
+    std::string & sTrace = g_pWorld->GetTraceText();
+    sTrace = "";
     return 0;
 }
 
 int luaCBGetTraceText(lua_State * L)
 {
-    lua_pushstring(L, luaGetOutput().c_str());
+    lua_pushstring(L, g_pWorld->GetTraceText().c_str());
     return 1;
 }
 
@@ -2476,13 +2477,14 @@ int luaCBHideError(lua_State * L)
 
 int luaCBClearError(lua_State * L)
 {
-    luaClearError();
+    std::string & sError = g_pWorld->GetErrorText();
+    sError = "";
     return 0;
 }
 
 int luaCBGetErrorText(lua_State * L)
 {
-    lua_pushstring(L, luaGetError().c_str());
+    lua_pushstring(L, g_pWorld->GetErrorText().c_str());
     return 1;
 }
 
