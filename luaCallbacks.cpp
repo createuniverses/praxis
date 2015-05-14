@@ -51,6 +51,8 @@
 #include "forthInterface.h"
 #include "ioInterface.h"
 
+#include "PraxisLog.h"
+
 extern "C"
 {
 #include <lua.h>
@@ -2446,14 +2448,13 @@ int luaCBHideTrace(lua_State * L)
 
 int luaCBClearTrace(lua_State * L)
 {
-    std::string & sTrace = g_pWorld->GetTraceText();
-    sTrace = "";
+    PraxisLog::trace = "";
     return 0;
 }
 
 int luaCBGetTraceText(lua_State * L)
 {
-    lua_pushstring(L, g_pWorld->GetTraceText().c_str());
+    lua_pushstring(L, PraxisLog::trace.c_str());
     return 1;
 }
 
@@ -2477,14 +2478,13 @@ int luaCBHideError(lua_State * L)
 
 int luaCBClearError(lua_State * L)
 {
-    std::string & sError = g_pWorld->GetErrorText();
-    sError = "";
+    PraxisLog::error = "";
     return 0;
 }
 
 int luaCBGetErrorText(lua_State * L)
 {
-    lua_pushstring(L, g_pWorld->GetErrorText().c_str());
+    lua_pushstring(L, PraxisLog::error.c_str());
     return 1;
 }
 

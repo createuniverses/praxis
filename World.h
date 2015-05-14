@@ -138,9 +138,6 @@ public:
     bool RightMouseDown() { return m_bRightMouseDown; }
     bool RightMouseWentDown() { return m_bRightMouseWentDown; }
 
-    std::string & GetTraceText() { return m_sTrace; }
-    std::string & GetErrorText() { return m_sError; }
-
 private:
 
     // OpenGL state
@@ -200,9 +197,6 @@ public:
 
     RtMidiOut* m_midiout;
     RtMidiIn*  m_midiin;
-
-    std::string m_sTrace;
-    std::string m_sError;
 };
 
 #endif // WORLD_H

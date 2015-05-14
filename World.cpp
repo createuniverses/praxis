@@ -24,6 +24,8 @@
 
 #include "SingleWorldConfiguration.h"
 
+#include "PraxisLog.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -157,7 +159,7 @@ void World::Update()
         }
     }
 
-    GetEditor()->Update();
+    //GetEditor()->Update();
 
 #ifdef __PRAXIS_WINDOWS__
 
@@ -417,11 +419,11 @@ void World::Render()
     int fWidth = viewport[2];
 
     if(m_bRenderOutput)
-        DrawText2D(mlVector3D(10 + 512 + 10, 35 + 512 - 13),  SelectEndLines(GetTraceText(),20), fWidth, fHeight);
+        DrawText2D(mlVector3D(10 + 512 + 10, 35 + 512 - 13),  SelectEndLines(PraxisLog::trace,20), fWidth, fHeight);
         //DrawText2D(mlVector3D(10 + 512 + 10, 35 + 512 - 13),  SelectEndLines(luaGetOutput(),20), fWidth, fHeight);
 
     if(m_bRenderError)
-        DrawText2D(mlVector3D(10 + 512 + 10, 35 + (512 / 4)),  SelectEndLines(GetErrorText(),20), fWidth, fHeight);
+        DrawText2D(mlVector3D(10 + 512 + 10, 35 + (512 / 4)),  SelectEndLines(PraxisLog::error,20), fWidth, fHeight);
         //DrawText2D(mlVector3D(10 + 512 + 10, 35 + (512 / 4)),  SelectEndLines(luaGetError(),20), fWidth, fHeight);
 
     m_nRenderCount++;

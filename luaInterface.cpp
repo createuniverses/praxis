@@ -26,9 +26,7 @@ extern "C"
 extern int g_nLastBreakTime;
 #endif
 
-#include "World.h"
-
-extern World * g_pWorld;
+#include "PraxisLog.h"
 
 lua_State * g_pLuaState = 0;
 
@@ -92,7 +90,7 @@ bool luaCall(std::string sCmd)
     EnterCriticalSection (&g_cs) ;
 #endif
 
-    std::string & sError = g_pWorld->GetErrorText();
+    std::string & sError = PraxisLog::error;
 
     lua_getglobal(g_pLuaState, "onerror");
     int error = (luaL_loadstring(g_pLuaState, sCmd.c_str()) || lua_pcall(g_pLuaState, 0, LUA_MULTRET, -2));
@@ -154,7 +152,7 @@ void luaClose()
 
 int cbLuaPrint( lua_State *L)
 {
-    std::string & sTrace = g_pWorld->GetTraceText();
+    std::string & sTrace = PraxisLog::trace;
 
     int n = lua_gettop(L);
     int i = 0;

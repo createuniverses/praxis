@@ -503,6 +503,8 @@ void GLEditor::Update()
 //    m_ParenthesesHighlight[1] = paren.n2;
 
     ParseLuaBlock();
+
+    g_bEditTextureDirty = true;
 }
 
 void GLEditor::Render()

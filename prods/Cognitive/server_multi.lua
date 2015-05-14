@@ -53,20 +53,63 @@ function svrRunForth(sck,s)
   --svrSend(stripnewline(forth(s)).."\n", sck)
 end
 
+-- praxis:
+
+iolang("doFile(\"iocli.io\")")
+
+iocommand = ""
+
 function svrRunIo(sck,s)
-  iolang("cli_line := \"\"\"" .. s .. "\"\"\"")
-  local reply,trace = iolang(s)
-  do
-  local result = stripnewline(reply)
-  if result ~= "" then result = "==> " .. result .. "\n" end
-  svrSend(result, sck)
+  iocommand = iocommand .. s .. "\n"
+  local reply,trace = iolang("doLine(\"\"\" " .. iocommand .. " \"\"\")")
+  if reply == "Ready" then
+    --iolang("context set_(getSlot(\"lastResult\")")
+    local result = stripnewline(iolang("getSlot(\"lastResult\")"))
+    if result ~= "nil" or trace == "" then
+      result = result .. "\n"
+      svrSend(result, sck)
+    end
+    iocommand = ""
   end
-  do
-  local result = stripnewline(trace)
-  if result ~= "" then result = result .. "\n" end
-  svrSend(result, sck)
+  if reply == "Error" then
+    local result = stripnewline(iolang("lastError"))
+    result = result .. "\n"
+    svrSend(result, sck)
+    iocommand = ""
+  end
+  if reply == "Incomplete" then
+    result = "..." .. "\n"
+    svrSend(result, sck)
+  end
+  
+  trace = stripnewline(trace)
+  if trace ~= "" then
+    trace = trace .. "\n"
+    svrSend(trace, sck)
   end
 end
+
+svrRunCode = svrRunIo
+
+-- praxis:
+
+function svrRunIo(sck,s)
+  local reply,trace = iolang(s)
+  do
+    local result = stripnewline(reply)
+    result = "==> " .. result .. "\n"
+    svrSend(result, sck)
+  end
+  do
+    local result = stripnewline(trace)
+    if result ~= "" then
+      result = "Error: " .. result .. "\n"
+      svrSend(result, sck)
+    end
+  end
+end
+
+svrRunCode = svrRunIo
 
 svrRunCode = svrRunLua
 
