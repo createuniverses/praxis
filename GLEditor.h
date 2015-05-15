@@ -20,18 +20,9 @@
 #include <string>
 #include "PolyGlyph.h"
 
-#define GLEDITOR_DELETE 127
-#define GLEDITOR_BACKSPACE 8
-
-#define GLEDITOR_RETURN 13
-#define GLEDITOR_CUT 24 
-#define GLEDITOR_COPY 3 
-#define GLEDITOR_PASTE 22 
-#define GLEDITOR_PLUS 61 
-#define GLEDITOR_MINUS 45 
-#define GLEDITOR_SAVE 19
-
 using namespace std;
+
+class PraxisTexture;
 
 class GLEditor
 {
@@ -94,15 +85,27 @@ public:
     static int m_VisibleColumns;
 
     static int m_nRenderMode;
-    enum RenderModes
+    enum RenderMode
     {
-        RenderMode_Texture_Polyglyph,
-        RenderMode_Texture_Stroke,
-        RenderMode_Texture_Bitmap,
         RenderMode_Direct_Polyglyph,
         RenderMode_Direct_Stroke,
-        RenderMode_Direct_Bitmap
+        RenderMode_Direct_Bitmap,
+        RenderMode_Texture_Polyglyph,
+        RenderMode_Texture_Stroke,
+        RenderMode_Texture_Bitmap
     };
+
+    static void SetRenderMode(int nRenderMode);
+    static void ResizeTexture(int nNewSize);
+
+    static bool m_bUpdateRequired;
+
+    static PraxisTexture * m_pTexture;
+    static int m_nDesiredTextureSize;
+
+    static float m_CursorWidth;
+    static float m_CharWidth;
+    static float m_CharHeight;
 
 //protected:
 
@@ -165,13 +168,11 @@ public:
     unsigned int SelectionBegin() { if(m_Position < m_HighlightAnchor) return m_Position; else return m_HighlightAnchor; }
     unsigned int SelectionEnd() { if(m_Position > m_HighlightAnchor) return m_Position; else return m_HighlightAnchor; }
 	bool m_Selection;
-	float m_CursorWidth;
-	float m_CharWidth;
-	float m_CharHeight;
     int m_ParenthesesHighlight[2];
     int m_LuaBlockHighlight[2];
     string m_OpenChars;
 	string m_CloseChars;
+
 	unsigned int m_LeftTextPosition;
 	unsigned int m_TopTextPosition;
 

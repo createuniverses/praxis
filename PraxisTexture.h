@@ -5,10 +5,10 @@
 #include "SingleWorldConfiguration.h"
 #include "luaInterface.h"
 
-class LiveCodeTexture
+class PraxisTexture
 {
 public:
-    LiveCodeTexture();
+    PraxisTexture(int nSize = 128);
     void Clear(unsigned char red, unsigned char green, unsigned char blue);
     void UpdateTexture();
 
@@ -21,7 +21,7 @@ public:
     GLuint nTextureID;
     std::string sRenderFunction;
     int nSize;
-    char pixels [512*512*3];
+    char pixels [1024*1024*3];
 };
 
 #endif // PRAXISTEXTURE_H

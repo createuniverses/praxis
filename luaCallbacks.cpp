@@ -46,12 +46,14 @@
 #include "Voxel.h"
 
 #include "PraxisTexture.h"
+#include "PraxisServer.h"
+#include "PraxisLog.h"
+
 
 #include "lispInterface.h"
 #include "forthInterface.h"
 #include "ioInterface.h"
 
-#include "PraxisLog.h"
 
 extern "C"
 {
@@ -718,25 +720,8 @@ int luaCBEdGetRenderMode(lua_State * L)
 
 int luaCBEdSetRenderMode(lua_State * L)
 {
-    GLEditor::m_nRenderMode = luaL_checknumber(L, 1);
-
-    if(GLEditor::m_nRenderMode < 0 || GLEditor::m_nRenderMode > 5)
-        GLEditor::m_nRenderMode = 0;
-
-    GLEditor::m_PolyGlyph->ClearCache();
-
-    if(GLEditor::m_nRenderMode == GLEditor::RenderMode_Texture_Bitmap)
-    {
-        // Smaller font, so can fit more text in the texture
-        GLEditor::m_VisibleLines    = 30;
-        GLEditor::m_VisibleColumns  = 65;
-    }
-    else
-    {
-        GLEditor::m_VisibleLines    = 20;
-        GLEditor::m_VisibleColumns  = 55;
-    }
-
+    int nRenderMode = luaL_checknumber(L, 1);
+    GLEditor::SetRenderMode(nRenderMode);
     return 0;
 }
 
@@ -1112,19 +1097,33 @@ int luaCBGetWindowRect(lua_State * L)
     return 4;
 }
 
-int luaCBSetBufferVisColumns(lua_State * L)
+int luaCBEdSetVisColumns(lua_State * L)
 {
     int arg = luaL_checknumber(L,1);
-    g_pWorld->GetEditor()->m_VisibleColumns = arg;
-
+    GLEditor::m_VisibleColumns = arg;
+    GLEditor::m_bUpdateRequired = true;
     return 0;
 }
 
-int luaCBSetBufferVisLines(lua_State * L)
+int luaCBEdSetVisLines(lua_State * L)
 {
     int arg = luaL_checknumber(L,1);
-    g_pWorld->GetEditor()->m_VisibleLines = arg;
+    GLEditor::m_VisibleLines = arg;
+    GLEditor::m_bUpdateRequired = true;
+    return 0;
+}
 
+int luaEdResizeTexture(lua_State * L)
+{
+    int arg = luaL_checknumber(L,1);
+    GLEditor::m_nDesiredTextureSize = arg;
+    GLEditor::m_bUpdateRequired = true;
+    return 0;
+}
+
+int luaEdForceUpdate(lua_State * L)
+{
+    GLEditor::m_bUpdateRequired = true;
     return 0;
 }
 
@@ -2014,9 +2013,9 @@ int luaCBTextureNew(lua_State * L)
 {
     // return the GL index of the texture and a pointer to the QImage itself.
 
-    LiveCodeTexture ** c = (LiveCodeTexture **)lua_newuserdata(L, sizeof(LiveCodeTexture *));
+    PraxisTexture ** c = (PraxisTexture **)lua_newuserdata(L, sizeof(PraxisTexture *));
 
-    *c = new LiveCodeTexture();
+    *c = new PraxisTexture();
 
     luaL_getmetatable(L, "LiveCode.texture");
     lua_setmetatable(L, -2);
@@ -2029,7 +2028,7 @@ int luaCBTextureGC(lua_State * L)
     int n = lua_gettop(L);
     if(n!=1) luaL_error(L, "1 argument expected.");
 
-    LiveCodeTexture * c = *(LiveCodeTexture **)luaL_checkudata(L, 1, "LiveCode.texture");
+    PraxisTexture * c = *(PraxisTexture **)luaL_checkudata(L, 1, "LiveCode.texture");
 
     delete c;
 
@@ -2041,7 +2040,7 @@ int luaCBTextureClear(lua_State * L)
     int n = lua_gettop(L);
     if(n!=1) luaL_error(L, "1 argument expected.");
 
-    LiveCodeTexture * c = *(LiveCodeTexture **)luaL_checkudata(L, 1, "LiveCode.texture");
+    PraxisTexture * c = *(PraxisTexture **)luaL_checkudata(L, 1, "LiveCode.texture");
 
     c->Clear(0,0,0);
 
@@ -2053,7 +2052,7 @@ int luaCBTextureSelect(lua_State * L)
     int n = lua_gettop(L);
     if(n!=1) luaL_error(L, "1 argument expected.");
 
-    LiveCodeTexture * c = *(LiveCodeTexture **)luaL_checkudata(L, 1, "LiveCode.texture");
+    PraxisTexture * c = *(PraxisTexture **)luaL_checkudata(L, 1, "LiveCode.texture");
 
     glBindTexture(GL_TEXTURE_2D, c->nTextureID);
 
@@ -2065,7 +2064,7 @@ int luaCBTextureUpdate(lua_State * L)
     int n = lua_gettop(L);
     if(n!=1) luaL_error(L, "1 argument expected.");
 
-    LiveCodeTexture * c = *(LiveCodeTexture **)luaL_checkudata(L, 1, "LiveCode.texture");
+    PraxisTexture * c = *(PraxisTexture **)luaL_checkudata(L, 1, "LiveCode.texture");
 
     c->UpdateTexture();
 
@@ -2077,7 +2076,7 @@ int luaCBTextureBegin(lua_State * L)
     int n = lua_gettop(L);
     if(n!=1) luaL_error(L, "1 argument expected.");
 
-    LiveCodeTexture * c = *(LiveCodeTexture **)luaL_checkudata(L, 1, "LiveCode.texture");
+    PraxisTexture * c = *(PraxisTexture **)luaL_checkudata(L, 1, "LiveCode.texture");
 
     c->Begin();
 
@@ -2089,7 +2088,7 @@ int luaCBTextureEnd(lua_State * L)
     int n = lua_gettop(L);
     if(n!=1) luaL_error(L, "1 argument expected.");
 
-    LiveCodeTexture * c = *(LiveCodeTexture **)luaL_checkudata(L, 1, "LiveCode.texture");
+    PraxisTexture * c = *(PraxisTexture **)luaL_checkudata(L, 1, "LiveCode.texture");
 
     c->End();
 
@@ -2101,7 +2100,7 @@ int luaCBTextureSetRenderFunction(lua_State * L)
     int n = lua_gettop(L);
     if(n!=2) luaL_error(L, "2 arguments expected.");
 
-    LiveCodeTexture * c = *(LiveCodeTexture **)luaL_checkudata(L, 1, "LiveCode.texture");
+    PraxisTexture * c = *(PraxisTexture **)luaL_checkudata(L, 1, "LiveCode.texture");
 
     std::string sRenderFunction = luaL_checkstring(L, 2);
 
@@ -2883,235 +2882,57 @@ int luaCBGetFPS(lua_State * L)
     return 1;
 }
 
-#ifdef __PRAXIS_LINUX__
-typedef int SOCKET;
-int INVALID_SOCKET = -1;
-int SOCKET_ERROR = -1;
-#endif
-
-SOCKET ServerSocket = INVALID_SOCKET;
-SOCKET g_clientSocket = INVALID_SOCKET;
-
 int luaCBStartServer(lua_State * L)
 {
-#ifdef __PRAXIS_WINDOWS__
-    // Start Winsock up
-    WSAData wsaData;
-    int nCode;
-    if ((nCode = WSAStartup(MAKEWORD(1, 1), &wsaData)) != 0) {
-        cerr << "WSAStartup() returned error code " << nCode << "." <<
-                endl;
-        lua_pushboolean(L, false);
-        return 1;
-    }
-#endif
-
-    // Begin listening for connections
-    cout << "Establishing the listener..." << endl;
-    ServerSocket = INVALID_SOCKET;
-    u_long nInterfaceAddr = inet_addr("127.0.0.1");
-    if (nInterfaceAddr != INADDR_NONE) {
-        ServerSocket = socket(AF_INET, SOCK_STREAM, 0);
-        if (ServerSocket != INVALID_SOCKET) {
-
-            sockaddr_in sinInterface;
-            sinInterface.sin_family = AF_INET;
-            sinInterface.sin_addr.s_addr = nInterfaceAddr;
-            sinInterface.sin_port = htons(4242);
-            if (bind(ServerSocket, (sockaddr*)&sinInterface,
-                    sizeof(sockaddr_in)) != SOCKET_ERROR) {
-                listen(ServerSocket, 1);
-            }
-        }
-    }
-
-    if (ServerSocket == INVALID_SOCKET)
-    {
-        lua_pushboolean(L, false);
-        return 1;
-    }
-
-#ifdef __PRAXIS_WINDOWS__
-    u_long iMode = 1;
-    ioctlsocket(ServerSocket, FIONBIO, &iMode);
-#endif
-
-#ifdef __PRAXIS_LINUX__
-    u_long iMode = 1;
-    ioctl(ServerSocket, FIONBIO, &iMode);
-#endif
-
-    lua_pushboolean(L, true);
+    bool bResult = PraxisServer::Start();
+    lua_pushboolean(L, bResult);
     return 1;
 }
 
 int luaCBAcceptConnection(lua_State * L)
 {
-    //cout << "Waiting for a connection..." << flush;
-    sockaddr_in sinRemote;
-    int nAddrSize = sizeof(sinRemote);
-#ifdef __PRAXIS_WINDOWS__
-    SOCKET clientSocket = accept(ServerSocket, (sockaddr*)&sinRemote, &nAddrSize);
-#endif
-#ifdef __PRAXIS_LINUX__
-    SOCKET clientSocket = accept(ServerSocket, (struct sockaddr*)&sinRemote, (socklen_t *)&nAddrSize);
-#endif
-    if (clientSocket != INVALID_SOCKET) {
-        cout << "Accepted connection from " <<
-                inet_ntoa(sinRemote.sin_addr) << ":" <<
-                ntohs(sinRemote.sin_port) << "." << endl;
-
-#ifdef __PRAXIS_WINDOWS__
-        u_long iMode = 1;
-        ioctlsocket(clientSocket, FIONBIO, &iMode);
-#endif
-
-#ifdef __PRAXIS_LINUX__
-        u_long iMode = 1;
-        ioctl(clientSocket, FIONBIO, &iMode);
-#endif
-    }
-
-    g_clientSocket = clientSocket;
-
-    lua_pushnumber(L, clientSocket);
-    return 1;
-}
-
-int luaCBReceiveDataWithLookahead(lua_State * L)
-{
-    SOCKET clientSocket = g_clientSocket;
-    int n = lua_gettop(L);
-    if(n >= 1)
-    {
-        clientSocket = luaL_checknumber(L, 1);
-    }
-
-    char buf[64000];
-    buf[0] = '\0';
-
-    int    nTotalBytes = 0;
-    u_long nBytesWaiting = 0;
-
-    do
-    {
-        int nTemp = recv(clientSocket, buf+nTotalBytes, 64000-nTotalBytes, 0);
-        if(nTemp > 0)
-        {
-            nTotalBytes += nTemp;
-            cout << "Received " << nTemp << " bytes." << endl;
-        }
-
-#ifdef __PRAXIS_WINDOWS__
-        ioctlsocket(clientSocket, FIONREAD, &nBytesWaiting);
-#endif
-#ifdef __PRAXIS_LINUX__
-        ioctl(clientSocket, FIONREAD, &nBytesWaiting);
-#endif
-    }
-    while(nBytesWaiting > 0);
-
-    buf[nTotalBytes] = '\0';
-
-    // Return any data received
-    lua_pushstring(L, buf);
+    SOCKET s = PraxisServer::Accept();
+    lua_pushnumber(L, s);
     return 1;
 }
 
 int luaCBReceiveData(lua_State * L)
 {
-    SOCKET clientSocket = g_clientSocket;
+    SOCKET s = PraxisServer::LastAcceptedClientSocket;
     int n = lua_gettop(L);
     if(n >= 1)
-    {
-        clientSocket = luaL_checknumber(L, 1);
-    }
-
-    char buf[64000];
-    buf[0] = '\0';
-
-    int nBytes = recv(clientSocket, buf, 64000, 0);
-    if(nBytes > 0)
-    {
-        cout << "Received " << nBytes << " bytes." << endl;
-    }
-
-    buf[nBytes] = '\0';
-
-    // Return any data received
-    lua_pushstring(L, buf);
+        s = luaL_checknumber(L, 1);
+    std::string data = PraxisServer::Receive(s);
+    lua_pushstring(L, data.c_str());
     return 1;
 }
 
 int luaCBSendData(lua_State * L)
 {
     std::string sText = luaL_checkstring(L, 1);
-
-    SOCKET clientSocket = g_clientSocket;
+    SOCKET s = PraxisServer::LastAcceptedClientSocket;
     int n = lua_gettop(L);
     if(n >= 2)
-    {
-        clientSocket = luaL_checknumber(L, 2);
-    }
-
-    int nReadBytes = sText.length();
-    char buf[64000];
-    strcpy(buf, sText.c_str());
-
-    int nSentBytes = 0;
-    while (nSentBytes < nReadBytes) {
-        int nTemp = send(clientSocket, buf + nSentBytes,
-                nReadBytes - nSentBytes, 0);
-        if (nTemp > 0) {
-            cout << "Sent " << nTemp << " bytes back to client." << endl;
-            nSentBytes += nTemp;
-        }
-        else if (nTemp == SOCKET_ERROR) {
-            cout << "Socket error" << endl;
-            return 0;
-        }
-        else {
-            // Client closed connection before we could reply to
-            // all the data it sent, so bomb out early.
-            cout << "Peer unexpectedly dropped connection!" <<
-                    endl;
-            return 0;
-        }
-    }
-
+        s = luaL_checknumber(L, 2);
+    PraxisServer::Send(s, sText);
     return 0;
 }
 
 int luaCBIsValidSocket(lua_State * L)
 {
-    SOCKET clientSocket = luaL_checknumber(L, 1);
-
-    if(clientSocket == INVALID_SOCKET)
-        lua_pushboolean(L, false);
-    else
-        lua_pushboolean(L, true);
-
+    SOCKET s = luaL_checknumber(L, 1);
+    lua_pushboolean(L, PraxisServer::SocketIsValid(s));
     return 1;
 }
 
 int luaCBSetBlocking(lua_State * L)
 {
-    SOCKET clientSocket = g_clientSocket;
+    u_long mode = luaL_checknumber(L, 1);
+    SOCKET s = PraxisServer::LastAcceptedClientSocket;
     int n = lua_gettop(L);
-    if(n >= 1)
-    {
-        clientSocket = luaL_checknumber(L, 1);
-    }
-
-    u_long iMode = luaL_checknumber(L, 1);
-#ifdef __PRAXIS_WINDOWS__
-        ioctlsocket(clientSocket, FIONBIO, &iMode);
-#endif
-
-#ifdef __PRAXIS_LINUX__
-        ioctl(clientSocket, FIONBIO, &iMode);
-#endif
-
+    if(n >= 2)
+        s = luaL_checknumber(L, 2);
+    PraxisServer::SetBlockingOption(s, mode);
     return 0;
 }
 
@@ -3384,8 +3205,26 @@ void luaInitCallbacks()
     lua_register(g_pLuaState, "edParseParentheses",    luaCBParseParentheses);
     lua_register(g_pLuaState, "edSetHighlight",        luaCBEdSetHighlight);
 
-    lua_register(g_pLuaState, "setVisColumns",         luaCBSetBufferVisColumns);
-    lua_register(g_pLuaState, "setVisLines",           luaCBSetBufferVisLines);
+    lua_register(g_pLuaState, "edGetRenderMode",       luaCBEdGetRenderMode);
+    lua_register(g_pLuaState, "edSetRenderMode",       luaCBEdSetRenderMode);
+
+    lua_register(g_pLuaState, "edSetVisColumns",       luaCBEdSetVisColumns);
+    lua_register(g_pLuaState, "edSetVisLines",         luaCBEdSetVisLines);
+
+    lua_register(g_pLuaState, "edResizeTexture",       luaEdResizeTexture);
+    lua_register(g_pLuaState, "edForceUpdate",         luaEdForceUpdate);
+
+    lua_register(g_pLuaState, "edGetTopPosition",      luaCBEdGetTopPosition);
+    lua_register(g_pLuaState, "edGetBottomPosition",   luaCBEdGetBottomPosition);
+    lua_register(g_pLuaState, "edGetLeftPosition",     luaCBEdGetLeftPosition);
+    lua_register(g_pLuaState, "edGetPosition",         luaCBEdGetPosition);
+    lua_register(g_pLuaState, "edSetPosition",         luaCBEdSetPosition);
+    lua_register(g_pLuaState, "edGetAnchor",           luaCBEdGetHighlightAnchor);
+    lua_register(g_pLuaState, "edSetAnchor",           luaCBEdSetHighlightAnchor);
+    lua_register(g_pLuaState, "edInsertNewline",       luaCBEdInsertNewline);
+
+    lua_register(g_pLuaState, "edGetFlashRate",        luaCBEdGetFlashRate);
+    lua_register(g_pLuaState, "edSetFlashRate",        luaCBEdSetFlashRate);
 
     lua_register(g_pLuaState, "gotoBufferStart",       luaCBGotoBufferStart);
     lua_register(g_pLuaState, "gotoBufferEnd",         luaCBGotoBufferEnd);
@@ -3435,21 +3274,6 @@ void luaInitCallbacks()
     lua_register(g_pLuaState, "glRemoveStencil",        luaCBGLRemoveStencil);
     lua_register(g_pLuaState, "glShowStencil",          luaCBGLShowStencil);
     lua_register(g_pLuaState, "glResetStencil",         luaCBGLResetStencil);
-
-    lua_register(g_pLuaState, "edGetTopPosition",       luaCBEdGetTopPosition);
-    lua_register(g_pLuaState, "edGetBottomPosition",    luaCBEdGetBottomPosition);
-    lua_register(g_pLuaState, "edGetLeftPosition",      luaCBEdGetLeftPosition);
-    lua_register(g_pLuaState, "edGetPosition",          luaCBEdGetPosition);
-    lua_register(g_pLuaState, "edSetPosition",          luaCBEdSetPosition);
-    lua_register(g_pLuaState, "edGetAnchor",            luaCBEdGetHighlightAnchor);
-    lua_register(g_pLuaState, "edSetAnchor",            luaCBEdSetHighlightAnchor);
-    lua_register(g_pLuaState, "edInsertNewline",        luaCBEdInsertNewline);
-
-    lua_register(g_pLuaState, "edGetRenderMode",        luaCBEdGetRenderMode);
-    lua_register(g_pLuaState, "edSetRenderMode",        luaCBEdSetRenderMode);
-
-    lua_register(g_pLuaState, "edGetFlashRate",         luaCBEdGetFlashRate);
-    lua_register(g_pLuaState, "edSetFlashRate",         luaCBEdSetFlashRate);
 
     lua_register(g_pLuaState, "playSound",              luaCBPlaySound);
     lua_register(g_pLuaState, "stopSound",              luaCBStopSound);

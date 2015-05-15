@@ -25,6 +25,7 @@
 #include "SingleWorldConfiguration.h"
 
 #include "PraxisLog.h"
+#include "PraxisTexture.h"
 
 #include <iostream>
 #include <fstream>
@@ -159,7 +160,7 @@ void World::Update()
         }
     }
 
-    //GetEditor()->Update();
+    GetEditor()->Update();
 
 #ifdef __PRAXIS_WINDOWS__
 
@@ -419,12 +420,10 @@ void World::Render()
     int fWidth = viewport[2];
 
     if(m_bRenderOutput)
-        DrawText2D(mlVector3D(10 + 512 + 10, 35 + 512 - 13),  SelectEndLines(PraxisLog::trace,20), fWidth, fHeight);
-        //DrawText2D(mlVector3D(10 + 512 + 10, 35 + 512 - 13),  SelectEndLines(luaGetOutput(),20), fWidth, fHeight);
+        DrawText2D(mlVector3D(10 + GLEditor::m_pTexture->nSize + 10, 35 + GLEditor::m_pTexture->nSize - 13),  SelectEndLines(PraxisLog::trace,20), fWidth, fHeight);
 
     if(m_bRenderError)
-        DrawText2D(mlVector3D(10 + 512 + 10, 35 + (512 / 4)),  SelectEndLines(PraxisLog::error,20), fWidth, fHeight);
-        //DrawText2D(mlVector3D(10 + 512 + 10, 35 + (512 / 4)),  SelectEndLines(luaGetError(),20), fWidth, fHeight);
+        DrawText2D(mlVector3D(10 + GLEditor::m_pTexture->nSize + 10, 35 + (GLEditor::m_pTexture->nSize / 4)),  SelectEndLines(PraxisLog::error,20), fWidth, fHeight);
 
     m_nRenderCount++;
 }
@@ -559,8 +558,7 @@ void World::OnRButtonUp(int nX, int nY)
 
 void World::OnKeyDown(unsigned char nKey, int nX, int nY)
 {
-    extern bool g_bEditTextureDirty;
-    g_bEditTextureDirty = true;
+    GLEditor::m_bUpdateRequired = true;
 
     // When the buffer is visible, sent the keypresses to it.
     // When the buffer isn't, call the lua function.
@@ -641,7 +639,7 @@ void World::OnKeyDown(unsigned char nKey, int nX, int nY)
         // Insert a line feed.
         // Should go to the end of the block or line before inserting line feed.
         GetEditor()->InsertNewline();
-        GetEditor()->Update();
+        //GetEditor()->Update();
 
         if(sLua != "")
             luaCall(sLua);
@@ -674,8 +672,7 @@ void World::OnKeyUp(unsigned char nKey, int nX, int nY)
 
 void World::OnKeyDownSpecial(unsigned char nKey, int nX, int nY)
 {
-    extern bool g_bEditTextureDirty;
-    g_bEditTextureDirty = true;
+    GLEditor::m_bUpdateRequired = true;
 
     // Have this call the lisp and forth functions as well?
     // Or just Lua for now?

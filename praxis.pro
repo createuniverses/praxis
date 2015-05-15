@@ -235,7 +235,8 @@ SOURCES += main.cpp \
     io/io_main.c \
     io/Stack_io.c \
     PraxisTexture.cpp \
-    PraxisLog.cpp
+    PraxisLog.cpp \
+    PraxisServer.cpp
 
 unix {
 SOURCES += \
@@ -428,7 +429,8 @@ HEADERS += \
     ioInterface.h \
     ioCallbacks.h \
     PraxisTexture.h \
-    PraxisLog.h
+    PraxisLog.h \
+    PraxisServer.h
 
 unix {
 HEADERS += \

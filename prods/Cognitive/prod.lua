@@ -151,7 +151,7 @@ portal = WidgetLib.newPortal()
 
 hideEditor()
 
-edSetRenderMode(2)
+edSetRenderMode(5)
 
 dofile("server_multi.lua")
 

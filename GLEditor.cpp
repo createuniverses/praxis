@@ -20,13 +20,26 @@
 
 #include "PraxisTexture.h"
 
-LiveCodeTexture * g_pEditTexture = 0;
-bool g_bEditTextureDirty = true;
+#define GLEDITOR_DELETE 127
+#define GLEDITOR_BACKSPACE 8
+#define GLEDITOR_RETURN 13
+#define GLEDITOR_CUT 24
+#define GLEDITOR_COPY 3
+#define GLEDITOR_PASTE 22
+#define GLEDITOR_SAVE 19
+
+PraxisTexture * GLEditor::m_pTexture = 0;
+int GLEditor::m_nDesiredTextureSize  = 512;
+bool GLEditor::m_bUpdateRequired     = true;
 
 // static so we share between workspaces
 string GLEditor::m_CopyBuffer;
 
-int GLEditor::m_nRenderMode = GLEditor::RenderMode_Texture_Polyglyph;
+int GLEditor::m_nRenderMode = GLEditor::RenderMode_Direct_Polyglyph;
+
+float GLEditor::m_CursorWidth = 0.0f;
+float GLEditor::m_CharWidth   = 0.0f;
+float GLEditor::m_CharHeight  = 0.0f;
 
 PolyGlyph * GLEditor::m_PolyGlyph = 0;
 
@@ -38,9 +51,6 @@ GLEditor::GLEditor():
     m_Position(0),
     m_HighlightAnchor(0),
     m_Selection(false),
-    m_CursorWidth(0),
-    m_CharWidth(0),
-    m_CharHeight(0),
     m_OpenChars("([<{"),
     m_CloseChars(")]>}"),
     m_TopTextPosition(0),
@@ -279,6 +289,7 @@ void GLEditor::SetText(const string& s)
 
     ProcessTabs();
 
+    m_bUpdateRequired = true;
     Update();
 }
 
@@ -290,6 +301,7 @@ void GLEditor::InsertText(const string & s)
     if(m_Position>GetLastVisiblePosition())
         m_TopTextPosition=LineEnd(m_TopTextPosition)+1;
 
+    m_bUpdateRequired = true;
     Update();
 }
 
@@ -317,6 +329,29 @@ void SetNaturalRasterPos()
   glRasterPos2d(winX, winY);
 }
 
+void GLEditor::SetRenderMode(int nRenderMode)
+{
+    if(nRenderMode < 0) nRenderMode = 0;
+    if(nRenderMode > 5) nRenderMode = 5;
+
+    GLEditor::m_nRenderMode = nRenderMode;
+
+    GLEditor::m_PolyGlyph->ClearCache();
+
+    if(GLEditor::m_nRenderMode == GLEditor::RenderMode_Texture_Bitmap)
+    {
+        // Smaller font, so can fit more text in the texture
+        GLEditor::m_VisibleLines    = 30;
+        GLEditor::m_VisibleColumns  = 65;
+    }
+    else
+    {
+        GLEditor::m_VisibleLines    = 20;
+        GLEditor::m_VisibleColumns  = 55;
+    }
+
+    m_bUpdateRequired = true;
+}
 
 void GLEditor::StrokeCharacter(wchar_t c, float dx, float dy)
 {
@@ -471,6 +506,9 @@ void GLEditor::GetBB(float &minX, float &minY, float &maxX, float &maxY)
 
 void GLEditor::Update()
 {
+    if(!m_bUpdateRequired)
+        return;
+
     // Keep m_Position in bounds of the file
     if (m_Position<0) m_Position=0;
     if (m_Position>m_Text.size()) m_Position=m_Text.size();
@@ -503,13 +541,22 @@ void GLEditor::Update()
 //    m_ParenthesesHighlight[1] = paren.n2;
 
     ParseLuaBlock();
+}
 
-    g_bEditTextureDirty = true;
+void GLEditor::ResizeTexture(int nNewSize)
+{
+    if(nNewSize <    2) nNewSize =    2;
+    if(nNewSize > 1024) nNewSize = 1024;
+
+    m_nDesiredTextureSize = nNewSize;
+    m_bUpdateRequired = true;
 }
 
 void GLEditor::Render()
 {
-    if(m_nRenderMode >= RenderMode_Direct_Polyglyph)
+    bool bDirectRenderMode = (m_nRenderMode <= RenderMode_Direct_Bitmap);
+
+    if(bDirectRenderMode)
     {
         int nLeftMargin    = m_Width * 0.01f;
         int nWidth         = m_Width - m_Width * 0.25f;
@@ -521,20 +568,27 @@ void GLEditor::Render()
     }
     else
     {
-        if(g_pEditTexture == 0)
+        if(m_pTexture == 0)
         {
-            g_pEditTexture = new LiveCodeTexture();
+            m_pTexture = new PraxisTexture(m_nDesiredTextureSize);
+            m_bUpdateRequired = true;
+        }
+        else if(m_pTexture->nSize != m_nDesiredTextureSize)
+        {
+            delete m_pTexture;
+            m_pTexture = new PraxisTexture(m_nDesiredTextureSize);
+            m_bUpdateRequired = true;
         }
 
-        if(g_bEditTextureDirty)
+        if(m_bUpdateRequired)
         {
-            g_pEditTexture->Begin();
-            //g_pEditTexture->Resume();
-            glViewport(0, 0, 512, 512);
+            m_pTexture->Begin();
+            //m_pTexture->Resume();
+            glViewport(0, 0, m_pTexture->nSize, m_pTexture->nSize);
             RenderBuffer(false);
-            g_pEditTexture->End();
+            m_pTexture->End();
 
-            g_bEditTextureDirty = false;
+            m_bUpdateRequired = false;
         }
 
         RenderTexture();
@@ -548,7 +602,7 @@ void GLEditor::RenderTexture()
     glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_ALPHA);
 
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, g_pEditTexture->nTextureID);
+    glBindTexture(GL_TEXTURE_2D, m_pTexture->nTextureID);
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
@@ -566,7 +620,7 @@ void GLEditor::RenderTexture()
 //    glDrawPixels(g_pEditTexture->nSize, g_pEditTexture->nSize, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)g_pEditTexture->pixels);
 
     {
-        int nSize = 512;
+        int nSize = m_pTexture->nSize;
         int nLeftMargin = 10;
         int nBottomMargin = 35;
         int nMinX = nLeftMargin;
@@ -820,6 +874,8 @@ void GLEditor::InsertNewline()
 
     if(m_Position>GetLastVisiblePosition())
         m_TopTextPosition=LineEnd(m_TopTextPosition)+1;
+
+    Update();
 }
 
 void GLEditor::Backspace()
@@ -888,7 +944,7 @@ int GLEditor::GetIndent(int nPosition)
 
 void GLEditor::Handle(int key, int special)
 {
-    g_bEditTextureDirty = true;
+    m_bUpdateRequired = true;
 
     int mod = glutGetModifiers();
 

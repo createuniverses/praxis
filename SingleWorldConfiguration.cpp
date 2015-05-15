@@ -32,8 +32,8 @@ void SingleWorldConfiguration_mousemove(int x, int y );
 void SingleWorldConfiguration_passivemousemove(int x, int y );
 void SingleWorldConfiguration_mousewheel(int wheel, int direction, int x, int y);
 
-int g_nOffscreenWindowSize = 512;
-//int g_nOffscreenWindowSize = 1024;
+//int g_nOffscreenWindowSize = 512;
+int g_nOffscreenWindowSize = 1024;
 int g_nOffscreenWindowID = -1;
 int g_nMainWindowID = -1;
 

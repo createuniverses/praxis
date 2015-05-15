@@ -1,7 +1,7 @@
 #include "PraxisTexture.h"
 
 
-LiveCodeTexture::LiveCodeTexture()
+PraxisTexture::PraxisTexture(int nSize)
 {
     glGenTextures(1,&nTextureID);
     glBindTexture(GL_TEXTURE_2D,nTextureID);
@@ -10,9 +10,10 @@ LiveCodeTexture::LiveCodeTexture()
     //glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     //glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-    nSize = 512;
-    //nSize = 128;
-    //nSize = 1024;
+    if(nSize <    2)  nSize = 2;
+    if(nSize > 1024)  nSize = 1024;
+
+    this->nSize = nSize;
 
     Clear(0,0,0);
 
@@ -21,7 +22,7 @@ LiveCodeTexture::LiveCodeTexture()
     sRenderFunction = "";
 }
 
-void LiveCodeTexture::Clear(unsigned char red, unsigned char green, unsigned char blue)
+void PraxisTexture::Clear(unsigned char red, unsigned char green, unsigned char blue)
 {
     for(int i = 0; i < nSize * nSize; i++)
     {
@@ -31,7 +32,7 @@ void LiveCodeTexture::Clear(unsigned char red, unsigned char green, unsigned cha
     }
 }
 
-void LiveCodeTexture::Randomize()
+void PraxisTexture::Randomize()
 {
     for(int i = 0; i < nSize * nSize; i++)
     {
@@ -41,7 +42,7 @@ void LiveCodeTexture::Randomize()
     }
 }
 
-void LiveCodeTexture::UpdateTexture()
+void PraxisTexture::UpdateTexture()
 {
     // http://www.gamedev.net/page/resources/_/technical/opengl/moving-beyond-opengl-11-for-windows-r1929
     // http://stackoverflow.com/questions/7808146/gltexsubimage2d-extremely-slow-on-intel-video-card
@@ -56,7 +57,7 @@ void LiveCodeTexture::UpdateTexture()
     End();
 }
 
-void LiveCodeTexture::Begin()
+void PraxisTexture::Begin()
 {
     UseOffscreenContext();
 
@@ -65,7 +66,7 @@ void LiveCodeTexture::Begin()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 }
 
-void LiveCodeTexture::Resume()
+void PraxisTexture::Resume()
 {
     UseOffscreenContext();
 
@@ -95,7 +96,7 @@ void LiveCodeTexture::Resume()
     glPopMatrix();
 }
 
-void LiveCodeTexture::End()
+void PraxisTexture::End()
 {
     glReadPixels(
         0, 0, nSize,nSize,
