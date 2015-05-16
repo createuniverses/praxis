@@ -15,11 +15,18 @@
 #include <arpa/inet.h>
 #endif
 
+#include <string.h>
+
 #include <string>
 #include <iostream>
 
 using namespace std;
-using namespace PraxisServer;
+
+namespace PraxisServer
+{
+    SOCKET ServerSocket;
+    SOCKET LastAcceptedClientSocket;
+}
 
 bool PraxisServer::Start()
 {
@@ -107,6 +114,11 @@ SOCKET PraxisServer::Accept()
     return clientSocket;
 }
 
+std::string PraxisServer::Receive()
+{
+    return Receive(LastAcceptedClientSocket);
+}
+
 std::string PraxisServer::Receive(SOCKET s)
 {
     char buf[65536];
@@ -121,6 +133,11 @@ std::string PraxisServer::Receive(SOCKET s)
     buf[nBytes] = '\0';
 
     return std::string(buf);
+}
+
+void PraxisServer::Send(std::string & data)
+{
+    Send(LastAcceptedClientSocket, data);
 }
 
 void PraxisServer::Send(SOCKET s, std::string & data)
@@ -153,14 +170,14 @@ void PraxisServer::Send(SOCKET s, std::string & data)
     return;
 }
 
-bool PraxisServer::ServerIsValid()
-{
-    return (ServerSocket != INVALID_SOCKET);
-}
-
 bool PraxisServer::SocketIsValid(SOCKET s)
 {
     return (s != INVALID_SOCKET);
+}
+
+void PraxisServer::SetBlockingOption(u_long mode)
+{
+    SetBlockingOption(LastAcceptedClientSocket, mode);
 }
 
 void PraxisServer::SetBlockingOption(SOCKET s, u_long mode)

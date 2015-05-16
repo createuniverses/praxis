@@ -20,20 +20,21 @@ static int SOCKET_ERROR = -1;
 #endif
 
 #include <string>
-#include <iostream>
 
 namespace PraxisServer
 {
     bool         Start();
+
     SOCKET       Accept();
+    bool         SocketIsValid(SOCKET s);
+
+    std::string  Receive();
+    void         Send(std::string & data);
+    void         SetBlockingOption(u_long mode);
+
     std::string  Receive(SOCKET s);
     void         Send(SOCKET s, std::string & data);
-    bool         ServerIsValid();
-    bool         SocketIsValid(SOCKET s);
     void         SetBlockingOption(SOCKET s, u_long mode);
-
-    SOCKET ServerSocket;
-    SOCKET LastAcceptedClientSocket;
 }
 
 #endif // PRAXISSERVER_H
