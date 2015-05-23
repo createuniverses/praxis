@@ -709,9 +709,20 @@ void GLEditor::RenderBuffer(bool bBackground)
             if ((int)n>=m_LuaBlockHighlight[0] &&
                     (int)n<=m_LuaBlockHighlight[1]) // draw lua block highlight
             {
-                glColor4f(0,1,1,0.5f);
-                DrawCharBlock();
-                glColor4f(0.7,0.7,0.7,1);
+                //glColor4f(0,1,1,0.5f);
+                int nDistToStart = n - m_LuaBlockHighlight[0];
+                int nDistToEnd   = m_LuaBlockHighlight[1] - n;
+                float fAlpha1 = 0.5f - (nDistToStart * 0.1f);
+                float fAlpha2 = 0.5f - (nDistToEnd * 0.1f);
+                float fAlpha = fAlpha1;
+                if(fAlpha2 > fAlpha1) fAlpha = fAlpha2;
+
+                if(fAlpha > 0.0f)
+                {
+                    glColor4f(0,1,1, fAlpha);
+                    DrawCharBlock();
+                    glColor4f(0.7,0.7,0.7,1);
+                }
             }
 
             if (m_Selection && n>=SelectionBegin() && n<SelectionEnd()) // draw selection highlight
