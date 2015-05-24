@@ -44,6 +44,17 @@ ansi[csi.."B"] = handle_down
 ansi[csi.."C"] = handle_right
 ansi[csi.."D"] = handle_left
 
+function isPrintable(k)
+  local r = false
+  if k >= 65 and k <= 65+26 then
+    r = true
+  end
+  if k >= 97 and k <= 97+26 then
+    r = true
+  end
+  return r
+end
+
 -- set the metatable for ansi to one that
 -- will handle printable characters
 
@@ -54,7 +65,7 @@ function ansimt.__index(t,k)
   if #k == 1 then
     local b = string.byte(k,1)
     --svrSend("b = " .. b, sck1)
-    if b >= 65 and b <= 65+26 then
+    if isPrintable(b) then
       svrSend(string.char(b))
       handle_right()
     end

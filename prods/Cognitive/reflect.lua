@@ -1,8 +1,15 @@
 -- Name: reflect.lua
 
 function getFunction(fnname)
-  local dt = debug.getinfo(
-    load("return " .. string.gsub(fnname, ":", "."))())
+  local dt = 0
+  if type(fnname) == "string" then
+    dt = debug.getinfo(
+      load("return " .. string.gsub(fnname, ":", "."))())
+  end
+  if type(fnname) == "function" then
+    dt = debug.getinfo(fnname)
+  end
+  if dt == 0 then do return "",nil end end
   if string.sub(dt.source, 1,1) == "@" then
     --print(dt.short_src)
     --print(dt.linedefined, dt.lastlinedefined)
