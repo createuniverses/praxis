@@ -9,6 +9,7 @@
 #include "io/IoCFunction.h"
 
 #include "World.h"
+#include "PraxisServer.h"
 
 extern IoState * g_pIoState;
 
@@ -18,6 +19,7 @@ class IoPraxis
 {
 public:
     static IoObject* DrawLine(IoObject *self, IoObject *locals, IoMessage *m);
+    static IoObject* SvrSend(IoObject *self, IoObject *locals, IoMessage *m);
 
     static IoObject* proto_tagless(IoState* state);
 
@@ -31,6 +33,7 @@ IoObject *IoPraxis::proto_tagless(IoState* state)
 {
     IoMethodTable methods[] = {
         {"drawLine", DrawLine},
+        {"svrSend", SvrSend},
         {NULL, NULL}};
 
     IoObject* self = IoObject_new(state);
@@ -113,6 +116,38 @@ IoObject* IoPraxis::DrawLine(IoObject *self, IoObject *locals, IoMessage *m)
     glVertex3f(x2,y2,z2);
 
     glEnd();
+
+    return IONIL(self);
+}
+
+IoObject* IoPraxis::SvrSend(IoObject *self, IoObject *locals, IoMessage *m)
+{
+    int argcount = IoMessage_argCount(m);
+
+    if(argcount != 2)
+    {
+        IoState_error_(g_pIoState, m, "2 numerical arguments expected for svrSend");
+        return IONIL(self);
+    }
+
+    IoObject * socket = IoMessage_locals_valueArgAt_(m, locals, 0);
+    if(!ISNUMBER(socket))
+    {
+        IoState_error_(g_pIoState, m, "Argument %d not a socket id", 0);
+        return IONIL(self);
+    }
+
+    IoObject * data = IoMessage_locals_valueArgAt_(m, locals, 1);
+    if(!ISSEQ(data))
+    {
+        IoState_error_(g_pIoState, m, "Argument %d not a string", 1);
+        return IONIL(self);
+    }
+
+    SOCKET s = IoNumber_asInt(IoMessage_locals_valueArgAt_(m, locals, 0));
+    std::string d = IoSeq_asCString(data);
+
+    PraxisServer::Send(s, d);
 
     return IONIL(self);
 }

@@ -28,6 +28,8 @@ std::string & forthGetOutput();
 void forthClearError();
 void forthClearOutput();
 
+std::string forthGetState();
+
 void forthClose();
 
 //bool forthIsCommandComplete(std::string sCmd);

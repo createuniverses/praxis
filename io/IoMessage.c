@@ -484,6 +484,18 @@ IO_METHOD(IoMessage, doInContext)
 
 //#define IO_DEBUG_STACK
 
+#ifdef __PRAXIS_WINDOWS__
+#include <windows.h>
+#endif
+
+#ifdef __PRAXIS_LINUX__
+#include <X11/Xlib.h>
+#include "GL/openglut.h"
+extern Display * g_pAppDisplay;
+#endif
+
+extern int g_nLastBreakTime;
+
 IoObject *IoMessage_locals_performOn_(IoMessage *self, IoObject *locals, IoObject *target)
 {
 	IoState *state = IOSTATE;
@@ -498,8 +510,58 @@ IoObject *IoMessage_locals_performOn_(IoMessage *self, IoObject *locals, IoObjec
 	{
 		IoState_callUserInterruptHandler(IOSTATE);
 	}
-			
-	do
+
+#ifdef __PRAXIS_WINDOWS__
+    {
+        // Force GetAsyncKeyState to be called for both keys so that
+        // their respective statuses are up to date.
+        // Previously, only Ctrl was kept up to date. Q was checked only if Ctrl held down.
+        // Press q, then other stuff, then when Ctrl pressed, a break would be triggered.
+        SHORT bCtrlDown = GetAsyncKeyState(VK_LCONTROL);
+        SHORT bQDown = GetAsyncKeyState(0x51);
+        if((bCtrlDown != 0) && (bQDown != 0)) // Ctrl-Q pressed
+        {
+            // Break detected. Check the time since last break.
+            // If its high enough, then break.
+
+            int nTime = timeGetTime();
+            if(nTime > (g_nLastBreakTime + 200))
+            {
+                g_nLastBreakTime = nTime;
+
+                //printf("Ctrl-Q detected");
+                //return IoState_callUserInterruptHandler2(IOSTATE);
+                IoState_error_(state, self, "User break");
+                return state->ioNil;
+            }
+        }
+    }
+#endif
+
+#ifdef __PRAXIS_LINUX__
+    if(g_pAppDisplay)
+    {
+        char keys_return[32];
+        XQueryKeymap(g_pAppDisplay, keys_return);
+
+        if(keys_return[3] == 1 && keys_return[4] == 32)
+        {
+            // Break detected. Check the time since last break.
+            // If its high enough, then break.
+
+            int nTime = glutGet(GLUT_ELAPSED_TIME);
+            if(nTime > (g_nLastBreakTime + 200))
+            {
+                g_nLastBreakTime = nTime;
+
+                //printf("Ctrl-Q detected");
+                return IoState_callUserInterruptHandler2(IOSTATE);
+            }
+        }
+    }
+#endif
+
+    do
 	{
 		//md = DATA(m);
 

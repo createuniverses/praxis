@@ -64,6 +64,24 @@ void forthClearOutput()
     g_ficlTextOut = "";
 }
 
+std::string forthGetState()
+{
+    if(g_ficlVm)
+    {
+        if(g_ficlVm->state == FICL_VM_STATE_INTERPRET)
+            return "interpret";
+        else if(g_ficlVm->state == FICL_VM_STATE_COMPILE)
+            return "compiling";
+        else
+            return "invalid";
+    }
+    else
+    {
+        return "VM not initialized";
+    }
+}
+
+
 
 // FICL output capturing
 

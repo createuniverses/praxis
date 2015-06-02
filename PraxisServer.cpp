@@ -143,8 +143,8 @@ void PraxisServer::Send(std::string & data)
 void PraxisServer::Send(SOCKET s, std::string & data)
 {
     int nReadBytes = data.length();
-    char buf[65536];
-    strcpy(buf, data.c_str());
+    const char * buf = data.c_str();
+    //strcpy(buf, data.c_str());
 
     int nSentBytes = 0;
     while (nSentBytes < nReadBytes) {

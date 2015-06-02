@@ -31,3 +31,4 @@ render := method(
 -- loadBuffer("iorender.io")
 
 
+os.execute("praxis_putty.bat")
