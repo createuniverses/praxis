@@ -52,6 +52,9 @@ function isPrintable(k)
   if k >= 97 and k <= 97+26 then
     r = true
   end
+  if k >= 48 and k <= 57 then r = true end
+  if k == 32 then r = true end
+
   return r
 end
 
@@ -88,3 +91,4 @@ function svrRunEchoServer(sck)
     fn()
   end
 end
+

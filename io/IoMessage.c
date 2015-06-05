@@ -555,7 +555,9 @@ IoObject *IoMessage_locals_performOn_(IoMessage *self, IoObject *locals, IoObjec
                 g_nLastBreakTime = nTime;
 
                 //printf("Ctrl-Q detected");
-                return IoState_callUserInterruptHandler2(IOSTATE);
+                //return IoState_callUserInterruptHandler2(IOSTATE);
+                IoState_error_(state, self, "User break");
+                return state->ioNil;
             }
         }
     }
