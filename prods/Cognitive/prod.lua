@@ -149,13 +149,22 @@ portal = WidgetLib.newPortal()
 portal = WidgetLib.newPortal()
 portal = WidgetLib.newPortal()
 
-hideEditor()
+--hideEditor()
 
-edSetRenderMode(5)
+--edSetRenderMode(5)
 
-dofile("server_multi.lua")
+--dofile("server_multi.lua")
+
+--newBuffer()
+--loadBuffer("iolangexample.lua")
+--showEditor()
 
 newBuffer()
-loadBuffer("iolangexample.lua")
+loadBuffer("spirograph.lua")
 showEditor()
+
+edSetRenderMode(0)
+edSetVisColumns(90)
+edSetVisLines(30)
+
 
