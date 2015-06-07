@@ -420,10 +420,10 @@ void World::Render()
     int fWidth = viewport[2];
 
     if(m_bRenderOutput)
-        DrawText2D(mlVector3D(10 + GLEditor::m_pTexture->nSize + 10, 35 + GLEditor::m_pTexture->nSize - 13),  SelectEndLines(PraxisLog::trace,20), fWidth, fHeight);
+        DrawText2D(mlVector3D(10 + GLEditor::m_nDesiredTextureSize + 10, 35 + GLEditor::m_nDesiredTextureSize - 13),  SelectEndLines(PraxisLog::trace,20), fWidth, fHeight);
 
     if(m_bRenderError)
-        DrawText2D(mlVector3D(10 + GLEditor::m_pTexture->nSize + 10, 35 + (GLEditor::m_pTexture->nSize / 4)),  SelectEndLines(PraxisLog::error,20), fWidth, fHeight);
+        DrawText2D(mlVector3D(10 + GLEditor::m_nDesiredTextureSize + 10, 35 + (GLEditor::m_nDesiredTextureSize / 4)),  SelectEndLines(PraxisLog::error,20), fWidth, fHeight);
 
     m_nRenderCount++;
 }

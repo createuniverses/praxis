@@ -73,12 +73,6 @@ GLEditor::GLEditor():
 
     m_sName = "Untitled";
     m_sParentName = "";
-
-    if(m_pTexture == 0)
-    {
-        m_pTexture = new PraxisTexture(m_nDesiredTextureSize);
-        m_bUpdateRequired = true;
-    }
 }
 
 GLEditor::~GLEditor()
