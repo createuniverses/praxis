@@ -1,0 +1,53 @@
+Ideas list:
+Parse a string for notes in a melody and play them
+play("c d e f g f e d c")
+
+So many other things
+
+Add audio sample buffers
+Add ctrl-left/right to move a word at a time
+Sure, use Io and Lisp, but always add stuff to Lua, the first language
+Lua has always been a friend
+
+Be able to place markers in the editor
+Run marked text, run marked text then erase (marked text may be to have an effect on the text)
+End marker moves when text inserted between markers (through typing or pasting)
+
+do
+  edSetRenderMode(2)
+  edSetVisColumns(98)
+  edSetVisLines(33)
+  clearError()
+end
+
+do
+  edSetRenderMode(2)
+  edSetVisColumns(60)
+  edSetVisLines(28)
+  clearError()
+end
+
+fullscreenMode()
+windowedMode()
+
+midiNoteOn(60)
+midiNoteOff(60)
+
+Render Synthbench in a stencil widget
+Put the server in a widget
+Widget utilities: list widgets, add render widget, remove widget, etc
+Widgets need names then.
+
+Spirograph
+
+This blue laptop is running praxis BEAUTIFULLY
+Full screen, full editor, good font, 30+fps
+NICE
+And it isn't even breaking a sweat. Not even a little warm.
+
+Print directory listing, available files
+
+clearTrace()
+
+s = os.execute("ls")
+print(inspect(s))
