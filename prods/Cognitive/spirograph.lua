@@ -1,22 +1,53 @@
-fullscreenMode()
-edSetRenderMode(0)
-setBufferName("spirograph.lua")
-
-windowedMode()
-setMaxFramerate(30)
-
-function renderSpiro()
-end
-
-spirowidget = WidgetLib.newSimple()
-
 glColor = colorGL
+
+function glVec(v)
+  vectorGL(v.x, v.y, v.z)
+end
 
 function pointOnCircle(angle, radius)
   local v = vec3d(radius * math.sin(angle),
                   radius * math.cos(angle),
                   0);
   return v
+end
+
+------------------
+
+if spirowidget == nil then
+  spirowidget = WidgetLib.newSimple()
+end
+
+streamer = Queue.new()
+function addPointToStreamer(s, p)
+  Queue.pushfirst(s, p)
+  if Queue.size(s) > 1000 then
+    Queue.poplast(s)
+  end
+end
+
+function renderStreamer(s)
+  beginLinGL()
+  colorGL(255,255,255,255)
+  for i=1,Queue.size(s)-1,1 do
+    local p1 = Queue.get(s,i)
+    local p2 = Queue.get(s,i+1)
+    glVec(p1)
+    glVec(p2)
+  end
+  if Queue.size(s) > 50 then
+    local i = 40
+    local p1 = Queue.get(s,i)
+    local p2 = Queue.get(s,i+5)
+    local p3 = p1 * 0.8
+    local p4 = p2 * 0.8
+    glVec(p1)
+    glVec(p3)
+    glVec(p2)
+    glVec(p4)
+    glVec(p3)
+    glVec(p4)
+  end
+  endGL()
 end
 
 do
@@ -30,9 +61,6 @@ do
   --spirowidget.cogs[7] = { radius = 8, angle = 0, speed = 2.3 }
   streamer = Queue.new()
 end
-
-windowedMode()
-fullscreenMode()
 
 do
   spirowidget.cogs[1].speed = 1
@@ -64,89 +92,3 @@ function spirowidget.render(w)
   end
   setmetatable(_G, nil)
 end
-
-continue()
-clearError()
-
-switchToBuffer("queue.lua")
-
-streamer = Queue.new()
-function addPointToStreamer(s, p)
-  Queue.pushfirst(s, p)
-  if Queue.size(s) > 1000 then
-    Queue.poplast(s)
-  end
-end
-
-print2(getFunction(glVector))
-
-function glVec(v)
-  vectorGL(v.x, v.y, v.z)
-end
-
-function renderStreamer(s)
-  beginLinGL()
-  colorGL(255,255,255,255)
-  for i=1,Queue.size(s)-1,1 do
-    local p1 = Queue.get(s,i)
-    local p2 = Queue.get(s,i+1)
-    glVec(p1)
-    glVec(p2)
-  end
-  if Queue.size(s) > 50 then
-    local i = 40
-    local p1 = Queue.get(s,i)
-    local p2 = Queue.get(s,i+5)
-    local p3 = p1 * 0.8
-    local p4 = p2 * 0.8
-    glVec(p1)
-    glVec(p3)
-    glVec(p2)
-    glVec(p4)
-    glVec(p3)
-    glVec(p4)
-  end
-  endGL()
-end
-
-
-print(t)
-t = getmetatable(_G)
-print(inspect(t))
-
-tempt = {}
-tempt.val = 5
-
-print(inspect(tempt))
-
-setmetatable(tempt, nil)
-clearTrace()
-
-
-tempmt = {}
-
-function tempmt.__index(t,k)
-  print("trying to access " .. k)
-  return tempt[k]
-end
-
-print(tempt["val"])
-do
-  k="val"
-  print(tempt[k])
-end
-
-setmetatable(_G, tempmt)
-setmetatable(_G, nil)
-
-clearError()
-continue()
-
-do
-  setmetatable(_G, tempmt)
-  print(val)
-  setmetatable(_G, nil)
-end
-
-windowedMode()
-fullscreenMode()
