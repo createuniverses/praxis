@@ -1,3 +1,5 @@
+edSetRenderMode(0)
+
 glColor = colorGL
 
 function glVec(v)
@@ -92,3 +94,4 @@ function spirowidget.render(w)
   end
   setmetatable(_G, nil)
 end
+

@@ -15,8 +15,13 @@ win32 {
     DEFINES += FREETYPE2_STATIC
     INCLUDEPATH += ./freetype-2.3.5/include/
     INCLUDEPATH += ./fmodapi375win/inc/
-    LIBS += ..\\libs\\fmodvc.lib
-    LIBS += ..\\libs\\freetype235.lib
+
+    message($$_PRO_FILE_PWD_)
+
+    LIBS += $$_PRO_FILE_PWD_/fmodapi375win/lib/fmodvc.lib
+    LIBS += $$_PRO_FILE_PWD_/freetype-2.3.5/objs/freetype235.lib
+    #LIBS += ..\\libs\\fmodvc.lib
+    #LIBS += ..\\libs\\freetype235.lib
     LIBS += wsock32.lib
     LIBS += Shell32.lib
 }

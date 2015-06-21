@@ -1,0 +1,47 @@
+project(praxis)
+cmake_minimum_required(VERSION 2.8)
+
+aux_source_directory(. SRC_LIST)
+aux_source_directory(MathLib SRC_LIST)
+aux_source_directory(ficl-4.1.0 SRC_LIST)
+aux_source_directory(ficl-4.1.0/ficlplatform SRC_LIST)
+aux_source_directory(io SRC_LIST)
+aux_source_directory(lpeg-0.12 SRC_LIST)
+aux_source_directory(lua-5.1.4/src SRC_LIST)
+aux_source_directory(Neural SRC_LIST)
+aux_source_directory(OpenGlut/src SRC_LIST)
+aux_source_directory(s7 SRC_LIST)
+aux_source_directory(Voxel SRC_LIST)
+
+list(REMOVE_ITEM SRC_LIST "lua-5.1.4/src/luac.c")
+list(REMOVE_ITEM SRC_LIST "lua-5.1.4/src/lua.c")
+list(REMOVE_ITEM SRC_LIST "ficl-4.1.0/ficlplatform/unix.c")
+list(REMOVE_ITEM SRC_LIST "s7/ffitest.c")
+list(REMOVE_ITEM SRC_LIST "s7/glistener.c")
+
+include_directories(./MathLib/)
+include_directories(./World/)
+include_directories(./OpenGlut/include/)
+include_directories(./lua-5.1.4/src/)
+include_directories(./Voxel/)
+include_directories(./Neural/)
+include_directories(./freetype-2.3.5/include/)
+include_directories(./fmodapi375win/inc/)
+
+add_definitions(-D__PRAXIS_WINDOWS__)
+add_definitions(-D__WINDOWS_MM__)
+add_definitions(-DFREETYPE2_STATIC)
+add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+
+add_library(fmod     STATIC IMPORTED)
+add_library(freetype STATIC IMPORTED)
+
+set_property(TARGET fmod      PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/fmodapi375win/lib/fmodvc.lib)
+set_property(TARGET freetype  PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/freetype-2.3.5/objs/freetype235.lib)
+
+set(CMAKE_CXX_STANDARD_LIBRARIES "${CMAKE_CXX_STANDARD_LIBRARIES} shell32.lib wsock32.lib")
+
+add_executable(${PROJECT_NAME} ${SRC_LIST})
+
+target_link_libraries(${PROJECT_NAME} fmod)
+target_link_libraries(${PROJECT_NAME} freetype)
