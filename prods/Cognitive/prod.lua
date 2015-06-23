@@ -164,7 +164,6 @@ loadBuffer("spirograph.lua")
 showEditor()
 
 edSetRenderMode(0)
-edSetVisColumns(90)
-edSetVisLines(30)
-
+--edSetVisColumns(90)
+--edSetVisLines(30)
 

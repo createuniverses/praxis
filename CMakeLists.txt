@@ -32,6 +32,7 @@ add_definitions(-D__PRAXIS_WINDOWS__)
 add_definitions(-D__WINDOWS_MM__)
 add_definitions(-DFREETYPE2_STATIC)
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+add_definitions(-DWIN32)
 
 add_library(fmod     STATIC IMPORTED)
 add_library(freetype STATIC IMPORTED)

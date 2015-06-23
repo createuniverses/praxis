@@ -94,13 +94,16 @@ int g_nLastBreakTime = 0;
 #endif
 
 #ifdef __PRAXIS_WINDOWS__
-int CALLBACK WinMain( HINSTANCE hInstance,
-                      HINSTANCE hPrevInstance,
-                      LPSTR lpCmdLine,
-                      int nCmdShow)
-#else
-int main()
+//int CALLBACK WinMain( HINSTANCE hInstance,
+//                      HINSTANCE hPrevInstance,
+//                      LPSTR lpCmdLine,
+//                      int nCmdShow)
+#ifdef _MSC_VER
+#    pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
+#endif
+
+int main()
 {
 #ifdef __PRAXIS_LINUX__
     sigaction(SIGINT, NULL, &old_act);
@@ -124,7 +127,7 @@ int main()
     MoveConsTest();
 
 #ifdef __PRAXIS_WINDOWS__
-    hInstance;hPrevInstance;lpCmdLine;nCmdShow;
+//    hInstance;hPrevInstance;lpCmdLine;nCmdShow;
 
     InitializeCriticalSection(&g_cs);
 #endif
