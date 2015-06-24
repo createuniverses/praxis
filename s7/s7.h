@@ -1,35 +1,31 @@
 #ifndef S7_H
 #define S7_H
 
-#define S7_VERSION "3.9"
-#define S7_DATE "24-May-14"
+#define S7_VERSION "3.27"
+#define S7_DATE "19-Jun-15"
 
 
 typedef long long int s7_Int;
-/* This sets the size of integers in Scheme and s7.c; s7_Int can be almost any (signed) integer type: 
- *    "int" is ok, but "short" is problematic -- lots of things assume s7_Int is at least 32 bits.
+/* This sets the size of integers in Scheme; it needs to be big enough to accomodate a C pointer.
  */
 
 typedef double s7_Double;
-/* similarly for doubles (reals in Scheme) -- only "double" works in C++, and
- *    integer-decode-float assumes s7_Double is double, as do all the homogenous float vector functions.
+/* similarly for Scheme reals; only "double" works in C++
  */
 
-
-  /* --------------------------------------------------------------------------------
-   * s7 itself is based on the types and functions in this file, so the first place to look for examples
-   *   is s7.c.  There are also a few variations on a REPL at the end of s7.html.  s7test.scm
-   *   is a regression test for s7 -- it still turns up a few problems.  More tests are certainly welcome!  
-   *   Extended examples of s7 usage are:
-   *
-   *   Snd: ftp://ccrma-ftp.stanford.edu/pub/Lisp/snd-14.tar.gz (a sound editor)
-   *     which includes:
-   *       libxm: libxm.tar.gz (X, Motif, Gtk, Cairo, and openGL bindings)
-   *       sndlib: sndlib.tar.gz (sound file, audio port, and CLM bindings plus an optimizer (run))
-   *
-   *   Common Music by Rick Taube: http://camil.music.uiuc.edu/Software/grace/downloads/cm3.tar.gz (composition)
-   *     which can use sndlib -- see Snd's grfsnd.html or the cmdist archives for details
-   */
+/* s7 itself is based on the types and functions in this file, so the first place to look for examples
+ *   is s7.c.  There are also a few variations on a REPL at the end of s7.html.  s7test.scm
+ *   is a regression test for s7 -- it still turns up a few problems.  More tests are certainly welcome!  
+ *   Extended examples of s7 usage are:
+ *
+ *   Snd: ftp://ccrma-ftp.stanford.edu/pub/Lisp/snd-15.tar.gz (a sound editor)
+ *     which includes:
+ *       libxm: libxm.tar.gz (X, Motif, Gtk, Cairo, and openGL bindings)
+ *       sndlib: sndlib.tar.gz (sound file, audio port, and CLM bindings plus an optimizer (run))
+ *
+ *   Common Music/Grace by Rick Taube: http://camil.music.uiuc.edu/Software/grace/downloads/cm3.tar.gz (composition)
+ *     which can use sndlib -- see Snd's grfsnd.html or the cmdist archives for details
+ */
 
 
 #include <stdio.h>
@@ -42,9 +38,7 @@ typedef double s7_Double;
   #define bool	int
   #define true	1
   #define false	0
-  /* this fallback code does not actually work -- perhaps "bool" is not an int? in gcc it's _Bool.
-   *    we need stdbool.h 
-   */
+  /* this fallback code does not actually work -- we need stdbool.h */
 #endif
 #endif
 #endif
@@ -61,7 +55,6 @@ s7_scheme *s7_init(void);
 
   /* s7_scheme is our interpreter
    * s7_pointer is a Scheme object of any (Scheme) type
-   *
    * s7_init creates the interpreter.
    */
 
@@ -87,17 +80,11 @@ s7_pointer s7_make_c_pointer(s7_scheme *sc, void *ptr);
   /* these are for passing uninterpreted C pointers through Scheme */
 
 s7_pointer s7_eval_c_string(s7_scheme *sc, const char *str);         /* (eval-string str) */
+s7_pointer s7_eval_c_string_with_environment(s7_scheme *sc, const char *str, s7_pointer e);
 s7_pointer s7_object_to_string(s7_scheme *sc, s7_pointer arg, bool use_write);       
                                                                      /* (object->string obj) */
 char *s7_object_to_c_string(s7_scheme *sc, s7_pointer obj);          /* same as object->string but returns a C char* directly */
                                                                      /*   the returned value should be freed by the caller */
-
-/* Greg Santucci */
-s7_pointer s7_get_main_stack_code(s7_scheme *sc);
-char * s7_get_main_stack_caller(s7_scheme *sc);
-int s7_get_stack_depth(s7_scheme *sc);
-char * s7_get_symbol_name(s7_pointer sym);
-s7_pointer s7_get_value(s7_scheme * sc);
 
 s7_pointer s7_load(s7_scheme *sc, const char *file);                 /* (load file) */
 s7_pointer s7_load_path(s7_scheme *sc);                              /* *load-path* */
@@ -112,13 +99,8 @@ void s7_quit(s7_scheme *sc);
 void (*s7_begin_hook(s7_scheme *sc))(s7_scheme *sc, bool *val);
 void s7_set_begin_hook(s7_scheme *sc, void (*hook)(s7_scheme *sc, bool *val));
   /* call "hook" at the start of any block; use NULL to cancel.
-   *   see s7.html#replrescue and (in the Snd package) snd-listener.c for examples.
    *   s7_begin_hook returns the current begin_hook function or NULL.
    */
-
-/* Greg Santucci 16-Jun-2014 */
-void (*s7_end_hook(s7_scheme *sc))(s7_scheme *sc, bool *val);
-void s7_set_end_hook(s7_scheme *sc, void (*hook)(s7_scheme *sc, bool *val));
 
 s7_pointer s7_eval(s7_scheme *sc, s7_pointer code, s7_pointer e);
 s7_pointer s7_eval_form(s7_scheme *sc, s7_pointer form, s7_pointer e);
@@ -155,10 +137,10 @@ s7_pointer s7_stacktrace(s7_scheme *sc);
    *  normally printing the error arguments to current-error-port.
    */
 
-int s7_gc_protect(s7_scheme *sc, s7_pointer x);
+unsigned int s7_gc_protect(s7_scheme *sc, s7_pointer x);
 void s7_gc_unprotect(s7_scheme *sc, s7_pointer x);
-void s7_gc_unprotect_at(s7_scheme *sc, int loc);
-s7_pointer s7_gc_protected_at(s7_scheme *sc, int loc);
+void s7_gc_unprotect_at(s7_scheme *sc, unsigned int loc);
+s7_pointer s7_gc_protected_at(s7_scheme *sc, unsigned int loc);
 s7_pointer s7_gc_on(s7_scheme *sc, bool on);
 void s7_gc_stats(s7_scheme *sc, bool on);
 unsigned int s7_heap_size(s7_scheme *sc);
@@ -321,7 +303,6 @@ s7_Int *s7_int_vector_elements(s7_pointer vec);
 s7_Double *s7_float_vector_elements(s7_pointer vec);
 bool s7_is_float_vector(s7_pointer p);                                    
 bool s7_is_int_vector(s7_pointer p);                                      
-s7_pointer s7_float_vector_scale(s7_scheme *sc, s7_pointer v, s7_pointer x);
 
 s7_pointer s7_vector_ref(s7_scheme *sc, s7_pointer vec, s7_Int index);                            /* (vector-ref vec index) */
 s7_pointer s7_vector_set(s7_scheme *sc, s7_pointer vec, s7_Int index, s7_pointer a);              /* (vector-set! vec index a) */
@@ -338,8 +319,8 @@ void s7_vector_fill(s7_scheme *sc, s7_pointer vec, s7_pointer obj);             
 s7_pointer s7_vector_copy(s7_scheme *sc, s7_pointer old_vect);
 s7_pointer s7_vector_to_list(s7_scheme *sc, s7_pointer vect);                         /* (vector->list vec) */
 
-s7_Int s7_vector_print_length(s7_scheme *sc);                                         /* value of *vector-print-length* */
-s7_Int s7_set_vector_print_length(s7_scheme *sc, s7_Int new_len);
+s7_Int s7_print_length(s7_scheme *sc);                                                /* value of (*s7* 'print-length) */
+s7_Int s7_set_print_length(s7_scheme *sc, s7_Int new_len);
 
   /* 
    *  (vect i) is the same as (vector-ref vect i)
@@ -357,20 +338,9 @@ s7_pointer s7_hash_table_ref(s7_scheme *sc, s7_pointer table, s7_pointer key);
                                                                             /* (hash-table-ref table key) */
 s7_pointer s7_hash_table_set(s7_scheme *sc, s7_pointer table, s7_pointer key, s7_pointer value);  
                                                                             /* (hash-table-set! table key value) */
-  /* a hash-table is a vector of alists '((symbol value)), so to iterate over a hash-table
-   *   use for-each which calls its function with each of these alists.  An entry defaults to nil.
-   */
-  /* hash-tables are applicable:
-      (let ((hash (make-hash-table)))
-        (set! (hash 'hi) 32)
-        (hash 'hi))
-      -> 32
-  */
-
 
 s7_pointer s7_hook_functions(s7_scheme *sc, s7_pointer hook);                              /* (hook-functions hook) */
 s7_pointer s7_hook_set_functions(s7_scheme *sc, s7_pointer hook, s7_pointer functions);    /* (set! (hook-functions hook) ...) */
-
 
 
 bool s7_is_input_port(s7_scheme *sc, s7_pointer p);                         /* (input-port? p) */
@@ -414,15 +384,15 @@ const char *s7_format(s7_scheme *sc, s7_pointer args);                      /* (
 
 bool s7_is_procedure(s7_pointer x);                                         /* (procedure? x) */
 bool s7_is_macro(s7_scheme *sc, s7_pointer x);                              /* (macro? x) */
-s7_pointer s7_procedure_source(s7_scheme *sc, s7_pointer p);                /* (procedure-source x) if it can be found */
-s7_pointer s7_procedure_environment(s7_scheme *sc, s7_pointer p);           /* (procedure-environment x) */
+s7_pointer s7_closure_body(s7_scheme *sc, s7_pointer p);
+s7_pointer s7_closure_let(s7_scheme *sc, s7_pointer p);
+s7_pointer s7_closure_args(s7_scheme *sc, s7_pointer p);
+s7_pointer s7_funclet(s7_scheme *sc, s7_pointer p);                         /* (funclet x) */
 const char *s7_procedure_documentation(s7_scheme *sc, s7_pointer p);        /* (procedure-documentation x) if any (don't free the string) */
-s7_pointer s7_procedure_arity(s7_scheme *sc, s7_pointer x);                 /* (procedure-arity x) -- returns a list (required optional rest?) */
 bool s7_is_aritable(s7_scheme *sc, s7_pointer x, int args);                 /* (aritable? x args) */
-const char *s7_procedure_name(s7_scheme *sc, s7_pointer proc);              /* (procedure-name x) -- don't free the string! */
+s7_pointer s7_arity(s7_scheme *sc, s7_pointer x);                           /* (arity x) */
 
 const char *s7_help(s7_scheme *sc, s7_pointer obj);                         /* (help obj) */
-s7_pointer s7_unoptimize(s7_scheme *sc, s7_pointer code);                   /* (unoptimize obj) */
 
 s7_pointer s7_make_continuation(s7_scheme *sc);                             /* call/cc... (see example below) */
 bool s7_is_syntax(s7_pointer p);
@@ -435,25 +405,28 @@ bool s7_is_keyword(s7_pointer obj);                                         /* (
 s7_pointer s7_make_keyword(s7_scheme *sc, const char *key);                 /* (make-keyword key) */
 
 s7_pointer s7_symbol_access(s7_scheme *sc, s7_pointer sym);
-s7_pointer s7_symbol_set_access(s7_scheme *sc, s7_pointer symbol, s7_pointer funcs);
+s7_pointer s7_symbol_set_access(s7_scheme *sc, s7_pointer symbol, s7_pointer func);
 
 s7_pointer s7_slot(s7_scheme *sc, s7_pointer symbol);
 s7_pointer s7_slot_value(s7_pointer slot);
 s7_pointer s7_slot_set_value(s7_scheme *sc, s7_pointer slot, s7_pointer value);
 s7_pointer s7_make_slot(s7_scheme *sc, s7_pointer env, s7_pointer symbol, s7_pointer value);
 
-s7_pointer s7_global_environment(s7_scheme *sc);                            /* (global-environment) */
-s7_pointer s7_current_environment(s7_scheme *sc);                           /* (current-environment) */
-s7_pointer s7_set_current_environment(s7_scheme *sc, s7_pointer e);         /* returns previous current-environment */
-s7_pointer s7_outer_environment(s7_pointer e);                              /* (outer-environment e) */
-s7_pointer s7_augment_environment(s7_scheme *sc, s7_pointer env, s7_pointer bindings);
-s7_pointer s7_environment_to_list(s7_scheme *sc, s7_pointer env);           /* (environment->list env) */
-bool s7_is_environment(s7_pointer e);
-s7_pointer s7_environment_ref(s7_scheme *sc, s7_pointer env, s7_pointer sym); /* (env sym) */
-s7_pointer s7_environment_set(s7_scheme *sc, s7_pointer env, s7_pointer sym, s7_pointer val); /* (set! (env sym) val) */
-s7_pointer s7_open_environment(s7_pointer e);                               /* (open-environment e) */
-bool s7_is_open_environment(s7_pointer e);                                  /* (open-environment? e) */
-s7_pointer s7_search_open_environment(s7_scheme *sc, s7_pointer symbol, s7_pointer e);
+s7_pointer s7_rootlet(s7_scheme *sc);                                       /* (rootlet) */
+s7_pointer s7_shadow_rootlet(s7_scheme *sc);
+s7_pointer s7_set_shadow_rootlet(s7_scheme *sc, s7_pointer let);
+s7_pointer s7_curlet(s7_scheme *sc);                                        /* (curlet) */
+s7_pointer s7_set_curlet(s7_scheme *sc, s7_pointer e);                      /* returns previous curlet */
+s7_pointer s7_outlet(s7_pointer e);                                         /* (outlet e) */
+s7_pointer s7_sublet(s7_scheme *sc, s7_pointer env, s7_pointer bindings);   /* (sublet e ...) */
+s7_pointer s7_inlet(s7_scheme *sc, s7_pointer bindings);                    /* (inlet ...) */
+s7_pointer s7_let_to_list(s7_scheme *sc, s7_pointer env);                   /* (let->list env) */
+bool s7_is_let(s7_pointer e);                                               /* )let? e) */
+s7_pointer s7_let_ref(s7_scheme *sc, s7_pointer env, s7_pointer sym);       /* (let-ref e sym) */
+s7_pointer s7_let_set(s7_scheme *sc, s7_pointer env, s7_pointer sym, s7_pointer val); /* (let-set! e sym val) */
+s7_pointer s7_openlet(s7_pointer e);                                        /* (openlet e) */
+bool s7_is_openlet(s7_pointer e);                                           /* (openlet? e) */
+s7_pointer s7_method(s7_scheme *sc, s7_pointer obj, s7_pointer method);
 
 s7_pointer s7_name_to_value(s7_scheme *sc, const char *name);
 s7_pointer s7_symbol_table_find_name(s7_scheme *sc, const char *name);
@@ -505,57 +478,17 @@ bool s7_is_constant(s7_pointer p);
 
 bool s7_is_function(s7_pointer p); 
 s7_pointer s7_make_function(s7_scheme *sc, const char *name, s7_function fnc, int required_args, int optional_args, bool rest_arg, const char *doc);
+s7_pointer s7_make_safe_function(s7_scheme *sc, const char *name, s7_function fnc, int required_args, int optional_args, bool rest_arg, const char *doc);
 
 s7_pointer s7_define_function(s7_scheme *sc, const char *name, s7_function fnc, int required_args, int optional_args, bool rest_arg, const char *doc);
 s7_pointer s7_define_safe_function(s7_scheme *sc, const char *name, s7_function fnc, int required_args, int optional_args, bool rest_arg, const char *doc);
 void s7_define_function_star(s7_scheme *sc, const char *name, s7_function fnc, const char *arglist, const char *doc);
+s7_pointer s7_define_integer_function(s7_scheme *sc, const char *name, s7_function fnc, int required_args, int optional_args, bool rest_arg, const char *doc);
 void s7_define_safe_function_star(s7_scheme *sc, const char *name, s7_function fnc, const char *arglist, const char *doc);
 void s7_define_function_with_setter(s7_scheme *sc, const char *name, s7_function get_fnc, s7_function set_fnc, int req_args, int opt_args, const char *doc);
-  /* this is now the same as s7_make_procedure_with_setter (different args) */
-
-
-s7_pointer (*s7_function_chooser(s7_scheme *sc, s7_pointer fnc))(s7_scheme *sc, s7_pointer f, int args, s7_pointer expr);
-void s7_function_set_chooser(s7_scheme *sc, s7_pointer fnc,  s7_pointer (*chooser)(s7_scheme *sc, s7_pointer f, int args, s7_pointer expr));
-void *s7_function_chooser_data(s7_scheme *sc, s7_pointer f);
-void *s7_function_chooser_data_direct(s7_pointer f);
-void s7_function_chooser_set_data(s7_scheme *sc, s7_pointer f, void *data);
-  /* unsigned int s7_function_class(s7_pointer f); */
-void s7_function_set_class(s7_pointer f, s7_pointer base_f);
-s7_function s7_function_choice(s7_scheme *sc, s7_pointer expr);
-
-bool s7_function_choice_is_direct(s7_scheme *sc, s7_pointer expr);
-void s7_function_choice_set_direct(s7_scheme *sc, s7_pointer expr);
-bool s7_function_choice_is_direct_to_real(s7_scheme *sc, s7_pointer expr);
-s7_pointer s7_call_direct(s7_scheme *sc, s7_pointer expr);
-bool s7_tree_memq(s7_scheme *sc, s7_pointer symbol, s7_pointer tree);
-
-s7_pointer s7_remake_real(s7_scheme *sc, s7_pointer rl, s7_Double n);
-void s7_function_set_returns_temp(s7_pointer f);
-void s7_function_set_step_safe(s7_pointer f);
-bool s7_function_returns_temp(s7_scheme *sc, s7_pointer f);
-s7_Double s7_call_direct_to_real_and_free(s7_scheme *sc, s7_pointer expr);
-s7_pointer s7_value(s7_scheme *sc, s7_pointer sym);
-s7_pointer s7_car_value(s7_scheme *sc, s7_pointer lst);
-s7_pointer s7_cadr_value(s7_scheme *sc, s7_pointer lst);
-s7_pointer s7_cadar_value(s7_scheme *sc, s7_pointer lst);
-size_t s7_number_offset(s7_scheme *sc);
-size_t s7_denominator_offset(s7_scheme *sc);
-size_t s7_slot_value_offset(s7_scheme *sc);
-
-typedef struct {
-  void (*func)(void *p); 
-  void (*free)(void *p); 
-  s7_Double (*f)(void *p); 
-  void *data;
-} s7_ex;
-
-void s7_function_set_ex_parser(s7_pointer f, s7_ex *(*func)(s7_scheme *sc, s7_pointer expr));
-s7_ex *(*s7_function_ex_parser(s7_pointer f))(s7_scheme *sc, s7_pointer expr);
-
+  /* this is now the same as s7_dilambda (different args) */
 
 s7_pointer s7_apply_function(s7_scheme *sc, s7_pointer fnc, s7_pointer args);
-s7_pointer s7_make_closure(s7_scheme *sc, s7_pointer a, s7_pointer c, s7_pointer e);
-
 s7_pointer s7_define_macro(s7_scheme *sc, const char *name, s7_function fnc, int required_args, int optional_args, bool rest_arg, const char *doc);
 
   /* s7_make_function creates a Scheme function object from the s7_function 'fnc'.
@@ -581,8 +514,6 @@ s7_pointer s7_define_macro(s7_scheme *sc, const char *name, s7_function fnc, int
    *
    * s7_define_macro defines a Scheme macro; its arguments are not evaluated (unlike a function),
    *   but its returned value (assumed to be some sort of Scheme expression) is evaluated.
-   *
-   * for s7_make_closure, see the "Closure defined in C" example in s7.html.
    */
 
   /* In s7, (define* (name . args) body) or (define name (lambda* args body))
@@ -633,16 +564,23 @@ s7_pointer s7_call_with_location(s7_scheme *sc, s7_pointer func, s7_pointer args
    *
    * s7_call_with_location passes some information to the error handler.  
    */
+s7_pointer s7_dynamic_wind(s7_scheme *sc, s7_pointer init, s7_pointer body, s7_pointer finish);
 
-bool s7_is_procedure_with_setter(s7_pointer obj);
-s7_pointer s7_make_procedure_with_setter(s7_scheme *sc, 
-					 const char *name,
-					 s7_pointer (*getter)(s7_scheme *sc, s7_pointer args), 
-					 int get_req_args, int get_opt_args,
-					 s7_pointer (*setter)(s7_scheme *sc, s7_pointer args),
-					 int set_req_args, int set_opt_args,
-					 const char *documentation);
+
+bool s7_is_dilambda(s7_pointer obj);
+s7_pointer s7_dilambda(s7_scheme *sc, 
+		       const char *name,
+		       s7_pointer (*getter)(s7_scheme *sc, s7_pointer args), 
+		       int get_req_args, int get_opt_args,
+		       s7_pointer (*setter)(s7_scheme *sc, s7_pointer args),
+		       int set_req_args, int set_opt_args,
+		       const char *documentation);
 s7_pointer s7_procedure_setter(s7_scheme *sc, s7_pointer obj);
+s7_pointer s7_values(s7_scheme *sc, s7_pointer args);
+s7_pointer s7_make_iterator(s7_scheme *sc, s7_pointer e);
+bool s7_is_iterator(s7_pointer obj);
+bool s7_iterator_is_at_end(s7_pointer obj);
+s7_pointer s7_iterate(s7_scheme *sc, s7_pointer iter);
 
 
 int s7_new_type(const char *name, 
@@ -653,7 +591,8 @@ int s7_new_type(const char *name,
 		s7_pointer (*apply)(s7_scheme *sc, s7_pointer obj, s7_pointer args),
 		s7_pointer (*set)(s7_scheme *sc, s7_pointer obj, s7_pointer args));
 
-int s7_new_type_x(const char *name, 
+int s7_new_type_x(s7_scheme *sc,
+		  const char *name, 
 		  char *(*print)(s7_scheme *sc, void *value), 
 		  void (*free)(void *value), 
 		  bool (*equal)(void *val1, void *val2),
@@ -661,9 +600,9 @@ int s7_new_type_x(const char *name,
 		  s7_pointer (*apply)(s7_scheme *sc, s7_pointer obj, s7_pointer args),
 		  s7_pointer (*set)(s7_scheme *sc, s7_pointer obj, s7_pointer args),
 		  s7_pointer (*length)(s7_scheme *sc, s7_pointer obj),
-		  s7_pointer (*copy)(s7_scheme *sc, s7_pointer obj),
+		  s7_pointer (*copy)(s7_scheme *sc, s7_pointer args),
 		  s7_pointer (*reverse)(s7_scheme *sc, s7_pointer obj),
-		  s7_pointer (*fill)(s7_scheme *sc, s7_pointer obj, s7_pointer args));
+		  s7_pointer (*fill)(s7_scheme *sc, s7_pointer args));
 
 bool s7_is_object(s7_pointer p);
 int s7_object_type(s7_pointer obj);
@@ -672,21 +611,9 @@ void *s7_object_value_checked(s7_pointer obj, int type);
 void *s7_vector_ref_object_value_checked(s7_scheme *sc, s7_pointer args, int type);
 s7_pointer s7_make_object(s7_scheme *sc, int type, void *value);
 void s7_mark_object(s7_pointer p);
-s7_pointer s7_object_environment(s7_pointer obj);
-s7_pointer s7_object_set_environment(s7_pointer obj, s7_pointer e);
+s7_pointer s7_object_let(s7_pointer obj);
+s7_pointer s7_object_set_let(s7_pointer obj, s7_pointer e);
 void s7_set_object_print_readably(int type, char *(*printer)(s7_scheme *sc, void *val));
-
-  /* experiments */
-void s7_function_set_looped(s7_pointer f, s7_pointer c);
-void s7_function_set_let_looped(s7_pointer f, s7_pointer c);
-s7_pointer s7_local_slot(s7_scheme *sc, s7_pointer symbol);
-s7_pointer s7_is_local_variable(s7_scheme *sc, s7_pointer symbol, s7_pointer e);
-void s7_set_ex_fallback(s7_scheme *sc, s7_ex *(*fallback)(s7_scheme *sc, s7_pointer expr, s7_pointer locals));
-s7_ex *(*s7_ex_fallback(s7_scheme *sc))(s7_scheme *sc, s7_pointer expr, s7_pointer locals);
-
-void s7_autoload_set_names(s7_scheme *sc, const char **names, int size);
-
-
 
   /* These functions create a new Scheme object type.  There is a simple example in s7.html.
    *
@@ -718,7 +645,45 @@ void s7_autoload_set_names(s7_scheme *sc, const char **names, int size);
    *    any embedded s7_pointer variables).
    */
 
-s7_pointer s7_copy(s7_scheme *sc, s7_pointer obj);
+
+void s7_autoload_set_names(s7_scheme *sc, const char **names, int size);
+
+s7_pointer s7_copy(s7_scheme *sc, s7_pointer args);
+s7_pointer s7_fill(s7_scheme *sc, s7_pointer args);
+
+
+  /* these are aimed at the CLM optimizer */
+s7_pointer (*s7_function_chooser(s7_scheme *sc, s7_pointer fnc))(s7_scheme *sc, s7_pointer f, int args, s7_pointer expr);
+void s7_function_set_chooser(s7_scheme *sc, s7_pointer fnc,  s7_pointer (*chooser)(s7_scheme *sc, s7_pointer f, int args, s7_pointer expr));
+void *s7_function_chooser_data(s7_scheme *sc, s7_pointer f);
+void *s7_function_chooser_data_direct(s7_pointer f);
+void s7_function_chooser_set_data(s7_scheme *sc, s7_pointer f, void *data);
+  /* unsigned int s7_function_class(s7_pointer f); */
+void s7_function_set_class(s7_pointer f, s7_pointer base_f);
+s7_function s7_function_choice(s7_scheme *sc, s7_pointer expr);
+bool s7_function_choice_is_direct(s7_scheme *sc, s7_pointer expr);
+void s7_function_choice_set_direct(s7_scheme *sc, s7_pointer expr);
+bool s7_function_choice_is_direct_to_real(s7_scheme *sc, s7_pointer expr);
+s7_pointer s7_call_direct(s7_scheme *sc, s7_pointer expr);
+bool s7_tree_memq(s7_scheme *sc, s7_pointer symbol, s7_pointer tree);
+s7_pointer s7_remake_real(s7_scheme *sc, s7_pointer rl, s7_Double n);
+void s7_function_set_returns_temp(s7_pointer f);
+bool s7_function_returns_temp(s7_scheme *sc, s7_pointer f);
+s7_Double s7_call_direct_to_real_and_free(s7_scheme *sc, s7_pointer expr);
+s7_pointer s7_value(s7_scheme *sc, s7_pointer sym);
+s7_pointer s7_car_value(s7_scheme *sc, s7_pointer lst);
+s7_pointer s7_cadr_value(s7_scheme *sc, s7_pointer lst);
+s7_pointer s7_cadar_value(s7_scheme *sc, s7_pointer lst);
+size_t s7_number_offset(s7_scheme *sc);
+size_t s7_denominator_offset(s7_scheme *sc);
+size_t s7_slot_value_offset(s7_scheme *sc);
+
+void s7_function_set_looped(s7_pointer f, s7_pointer c);
+void s7_function_set_let_looped(s7_pointer f, s7_pointer c);
+s7_pointer s7_local_slot(s7_scheme *sc, s7_pointer symbol);
+s7_pointer s7_is_local_variable(s7_scheme *sc, s7_pointer symbol, s7_pointer e);
+  /* end CLM stuff */
+
 
   /* this is experimental */
 s7_pointer s7_apply_1(s7_scheme *sc, s7_pointer args, s7_pointer (*f1)(s7_pointer a1));
@@ -782,49 +747,39 @@ s7_pointer s7_apply_n_9(s7_scheme *sc, s7_pointer args,
 
 
 #if (!DISABLE_DEPRECATED)
-/* cm uses these two: */
-#define s7_NIL(Sc)         s7_nil(Sc)
+/* cm uses this: */
 #define s7_UNSPECIFIED(Sc) s7_unspecified(Sc)
-
-#define s7_F(Sc)           s7_f(Sc)
-#define s7_T(Sc)           s7_t(Sc)
-#define s7_UNDEFINED(Sc)   s7_undefined(Sc)
-#define s7_EOF_OBJECT(Sc)  s7_eof_object(Sc)
+#define s7_NIL(Sc) s7_nil(Sc)
+#define s7_is_procedure_with_setter s7_is_dilambda
+#define s7_make_procedure_with_setter s7_dilambda
 #endif
-
-/* the following Scheme functions are not currently exported to C:
- *
- *    * + - / < <= = > >= abs acos acosh angle ash asin asinh assv atan atanh 
- *    augment-environment! call-with-exit call-with-input-file call-with-input-string 
- *    call-with-output-file call-with-output-string catch ceiling char->integer char-alphabetic? 
- *    char-ci<=? char-ci<? char-ci=? char-ci>=? char-ci>? char-downcase char-lower-case? 
- *    char-numeric? char-position char-ready? char-upcase char-upper-case? char-whitespace? char<=? char<? 
- *    char=? char>=? char>? continuation? cosh dynamic-wind environment? eof-object? eval even? 
- *    exact? exact->inexact exp expt fill! floor for-each gcd hash-table hash-table-size 
- *    hook inexact->exact inexact? infinite? initial-environment integer->char integer-decode-float 
- *    integer-length keyword->symbol lcm length list->string list->vector list-tail log logand 
- *    logior lognot logxor logbit? magnitude make-hash-table-iterator make-list make-polar
- *    make-rectangular map max memv min modulo nan? negative? not odd? port-closed? 
- *    port-line-number positive? quotient read-byte read-line remainder round s7-version 
- *    sin sinh sort! sqrt string string->list string->number string-append string-ci<=? string-ci<? 
- *    string-ci=? string-ci>=? string-ci>? string-copy string-fill! string-position string-ref 
- *    string-set! string<=? string<? string=? string>=? string>? substring symbol symbol->keyword 
- *    symbol-table tan tanh truncate values vector vector->list with-input-from-file 
- *    with-input-from-string with-output-to-file with-output-to-string write-byte zero?
- *
- * and these variables: *safety* *#readers* *error-hook* *unbound-variable-hook*
- *
- * if you need any of these, let me know.
- */
 
 
 
 /* --------------------------------------------------------------------------------
  * 
  *        s7 changes
- *		
+ *
+ * 19-Jun:    removed the ex_parser stuff, set_step_safe, s7_ex_fallback.
+ * 5-May:     s7_make_iterator and friends.
+ * 16-Apr:    added s7_fill, changed arg interpretation of s7_copy, s7_dynamic_wind.
+ * 30-Mar:    s7_eval_c_string_with_environment (repl experiment).
+ * 19-Mar:    repl.scm.
+ * 28-Feb:    s7_vector_print_length -> s7_print_length, set case also.
+ * 25-Feb:    s7_closure_* funcs to replace clumsy (deprecated) s7_procedure_source.
+ * 29-Jan:    changed args to s7_new_type_x (added s7_scheme arg, fill! takes s7_function).
+ * 14-Jan-15: make-iterator, iterator?
+ * --------
+ * 26-Dec:    s7_arity replaces s7_procedure_arity.  s7_define_integer_function. deprecate s7_procedure_name.
+ * 5-Nov:     s7_shadow_rootlet and s7_set_shadow_rootlet.
+ * 30-Aug:    s7_make_safe_function (for cload.scm).
+ * 25-July:   define and friends now return the value, not the symbol.
+ *            procedure_with_setter -> dilambda.
+ *            environment -> let.  All the replaced names are deprecated.
+ * 30-June:   s7_method.
+ * 16-June:   remove unoptimize and s7_unoptimize.
  * 14-May:    s7_define_safe_function_star.  Removed s7_catch_all.
- * 22-Apr:    remove (deprecated) s7_apply_n_10, s7_is_valid_pointer, s7_keyword_eq_p.
+ * 22-Apr:    remove s7_apply_n_10, s7_is_valid_pointer, s7_keyword_eq_p.
  * 5-Mar:     s7_heap_size, s7_gc_freed.
  * 22-Jan-14: s7_vector_ref_object_value_checked.
  * --------

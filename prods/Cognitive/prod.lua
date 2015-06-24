@@ -153,10 +153,10 @@ portal = WidgetLib.newPortal()
 
 --edSetRenderMode(5)
 
---dofile("server_multi.lua")
+dofile("server_multi.lua")
 
---newBuffer()
---loadBuffer("iolangexample.lua")
+newBuffer()
+loadBuffer("iolangexample.lua")
 --showEditor()
 
 newBuffer()
@@ -166,4 +166,5 @@ showEditor()
 edSetRenderMode(0)
 --edSetVisColumns(90)
 --edSetVisLines(30)
+
 

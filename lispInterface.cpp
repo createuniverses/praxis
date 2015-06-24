@@ -46,6 +46,7 @@ void lispInit()
     s7_define_function(g_pLisp, "sleep", our_sleep, 0, 0, false, "(sleep) sleeps");
 }
 
+#if 0
 void lispEndHook(s7_scheme *sc, bool *all_done)
 {
     if(g_nLispTraceVerbosity > 0)
@@ -73,9 +74,11 @@ void lispEndHook(s7_scheme *sc, bool *all_done)
         std::cout << sResult << std::endl;
     }
 }
+#endif
 
 void lispBeginHook(s7_scheme *sc, bool *all_done)
 {
+#if 0
     if(g_nLispTraceVerbosity > 0)
     {
         std::string sCode = s7_object_to_c_string(sc, s7_get_main_stack_code(sc));
@@ -100,6 +103,7 @@ void lispBeginHook(s7_scheme *sc, bool *all_done)
 
         std::cout << "[" << sCaller << "] " << sEnvironment << " : " << sCode << std::endl;
     }
+#endif
 
 #ifdef __PRAXIS_WINDOWS__
     if(::GetAsyncKeyState(VK_LCONTROL) != 0 && ::GetAsyncKeyState(0x51) != 0) // Ctrl-Q pressed
@@ -157,10 +161,10 @@ bool lispCall(std::string sCmd)
         gc_loc = s7_gc_protect(g_pLisp, old_port);
 
     s7_set_begin_hook(g_pLisp, lispBeginHook);
-    s7_set_end_hook(g_pLisp, lispEndHook);
+    //s7_set_end_hook(g_pLisp, lispEndHook);
     s7_pointer val = s7_eval_c_string(g_pLisp, sCmd.c_str());
     s7_set_begin_hook(g_pLisp, NULL);
-    s7_set_end_hook(g_pLisp, NULL);
+    //s7_set_end_hook(g_pLisp, NULL);
 
     g_sLispOutput = s7_object_to_c_string(g_pLisp, val);
 

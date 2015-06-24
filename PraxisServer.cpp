@@ -122,15 +122,18 @@ std::string PraxisServer::Receive()
 std::string PraxisServer::Receive(SOCKET s)
 {
     char buf[65536];
-    buf[0] = '\0';
 
     int nBytes = recv(s, buf, 65536, 0);
     if(nBytes > 0)
     {
         cout << "Received " << nBytes << " bytes." << endl;
+        buf[nBytes] = '\0';
     }
-
-    buf[nBytes] = '\0';
+    else
+    {
+        //cout << "Received no bytes, recv returned " << nBytes << endl;
+        buf[0] = '\0';
+    }
 
     return std::string(buf);
 }

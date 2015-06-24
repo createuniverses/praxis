@@ -63,13 +63,13 @@
         ((and (number? m1) (number? m2)) (* m1 m2))
         (else (list '* m1 m2))))
 
-(deriv '(* x y) 'x)
-(deriv '(* (* x y) (+ x 3)) 'x)
-(deriv '(+ (* a (* x x)) (* b x) c) 'x)
-(+ (* a (+ x x)) b)
+;;(deriv '(* x y) 'x)
+;;(deriv '(* (* x y) (+ x 3)) 'x)
+;;(deriv '(+ (* a (* x x)) (* b x) c) 'x)
+;;(+ (* a (+ x x)) b)
 
 
-(define *padepth* 0)
-(procedure-annotate deriv)
+;;(define *padepth* 0)
+;;(procedure-annotate deriv)
 
 ;; (procedure-source deriv)
