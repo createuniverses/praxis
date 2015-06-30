@@ -1,9 +1,18 @@
 praxis
 ======
 
-A live coding environment based on Lua, Lisp and Forth.
+A live coding environment featuring a menagerie of beautiful languages consisting of Lua, Lisp, Forth and Io.
 
-Although mainly Lua at the moment.
+The Lisp comes from s7 scheme: https://ccrma.stanford.edu/software/snd/snd/s7.html
+
+The Forth comes from pForth: http://www.softsynth.com/pforth/
+
+Io: http://iolanguage.org/
+
+Lua: http://www.lua.org/
+
+These implementations were chosen because they are all well written, well tested and embeddable.
+
 
 Videos
 ------
@@ -49,15 +58,8 @@ Compiling and running praxis in Windows
 Prerequisites:
 
  - Qt (strictly speaking, only qmake is required, praxis is not dependent on Qt libraries)
-
-Praxis links against the following static libraries:
-
- - fmodvc.lib (found in fmodapi375win/lib)
- - freetype235.lib (found in freetype-2.3.5/objs)
-
-These files need to be copied to a folder called "libs" under the parent of the build folder. For example, if your build folder is in C:\builds\build-praxis-Qt\_5\_3-Release, the path of the libs folder will be C:\builds\libs.
-
-You can compile praxis the usual way you would for a qmake based project, either from the command line with qmake then make, or by loading the project in Qt Creator.
+ 
+You can compile praxis the usual way you would for a qmake based project, either from the command line with qmake then make, or by loading the project in Qt Creator. The static libraries for fmod and freetype are included in the source tree and will be linked against when building.
 
 When running praxis, praxis expects to see the following files in the current folder:
 
