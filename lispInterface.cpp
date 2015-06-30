@@ -206,3 +206,14 @@ void lispClose()
 {
     // nuthin?
 }
+
+extern "C"
+{
+
+// s7 requires this for its g_log function
+double round(double number)
+{
+    return number < 0.0 ? ceil(number - 0.5) : floor(number + 0.5);
+}
+
+}
