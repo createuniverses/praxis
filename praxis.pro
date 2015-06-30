@@ -16,7 +16,7 @@ win32 {
     INCLUDEPATH += ./freetype-2.3.5/include/
     INCLUDEPATH += ./fmodapi375win/inc/
 
-    message($$_PRO_FILE_PWD_)
+    #message($$_PRO_FILE_PWD_)
 
     LIBS += $$_PRO_FILE_PWD_/fmodapi375win/lib/fmodvc.lib
     LIBS += $$_PRO_FILE_PWD_/freetype-2.3.5/objs/freetype235.lib
@@ -241,7 +241,20 @@ SOURCES += main.cpp \
     io/Stack_io.c \
     PraxisTexture.cpp \
     PraxisLog.cpp \
-    PraxisServer.cpp
+    PraxisServer.cpp \
+    pforth/pf_cglue.c \
+    pforth/pf_clib.c \
+    pforth/pf_core.c \
+    pforth/pf_inner.c \
+    pforth/pf_io.c \
+    pforth/pf_io_none.c \
+    pforth/pf_main.c \
+    pforth/pf_mem.c \
+    pforth/pf_save.c \
+    pforth/pf_text.c \
+    pforth/pf_words.c \
+    pforth/pfcompil.c \
+    pforth/pfcustom.c
 
 unix {
 SOURCES += \
@@ -435,7 +448,27 @@ HEADERS += \
     ioCallbacks.h \
     PraxisTexture.h \
     PraxisLog.h \
-    PraxisServer.h
+    PraxisServer.h \
+    pforth/pf_all.h \
+    pforth/pf_cglue.h \
+    pforth/pf_clib.h \
+    pforth/pf_core.h \
+    pforth/pf_float.h \
+    pforth/pf_guts.h \
+    pforth/pf_host.h \
+    pforth/pf_inc1.h \
+    pforth/pf_io.h \
+    pforth/pf_mem.h \
+    pforth/pf_save.h \
+    pforth/pf_text.h \
+    pforth/pf_types.h \
+    pforth/pf_win32.h \
+    pforth/pf_words.h \
+    pforth/pfcompfp.h \
+    pforth/pfcompil.h \
+    pforth/pfdicdat_arm.h \
+    pforth/pfinnrfp.h \
+    pforth/pforth.h
 
 unix {
 HEADERS += \
