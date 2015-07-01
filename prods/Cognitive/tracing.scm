@@ -1,3 +1,9 @@
+(define (repeat n fn)
+  (if (<= n 0)
+      'done
+      ((lambda () (fn)
+                  (repeat (- n 1) fn)))))
+
 (define-macro (trace-old f)
     `(define ,f 
        (apply lambda 'args 
@@ -47,3 +53,4 @@
 ;                ({list} 'let ({list} ({list} 'val ({list} 'apply addone 'args))) '(format #t \"~A~%\" val)
 ;                        'val))))
 ;
+
