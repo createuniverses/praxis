@@ -11,11 +11,11 @@
 
 World * g_pSingleWorldConfiguration_World = 0;
 
-int g_nSingleWorldWidth = 700;
-int g_nSingleWorldHeight = 500;
+//int g_nSingleWorldWidth = 700;
+//int g_nSingleWorldHeight = 500;
 
-//int g_nSingleWorldWidth = 800;
-//int g_nSingleWorldHeight = 600;
+int g_nSingleWorldWidth = 800;
+int g_nSingleWorldHeight = 600;
 
 int g_nSingleWorldTop = 10;
 int g_nSingleWorldLeft = 10;

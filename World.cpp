@@ -75,7 +75,7 @@ World::World()
 
     m_nCurrentBuffer = -1;
 
-    NewEditor();
+    //NewEditor();
 
     m_bRenderOutput = true;
     m_bRenderError = true;
@@ -112,6 +112,8 @@ mlTransform * World::GetCameraTransformBase()
 
 void World::Init()
 {
+    NewEditor();
+
     luaCall("dofile(\"prod.lua\")");
 }
 
@@ -264,6 +266,7 @@ void World::Render()
     //glPolygonOffset (1., 1.);
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    //glClearColor(0.0f, (float)(rand()%1000) * 0.001f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glMatrixMode(GL_PROJECTION);
@@ -311,7 +314,7 @@ void World::Render()
             m_bRunning = false;
         }
 
-        ioCall("render()");
+        //ioCall("render()");
     }
 
     // Restore a sane render state in case render left it in a bad condition
