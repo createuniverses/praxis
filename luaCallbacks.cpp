@@ -2568,6 +2568,8 @@ int luaCBSetBufferText(lua_State * L)
 
 int luaCBInsertBufferText(lua_State * L)
 {
+    // I can just make this take 2 arguments, the first being the buffer, or even just the buffer name.
+
     int n = lua_gettop(L);
     if(n!=1) luaL_error(L, "1 argument expected.");
 
@@ -3046,6 +3048,9 @@ void luaInitCallbacks()
     luaCall("function keyDown(k) end");
     luaCall("function keyUp(k) end");
 
+    luaCall("function edKeyDown(k) end");
+    luaCall("function edKeyUp(k) end");
+
     luaCall("function returnPressed() edInsertNewline() end");
 
     luaCall("function logLiveCode(sCode) end");
@@ -3426,5 +3431,5 @@ void luaInitCallbacks()
     luaL_newmetatable(g_pLuaState, "LiveCode.transform");
 
     // Clear the stack with a lua_pop call here
-    lua_pop(g_pLuaState, 2);
+    lua_pop(g_pLuaState, lua_gettop(g_pLuaState));
 }

@@ -27,6 +27,7 @@ extern int g_nLastBreakTime;
 #endif
 
 #include "PraxisLog.h"
+#include <iostream>
 
 lua_State * g_pLuaState = 0;
 
@@ -81,6 +82,8 @@ void luaInit()
     LeaveCriticalSection (&g_cs) ;
 #endif
 
+    lua_pop(g_pLuaState, lua_gettop(g_pLuaState));
+
     g_bLuaRunning = true;
 }
 
@@ -102,6 +105,16 @@ bool luaCall(std::string sCmd)
 
         lua_pop(g_pLuaState, 1);
     }
+    else
+    {
+        int nResults = lua_gettop(g_pLuaState);
+        if(nResults > 0)
+        {
+            //luaPrintResults(std::string("Command: ") + sCmd);
+        }
+
+        lua_pop(g_pLuaState, nResults);
+    }
 
     // Pop the error function sitting on the stack
     lua_pop(g_pLuaState, 1);
@@ -111,6 +124,30 @@ bool luaCall(std::string sCmd)
 #endif
 
     return (error == 0);
+}
+
+void luaPrintResults(std::string sHeader)
+{
+    int nResults = lua_gettop(g_pLuaState);
+    //if(nResults > 0)
+    {
+        std::cout << sHeader << std::endl;
+        std::cout << "Num results = " << nResults << std::endl;
+
+        for(int i = 0; i < nResults; i++)
+        {
+            std::cout << lua_typename(g_pLuaState, lua_type(g_pLuaState, i)) << std::endl;
+
+            if(lua_isfunction(g_pLuaState, i))
+            {
+                lua_Debug ar;
+                lua_pushvalue(g_pLuaState, i);
+                lua_getinfo(g_pLuaState, ">S", &ar);
+                std::cout << ar.short_src << std::endl;
+                //std::cout << ar.linedefined << ", " << ar.source << ", " << ar.short_src << std::endl;
+            }
+        }
+    }
 }
 
 //std::string & luaGetOutput()
@@ -165,7 +202,7 @@ int cbLuaPrint( lua_State *L)
         }
         else
         {
-            sTrace += "Not a string\n";
+            //sTrace += "Not a string\n";
         }
     }
 

@@ -29,5 +29,7 @@ void luaClose();
 
 bool luaIsCommandComplete(std::string sCmd);
 
+void luaPrintResults(std::string sHeader);
+
 #endif // LUAINTERFACE_H
 

@@ -85,7 +85,7 @@ function SynthNode.updateWavemaker(node)
     else
       node.angle = node.angle + (g_twopi * (node.freq / g_sampleRate))
     end
-	if node.angle > g_twopi then node.angle = node.angle - g_twopi end
+  if node.angle > g_twopi then node.angle = node.angle - g_twopi end
     node.samplesLastFrame = node.samplesLastFrame + 1
   end
 end
@@ -194,8 +194,11 @@ end
 --transform.lookAt(syntrans, 100,10,100)
 --transform.setScale(syntrans, 6,1,3)
 
+g_synthTrans = transform.new()
+
 function makeSynthTrans(from, to, size)
-  local trans = transform.new()
+  --local trans = transform.new()
+  local trans = g_synthTrans
   transform.setTranslation(trans, from.x, from.y, from.z)
   transform.lookAt(trans, to.x, to.y, to.z)
   local diff = { x = to.x - from.x, y = to.y - from.y, z = to.z - from.z }
@@ -273,3 +276,4 @@ end
 
 transform.setTranslation(sl1.lspace, 0,10,-50)
 transform.lookAt(sl1.lspace, -100,10,-100)
+

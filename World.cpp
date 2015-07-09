@@ -521,6 +521,9 @@ void World::OnLButtonDown(int nX, int nY)
 
 	if(m_bMouseMovesCamera)
         m_bUpdatePickPosition = false;
+
+    // Map the mouse position to a character position in the editor, then send a callback with this information.
+
 }
 
 void World::OnLButtonUp(int nX, int nY)
@@ -574,6 +577,13 @@ void World::OnKeyDown(unsigned char nKey, int nX, int nY)
         luaCall(ss.str());
 
         return;
+    }
+    else
+    {
+        string temp(" "); temp[0] = nKey;
+        stringstream ss;
+        ss << "edKeyDown(\"" << temp.c_str() << "\")";
+        luaCall(ss.str());
     }
 
     // This is where to handle pressing enter for a command buffer.

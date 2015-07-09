@@ -30,6 +30,14 @@ render := method(
 
 -- loadBuffer("iorender.io")
 
+if iolangwidget == nil then
+  iolangwidget = WidgetLib.newSimple()
+end
+
+function iolangwidget.render(w)
+  iolang("render")
+end
 
 os.execute("putty.bat")
+
 
