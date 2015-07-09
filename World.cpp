@@ -583,7 +583,8 @@ void World::OnKeyDown(unsigned char nKey, int nX, int nY)
         string temp(" "); temp[0] = nKey;
         stringstream ss;
         ss << "edKeyDown(\"" << temp.c_str() << "\")";
-        luaCall(ss.str());
+        std::cout << ss.str() << std::endl;
+        //luaCall(ss.str());
     }
 
     // This is where to handle pressing enter for a command buffer.
