@@ -210,6 +210,8 @@ void lispClose()
 extern "C"
 {
 
+#include <math.h>
+
 // s7 requires this for its g_log function
 double round(double number)
 {
