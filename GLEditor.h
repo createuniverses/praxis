@@ -107,6 +107,8 @@ public:
     static float m_CharWidth;
     static float m_CharHeight;
 
+    static bool m_bNativeControl;
+
 //protected:
 
     struct IndexPair

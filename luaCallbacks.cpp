@@ -3015,6 +3015,39 @@ int luaCBSwitchToForth(lua_State * L)
     return 0;
 }
 
+int luaCBIsShiftDown(lua_State * L)
+{
+    bool bShift  = (glutGetModifiers() & GLUT_ACTIVE_SHIFT);
+    lua_pushboolean(L, bShift);
+    return 1;
+}
+
+int luaCBIsCtrlDown(lua_State * L)
+{
+    bool bCtrl   = (glutGetModifiers() & GLUT_ACTIVE_CTRL);
+    lua_pushboolean(L, bCtrl);
+    return 1;
+}
+
+int luaCBIsAltDown(lua_State * L)
+{
+    bool bAlt    = (glutGetModifiers() & GLUT_ACTIVE_ALT);
+    lua_pushboolean(L, bAlt);
+    return 1;
+}
+
+int luaCBTurnOffNativeEditorControl(lua_State * L)
+{
+    GLEditor::m_bNativeControl = false;
+    return 0;
+}
+
+int luaCBTurnOnNativeEditorControl(lua_State * L)
+{
+    GLEditor::m_bNativeControl = true;
+    return 0;
+}
+
 void luaInitCallbacks()
 {
 //    g_luaFont = QFont("Bitstream Vera Sans Mono", 12);
@@ -3363,6 +3396,10 @@ void luaInitCallbacks()
 
     lua_register(g_pLuaState, "switchToLisp",           luaCBSwitchToLisp);
     lua_register(g_pLuaState, "switchToForth",          luaCBSwitchToForth);
+
+    lua_register(g_pLuaState, "isAltDown",              luaCBIsAltDown);
+    lua_register(g_pLuaState, "isShiftDown",            luaCBIsShiftDown);
+    lua_register(g_pLuaState, "isCtrlDown",             luaCBIsCtrlDown);
 
     const struct luaL_Reg lua_texturelib [] = {
         {"new",                   luaCBTextureNew},

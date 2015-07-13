@@ -32,6 +32,8 @@ PraxisTexture * GLEditor::m_pTexture = 0;
 int GLEditor::m_nDesiredTextureSize  = 512;
 bool GLEditor::m_bUpdateRequired     = true;
 
+bool GLEditor::m_bNativeControl = true;
+
 // static so we share between workspaces
 string GLEditor::m_CopyBuffer;
 

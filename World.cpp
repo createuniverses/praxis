@@ -571,20 +571,21 @@ void World::OnKeyDown(unsigned char nKey, int nX, int nY)
 
     if(!m_bRenderEditor)
     {
-        string temp(" "); temp[0] = nKey;
+        //string temp(" "); temp[0] = nKey;
         stringstream ss;
-        ss << "keyDown(\"" << temp.c_str() << "\")";
+        //ss << "keyDown(\"" << nKey << "\")";
+        ss << "keyDown(" << (int)nKey << ")";
         luaCall(ss.str());
 
         return;
     }
     else
     {
-        string temp(" "); temp[0] = nKey;
+        //string temp(" "); temp[0] = nKey;
         stringstream ss;
-        ss << "edKeyDown(\"" << temp.c_str() << "\")";
+        ss << "edKeyDown(" << (int)nKey << ")";
         std::cout << ss.str() << std::endl;
-        //luaCall(ss.str());
+        luaCall(ss.str());
     }
 
     // This is where to handle pressing enter for a command buffer.
@@ -629,6 +630,9 @@ void World::OnKeyDown(unsigned char nKey, int nX, int nY)
 
     // Need to add a Lisp mode and a Forth mode.
     // Switching is handled by the callbacks for those embedded languages.
+
+    if(!GLEditor::m_bNativeControl)
+        return;
 
     if(bCtrlEnter)
     {
