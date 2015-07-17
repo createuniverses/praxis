@@ -26,3 +26,5 @@ saves*
 output.txt
 
 *.bak*
+
+putty*.log
