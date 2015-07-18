@@ -786,6 +786,19 @@ void World::SwitchToEditor(int n)
     m_nCurrentBuffer = n;
 }
 
+GLEditor * World::GetEditor(const std::string & sName)
+{
+    for(int i = 0; i < m_buffers.size(); i++)
+    {
+        GLEditor * pBuffer = m_buffers[i];
+        if(pBuffer->GetName() == sName)
+        {
+            return pBuffer;
+        }
+    }
+    return 0;
+}
+
 void World::SwitchToEditor(const std::string & sName)
 {
     for(int i = 0; i < m_buffers.size(); i++)

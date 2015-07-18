@@ -106,6 +106,8 @@ public:
     void PreviousEditor();
     void CloseEditor();
 
+    GLEditor * GetEditor(const std::string & sName);
+
     void ShowOutput() { m_bRenderOutput = true;  }
     void HideOutput() { m_bRenderOutput = false; }
     bool OutputVisible() { return m_bRenderOutput; }
