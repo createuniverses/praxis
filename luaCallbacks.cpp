@@ -2557,11 +2557,27 @@ int luaCBCloseBuffer(lua_State * L)
 int luaCBSetBufferText(lua_State * L)
 {
     int n = lua_gettop(L);
-    if(n!=1) luaL_error(L, "1 argument expected.");
+    if(n<1 || n>2) luaL_error(L, "1 or 2 arguments expected.");
 
-    std::string sText = luaL_checkstring(L, 1);
+    GLEditor * pEditor = g_pWorld->GetEditor();
+    std::string sText;
 
-    g_pWorld->GetEditor()->SetText(sText);
+    if(n==2)
+    {
+        std::string sName = luaL_checkstring(L, 1);
+
+        pEditor = g_pWorld->GetEditor(sName);
+        if(pEditor == 0)
+            luaL_error(L, "No editor by the name %s", sName.c_str());
+
+        sText = luaL_checkstring(L, 2);
+    }
+    else
+    {
+        sText = luaL_checkstring(L, 1);
+    }
+
+    pEditor->SetText(sText);
 
     return 0;
 }
@@ -2629,9 +2645,33 @@ int luaCBSaveBuffer(lua_State *L)
     return 0;
 }
 
+int luaCBGetNumBuffers(lua_State * L)
+{
+    lua_pushnumber(L, g_pWorld->m_buffers.size());
+    return 1;
+}
+
 int luaCBGetBufferName(lua_State * L)
 {
-    lua_pushstring(L, g_pWorld->GetEditor()->GetName().c_str());
+    int n = lua_gettop(L);
+    if(n>=1)
+    {
+        int id = luaL_checknumber(L, 1);
+        if(id < 0 || id >= g_pWorld->m_buffers.size())
+        {
+            lua_pushstring(L, "???");
+        }
+        else
+        {
+            GLEditor * p = g_pWorld->m_buffers[id];
+            lua_pushstring(L, p->GetName().c_str());
+        }
+    }
+    else
+    {
+        lua_pushstring(L, g_pWorld->GetEditor()->GetName().c_str());
+    }
+
     return 1;
 }
 
@@ -3249,6 +3289,7 @@ void luaInitCallbacks()
     lua_register(g_pLuaState, "setBufferText",         luaCBSetBufferText);
     lua_register(g_pLuaState, "insertBufferText",      luaCBInsertBufferText);
     lua_register(g_pLuaState, "getBufferText",         luaCBGetBufferText);
+    lua_register(g_pLuaState, "getNumBuffers",         luaCBGetNumBuffers);
     lua_register(g_pLuaState, "loadBuffer",            luaCBLoadBuffer);
     lua_register(g_pLuaState, "saveBuffer",            luaCBSaveBuffer);
     lua_register(g_pLuaState, "getBufferName",         luaCBGetBufferName);
