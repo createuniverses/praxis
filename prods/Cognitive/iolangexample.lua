@@ -38,6 +38,7 @@ function iolangwidget.render(w)
   iolang("render")
 end
 
-os.execute("putty.bat")
+os.execute("..\\..\\utils\\putty.bat")
+
 
 
