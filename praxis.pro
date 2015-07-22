@@ -254,7 +254,12 @@ SOURCES += main.cpp \
     pforth/pf_text.c \
     pforth/pf_words.c \
     pforth/pfcompil.c \
-    pforth/pfcustom.c
+    pforth/pfcustom.c \
+    luaCBOpenGL.cpp \
+    luaCBEditor.cpp \
+    luaCBServer.cpp \
+    luaCBTransform.cpp \
+    luaCBTexture.cpp
 
 unix {
 SOURCES += \
@@ -468,7 +473,8 @@ HEADERS += \
     pforth/pfcompil.h \
     pforth/pfdicdat_arm.h \
     pforth/pfinnrfp.h \
-    pforth/pforth.h
+    pforth/pforth.h \
+    luaCB.h
 
 unix {
 HEADERS += \

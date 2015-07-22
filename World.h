@@ -51,15 +51,6 @@ public:
 
     void UpdateMousePos(int nX, int nY);
 
-    enum LanguageMode
-    {
-        LanguageMode_Lisp,
-        LanguageMode_Forth,
-        LanguageMode_Lua
-    };
-
-    LanguageMode m_eLanguage;
-
     // Camera
 
     mlTransform * GetCameraTransform();

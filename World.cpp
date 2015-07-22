@@ -92,8 +92,6 @@ World::World()
     m_midiout = new RtMidiOutWinMM("praxis");
     m_midiin  = 0;
 #endif
-
-    m_eLanguage = LanguageMode_Lua;
 }
 
 World::~World()

@@ -12,6 +12,7 @@ use such a technique, and should instead use a MultiMedia timer.
 #include <stdio.h>
 #include <mmsystem.h>
 
+int g_nMidiUpdateInterval = 20;
 
 
 
