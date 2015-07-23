@@ -857,7 +857,7 @@ int luaCBDrawArraysTest(lua_State * L)
     return 0;
 }
 
-void luaInitCallbacksGL()
+void luaInitCallbacksOpenGL()
 {
     lua_register(g_pLuaState, "drawLine",              luaCBDrawLine);
     lua_register(g_pLuaState, "getCamPos",             luaCBGetCameraPosition);

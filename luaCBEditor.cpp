@@ -430,6 +430,18 @@ int luaCBReadFileToString(lua_State * L)
     return 1;
 }
 
+int luaCBTurnOnNativeEditorControl(lua_State * L)
+{
+    GLEditor::m_bNativeControl = true;
+    return 0;
+}
+
+int luaCBTurnOffNativeEditorControl(lua_State * L)
+{
+    GLEditor::m_bNativeControl = false;
+    return 0;
+}
+
 void luaInitCallbacksEditor()
 {
     lua_register(g_pLuaState, "newBuffer",             luaCBNewBuffer);
@@ -489,4 +501,7 @@ void luaInitCallbacksEditor()
 
     lua_register(g_pLuaState, "selectLines",           luaCBSelectLines);
     lua_register(g_pLuaState, "readFile",              luaCBReadFileToString);
+
+    lua_register(g_pLuaState, "edNativeControlOn",     luaCBTurnOnNativeEditorControl);
+    lua_register(g_pLuaState, "edNativeControlOff",    luaCBTurnOffNativeEditorControl);
 }

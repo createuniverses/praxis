@@ -262,7 +262,14 @@ SOURCES += main.cpp \
     luaCBTexture.cpp \
     luaCBMp3.cpp \
     luaCBWindow.cpp \
-    luaCBClipboard.cpp
+    luaCBClipboard.cpp \
+    luaCBVoxel.cpp \
+    luaCBSynth.cpp \
+    luaCBMidi.cpp \
+    luaCBWorld.cpp \
+    luaCBLang.cpp \
+    luaCBJoystick.cpp \
+    luaCBSystem.cpp
 
 unix {
 SOURCES += \
