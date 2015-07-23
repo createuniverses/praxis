@@ -259,7 +259,10 @@ SOURCES += main.cpp \
     luaCBEditor.cpp \
     luaCBServer.cpp \
     luaCBTransform.cpp \
-    luaCBTexture.cpp
+    luaCBTexture.cpp \
+    luaCBMp3.cpp \
+    luaCBWindow.cpp \
+    luaCBClipboard.cpp
 
 unix {
 SOURCES += \
