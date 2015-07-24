@@ -74,6 +74,19 @@ int luaCBPrintf(lua_State * L)
     return 0;
 }
 
+int luaCBPlatform(lua_State * L)
+{
+    std::string s = "undefined";
+#ifdef __PRAXIS_WINDOWS__
+    s = "windows";
+#endif
+#ifdef __PRAXIS_LINUX__
+    s = "linux";
+#endif
+    lua_pushstring(L, s.c_str());
+    return 1;
+}
+
 void luaInitCallbacksSystem()
 {
     lua_register(g_pLuaState, "luaCall",               luaCBLuaCall);
@@ -87,4 +100,6 @@ void luaInitCallbacksSystem()
     lua_register(g_pLuaState, "setCurrentDir",         luaCBSetCurrentDir);
 
     lua_register(g_pLuaState, "printf",                luaCBPrintf);
+
+    lua_register(g_pLuaState, "platform",              luaCBPlatform);
 }

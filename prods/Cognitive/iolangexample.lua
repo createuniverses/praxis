@@ -38,7 +38,16 @@ function iolangwidget.render(w)
   iolang("render")
 end
 
-os.execute("..\\..\\utils\\putty.bat")
+function wait(n)
+  local start = os.time()
+  while os.time() < start + n do end
+end
 
+if platform() == "windows" then
+  os.execute("start cmd /c ..\\..\\utils\\putty.bat")
+end
 
+if platform() == "linux" then
+  os.execute("sh ../../utils/putty.sh")
+end
 

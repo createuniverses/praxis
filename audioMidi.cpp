@@ -12,11 +12,6 @@ use such a technique, and should instead use a MultiMedia timer.
 #include <stdio.h>
 #include <mmsystem.h>
 
-int g_nMidiUpdateInterval = 20;
-
-
-
-
 /* Here's an array of MIDI Note-On and Note-Off events to play our musical phrase. Each event
 consists of 4 bytes. The first byte is how many "PPQN clocks" to delay before outputting the
 event. The second byte is the MIDI Status. The third byte is the MIDI Note Number. The fourth

@@ -5,6 +5,8 @@
 
 #include "luaCB.h"
 
+int g_nMidiUpdateInterval = 20;
+
 #ifdef __PRAXIS_WINDOWS__
 // may need to start a thread to play midi
 // so that it is played accurately.
