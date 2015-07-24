@@ -55,11 +55,6 @@ void luaInitCallbacks()
     luaCall("function keyDown(k) end");
     luaCall("function keyUp(k) end");
 
-    luaCall("function edKeyDown(k) end");
-    luaCall("function edKeyUp(k) end");
-
-    luaCall("function returnPressed() edInsertNewline() end");
-
     luaCall("function logLiveCode(sCode) end");
 
     luaCall("function f1Pressed() "

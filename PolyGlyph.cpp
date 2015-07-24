@@ -195,7 +195,7 @@ void __stdcall PolyGlyph::TessEnd(GlyphGeometry* geo)
 void PolyGlyph::RenderOutline(const FT_GlyphSlot glyph)
 {
 	unsigned int start=0;
-	glLineWidth(5);
+    glLineWidth(2);
 	for(int c=0; c<glyph->outline.n_contours; c++)
 	{
 		glBegin(GL_LINE_LOOP);

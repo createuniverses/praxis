@@ -63,8 +63,9 @@ GLEditor::GLEditor():
     if(m_PolyGlyph == 0)
         m_PolyGlyph = new PolyGlyph("Bitstream-Vera-Sans-Mono.ttf");
 
-    m_CharWidth=StrokeWidth('#')+1;
-    m_CharHeight=m_PolyGlyph->CharacterHeight('#') * 1.5;
+    //m_CharWidth=StrokeWidth('#')+1;
+    m_CharWidth=m_PolyGlyph->CharacterWidth('#'); // + 1?? Why? Tears?
+    m_CharHeight=m_PolyGlyph->CharacterHeight('#'); // * 1.5
     m_CursorWidth=m_CharWidth/3.0f;
 
     m_ParenthesesHighlight[0]=-1;
@@ -374,7 +375,8 @@ void GLEditor::StrokeCharacter(wchar_t c, float dx, float dy)
         glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, c);
 
         glPopMatrix();
-        glTranslatef(StrokeWidth(c),0,0);
+        //glTranslatef(StrokeWidth(c),0,0);
+        glTranslatef(m_CharWidth,0,0);
         glLineWidth(1.0f);
         break;
 
@@ -387,7 +389,8 @@ void GLEditor::StrokeCharacter(wchar_t c, float dx, float dy)
         glutBitmapCharacter(GLUT_BITMAP_8_BY_13, c);
 
         glPopMatrix();
-        glTranslatef(StrokeWidth(c),0,0);
+        //glTranslatef(StrokeWidth(c),0,0);
+        glTranslatef(m_CharWidth,0,0);
         glLineWidth(1.0f);
         break;
 
@@ -400,16 +403,17 @@ void GLEditor::StrokeCharacter(wchar_t c, float dx, float dy)
         glutBitmapCharacter(GLUT_BITMAP_9_BY_15, c);
 
         glPopMatrix();
-        glTranslatef(StrokeWidth(c),0,0);
+        //glTranslatef(StrokeWidth(c),0,0);
+        glTranslatef(m_CharWidth,0,0);
         glLineWidth(1.0f);
         break;
     }
 }
 
-float GLEditor::StrokeWidth(wchar_t c)
-{
-    return m_PolyGlyph->CharacterWidth(c);
-}
+//float GLEditor::StrokeWidth(wchar_t c)
+//{
+//    return m_PolyGlyph->CharacterWidth(c);
+//}
 
 string GLEditor::GetText()
 {
@@ -691,6 +695,12 @@ void GLEditor::RenderBuffer(bool bBackground)
         glEnd();
     }
 
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(minX, maxX, minY - (m_CharHeight * 0.2f), maxY, 0,10);
+
+    glMatrixMode(GL_MODELVIEW);
+
     unsigned int xcount=0;
     float xpos=0;
     float ypos=0;
@@ -761,10 +771,17 @@ void GLEditor::RenderBuffer(bool bBackground)
         {
             if (xcount>=m_LeftTextPosition && xcount < m_LeftTextPosition + m_VisibleColumns)
             {
-                float dx = 0;
-                float dy = 0;
+                //float dx = 0;
+                //float dy = 0;
 
-                StrokeCharacter(m_Text[n], dx, dy);
+                // Call Lua for each character rendered so effects can be implemented in Lua
+
+                stringstream ss;
+                //ss << "edRenderChar([[" << m_Text[n] << "]]," << xpos << "," << ypos << ")";
+                ss << "edRenderChar(string.char(" << (int)m_Text[n] << ")," << xpos << "," << ypos << ")";
+                luaCall(ss.str());
+
+                //StrokeCharacter(m_Text[n], dx, dy);
 
                 xpos+=m_CharWidth;
             }

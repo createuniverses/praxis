@@ -571,7 +571,6 @@ void World::OnKeyDown(unsigned char nKey, int nX, int nY)
     {
         //string temp(" "); temp[0] = nKey;
         stringstream ss;
-        //ss << "keyDown(\"" << nKey << "\")";
         ss << "keyDown(" << (int)nKey << ")";
         luaCall(ss.str());
 
@@ -582,7 +581,6 @@ void World::OnKeyDown(unsigned char nKey, int nX, int nY)
         //string temp(" "); temp[0] = nKey;
         stringstream ss;
         ss << "edKeyDown(" << (int)nKey << ")";
-        std::cout << ss.str() << std::endl;
         luaCall(ss.str());
     }
 

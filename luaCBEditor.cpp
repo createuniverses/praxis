@@ -442,8 +442,60 @@ int luaCBTurnOffNativeEditorControl(lua_State * L)
     return 0;
 }
 
+int luaCBEdSetCharWidth(lua_State * L)
+{
+    GLEditor::m_CharWidth = luaL_checknumber(L, 1);
+    return 0;
+}
+
+int luaCBEdGetCharWidth(lua_State * L)
+{
+    lua_pushnumber(L, GLEditor::m_CharWidth);
+    return 1;
+}
+
+int luaCBEdGetStdCharWidth(lua_State * L)
+{
+    lua_pushnumber(L, GLEditor::m_PolyGlyph->CharacterWidth('#'));
+    return 1;
+}
+
+int luaCBEdSetCharHeight(lua_State * L)
+{
+    GLEditor::m_CharHeight = luaL_checknumber(L, 1);
+    return 0;
+}
+
+int luaCBEdGetCharHeight(lua_State * L)
+{
+    lua_pushnumber(L, GLEditor::m_CharHeight);
+    return 1;
+}
+
+int luaCBEdGetStdCharHeight(lua_State * L)
+{
+    lua_pushnumber(L, GLEditor::m_PolyGlyph->CharacterHeight('#'));
+    return 1;
+}
+
+int luaCBEdStrokeCharacter(lua_State * L)
+{
+    std::string c = luaL_checkstring(L, 1);
+    float dx = luaL_checknumber(L, 2);
+    float dy = luaL_checknumber(L, 3);
+    g_pWorld->GetEditor()->StrokeCharacter(c.c_str()[0], dx, dy);
+    return 0;
+}
+
 void luaInitCallbacksEditor()
 {
+    luaCall("function edKeyDown(k) end");
+    luaCall("function edKeyUp(k) end");
+
+    luaCall("function returnPressed() edInsertNewline() end");
+
+    luaCall("function edRenderChar(c,xp,yp) edStrokeCharacter(c,0,0) end");
+
     lua_register(g_pLuaState, "newBuffer",             luaCBNewBuffer);
     lua_register(g_pLuaState, "closeBuffer",           luaCBCloseBuffer);
     lua_register(g_pLuaState, "setBufferText",         luaCBSetBufferText);
@@ -504,4 +556,14 @@ void luaInitCallbacksEditor()
 
     lua_register(g_pLuaState, "edNativeControlOn",     luaCBTurnOnNativeEditorControl);
     lua_register(g_pLuaState, "edNativeControlOff",    luaCBTurnOffNativeEditorControl);
+
+    lua_register(g_pLuaState, "edSetCharWidth",        luaCBEdSetCharWidth);
+    lua_register(g_pLuaState, "edGetCharWidth",        luaCBEdGetCharWidth);
+    lua_register(g_pLuaState, "edGetStdCharWidth",     luaCBEdGetStdCharWidth);
+
+    lua_register(g_pLuaState, "edSetCharHeight",       luaCBEdSetCharHeight);
+    lua_register(g_pLuaState, "edGetCharHeight",       luaCBEdGetCharHeight);
+    lua_register(g_pLuaState, "edGetStdCharHeight",    luaCBEdGetStdCharHeight);
+
+    lua_register(g_pLuaState, "edStrokeCharacter",     luaCBEdStrokeCharacter);
 }

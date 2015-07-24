@@ -1,5 +1,5 @@
 TEMPLATE = app
-#CONFIG += console
+CONFIG += console
 CONFIG -= qt
 
 INCLUDEPATH += ./MathLib/

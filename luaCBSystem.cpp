@@ -66,6 +66,14 @@ int luaCBSetCurrentDir(lua_State * L)
 }
 #endif
 
+int luaCBPrintf(lua_State * L)
+{
+    std::string s = luaL_checkstring(L, 1);
+    printf("%s", s.c_str());
+    fflush(stdout);
+    return 0;
+}
+
 void luaInitCallbacksSystem()
 {
     lua_register(g_pLuaState, "luaCall",               luaCBLuaCall);
@@ -77,4 +85,6 @@ void luaInitCallbacksSystem()
 
     lua_register(g_pLuaState, "getCurrentDir",         luaCBGetCurrentDir);
     lua_register(g_pLuaState, "setCurrentDir",         luaCBSetCurrentDir);
+
+    lua_register(g_pLuaState, "printf",                luaCBPrintf);
 }

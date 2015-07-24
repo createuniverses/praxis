@@ -77,7 +77,7 @@ public:
     int m_Height;
 
     void StrokeCharacter(wchar_t c, float dx = 0, float dy = 0);
-    float StrokeWidth(wchar_t c);
+    //float StrokeWidth(wchar_t c);
 
     static PolyGlyph *m_PolyGlyph;
 

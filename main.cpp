@@ -94,13 +94,16 @@ int g_nLastBreakTime = 0;
 #endif
 
 #ifdef __PRAXIS_WINDOWS__
+// This is never needed, just leaving it here for historical preservation reasons, or reference, or until I get sick of it.
 //int CALLBACK WinMain( HINSTANCE hInstance,
 //                      HINSTANCE hPrevInstance,
 //                      LPSTR lpCmdLine,
 //                      int nCmdShow)
-#ifdef _MSC_VER
-#    pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
-#endif
+//
+// To turn off the console, uncomment this and comment out CONFIG += console in praxis.pro
+//#ifdef _MSC_VER
+//#    pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+//#endif
 #endif
 
 int main()
@@ -133,6 +136,7 @@ int main()
 #endif
 
     aiNeuralNetworkSystem::Startup();
+    // Need to add lua callbacks for neural net system.
 
     // Lua
     luaInit();
