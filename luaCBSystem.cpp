@@ -74,6 +74,16 @@ int luaCBPrintf(lua_State * L)
     return 0;
 }
 
+//#include <conio.h>
+
+int luaCBGetChar(lua_State * L)
+{
+    int c = getchar();
+    //int c = getch();
+    lua_pushnumber(L, c);
+    return 1;
+}
+
 int luaCBPlatform(lua_State * L)
 {
     std::string s = "undefined";
@@ -100,6 +110,7 @@ void luaInitCallbacksSystem()
     lua_register(g_pLuaState, "setCurrentDir",         luaCBSetCurrentDir);
 
     lua_register(g_pLuaState, "printf",                luaCBPrintf);
+    lua_register(g_pLuaState, "getchar",               luaCBGetChar);
 
     lua_register(g_pLuaState, "platform",              luaCBPlatform);
 }
