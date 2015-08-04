@@ -2125,8 +2125,11 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
         // TAB will only be handled in the WM_KEYDOWN section,
         // (where it wasn't previously)
         // since holding Ctrl prevents it being noticed here.
-        if(wParam == VK_TAB)
-            break;
+
+        // Ctrl-i gets captured here, so I'm turning off this early out.
+        // Side effects:
+        //if(wParam == VK_TAB)
+        //    break;
 
         ogState.Modifiers = ogGetWin32Modifiers( );
         INVOKE_WCB( *window, Keyboard,

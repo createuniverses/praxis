@@ -1,5 +1,8 @@
 edSetRenderMode(0)
 
+edSetTopMargin(0.25)
+edSetVisLines(5)
+
 glColor = colorGL
 
 function glVec(v)
@@ -94,4 +97,6 @@ function spirowidget.render(w)
   end
   setmetatable(_G, nil)
 end
+
+
 

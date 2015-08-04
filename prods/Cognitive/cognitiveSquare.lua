@@ -1,11 +1,4 @@
-praxis:
-hideEditor()
-showEditor()
 
-praxis:
-setClipboardText(getFunction("render"))
-
-praxis:
 function render()
   WidgetLib.renderAll()
   
@@ -20,8 +13,6 @@ function render()
   SynthNode.render(lpfEffNode, vec2d(0,0), vec2d(100,30))
 end
 
-
-praxis:
 workspace = {}
 slipnet = {}
 coderack = {}
@@ -45,6 +36,3 @@ workspace.render = function ()
     cognitiveLib[item.render](item)
   end
 end
-
--- praxis:STOP
-

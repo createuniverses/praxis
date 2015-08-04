@@ -126,7 +126,7 @@ std::string PraxisServer::Receive(SOCKET s)
     int nBytes = recv(s, buf, 65536, 0);
     if(nBytes > 0)
     {
-        cout << "Received " << nBytes << " bytes." << endl;
+        // cout << "Received " << nBytes << " bytes." << endl;
         buf[nBytes] = '\0';
     }
     else
@@ -154,7 +154,7 @@ void PraxisServer::Send(SOCKET s, std::string & data)
         int nTemp = send(s, buf + nSentBytes,
                 nReadBytes - nSentBytes, 0);
         if (nTemp > 0) {
-            cout << "Sent " << nTemp << " bytes back to client." << endl;
+            // cout << "Sent " << nTemp << " bytes back to client." << endl;
             nSentBytes += nTemp;
         }
         else if (nTemp == SOCKET_ERROR) {

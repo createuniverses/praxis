@@ -686,6 +686,13 @@ void World::OnKeyUp(unsigned char nKey, int nX, int nY)
 
 void World::OnKeyDownSpecial(unsigned char nKey, int nX, int nY)
 {
+    {
+        //string temp(" "); temp[0] = nKey;
+        stringstream ss;
+        ss << "edKeyDownSpecial(" << (int)nKey << ")";
+        luaCall(ss.str());
+    }
+
     GLEditor::m_bUpdateRequired = true;
 
     // Have this call the lisp and forth functions as well?
@@ -723,6 +730,11 @@ void World::OnKeyDownSpecial(unsigned char nKey, int nX, int nY)
                 return;
             }
         }
+
+        // Don't handle for TAB at all in this function except for buffer
+        // switching, since holding a modifier means TAB triggers here
+        // instead of as a printable in OnKeyDown.
+        return;
     }
 
     // REPL buffer for one line commands
@@ -732,7 +744,10 @@ void World::OnKeyDownSpecial(unsigned char nKey, int nX, int nY)
     // still need to render the trace and error strings
     // the last n lines of them.
 
-    // don't handle if tab used to switch buffers.
+    // Don't handle if tab used to switch buffers.
+    // Update: Don't handle for TAB at all.
+    // TAB for spacing already handled in OnKeyDown
+    // TAB for buffer switching already handled earlier.
     GetEditor()->Handle(0, nKey);
 
     // Function keys and other shortcuts for:

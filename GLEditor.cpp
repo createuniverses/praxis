@@ -558,16 +558,21 @@ void GLEditor::ResizeTexture(int nNewSize)
     m_bUpdateRequired = true;
 }
 
+float g_fEdLeftMargin = 0.01f;
+float g_fEdRightMargin = 0.75f;
+float g_fEdBottomMargin = 0.05f;
+float g_fEdTopMargin = 0.9f;
+
 void GLEditor::Render()
 {
     bool bDirectRenderMode = (m_nRenderMode <= RenderMode_Direct_Bitmap);
 
     if(bDirectRenderMode)
     {
-        int nLeftMargin    = m_Width * 0.01f;
-        int nWidth         = m_Width - m_Width * 0.25f;
-        int nBottomMargin  = m_Height * 0.05f;
-        int nHeight        = m_Height - m_Height * 0.1f;
+        int nLeftMargin    = m_Width * g_fEdLeftMargin;
+        int nWidth         = m_Width * g_fEdRightMargin;
+        int nBottomMargin  = m_Height * g_fEdBottomMargin;
+        int nHeight        = m_Height * g_fEdTopMargin;
 
         glViewport(nLeftMargin, nBottomMargin, nWidth, nHeight);
         RenderBuffer(true);

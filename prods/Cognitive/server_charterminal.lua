@@ -2,7 +2,9 @@
 line = 1
 col = 1
 
-function move_cursor(line,col)
+function move_cursor(l,c)
+  line = l
+  col = c
   svrSend(csi .. line .. ";" .. col .. "H")
 end
 
@@ -33,6 +35,10 @@ function handle_right()
   col = col + 1
   if col > 20 then col = 20 end
   move_cursor(line, col)
+  -- move to next line
+  -- make the end of line determined by whether
+  -- a newline was encountered, or just know it
+  -- beforehand.
 end
 
 csi = string.char(27) .. "["
@@ -47,6 +53,34 @@ ansi[csi.."D"] = handle_left
 -- set the metatable for ansi to one that
 -- will handle printable characters
 
+printable = {}
+for i=1,255,1 do
+  printable[i] = false
+end
+
+-- upper case
+for i=65,65+25,1 do
+  printable[i] = true
+end
+
+-- lower case
+for i=97,97+25,1 do
+  printable[i] = true
+end
+
+-- digits
+for i=49,59,1 do
+  printable[i] = true
+end
+
+-- space
+printable[32] = true
+
+-- all printable characters
+for i=32,126,1 do
+  printable[i] = true
+end
+
 ansimt = {}
 
 function ansimt.__index(t,k)
@@ -54,7 +88,8 @@ function ansimt.__index(t,k)
   if #k == 1 then
     local b = string.byte(k,1)
     --svrSend("b = " .. b, sck1)
-    if b >= 65 and b <= 65+26 then
+    --if b >= 65 and b <= 65+26 then
+    if printable[b] then
       svrSend(string.char(b))
       handle_right()
     end
@@ -71,8 +106,10 @@ function svrRunEchoServer(sck)
   if s~="" then
     clearTrace()
     for i=1,#s,1 do
+      svrSend(string.byte(s,i) .. " ", sck1)
       print(string.byte(s,i))
     end
+    svrSend("\n", sck1)
     fn = ansi[s] or function () end
     fn()
   end

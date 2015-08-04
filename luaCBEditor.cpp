@@ -5,6 +5,11 @@
 
 #include "luaCB.h"
 
+extern float g_fEdLeftMargin;
+extern float g_fEdRightMargin;
+extern float g_fEdBottomMargin;
+extern float g_fEdTopMargin;
+
 int luaCBNewBuffer(lua_State * L)
 {
     g_pWorld->NewEditor();
@@ -371,6 +376,42 @@ int luaCBEdSetVisLines(lua_State * L)
     return 0;
 }
 
+int luaCBEdGetVisColumns(lua_State * L)
+{
+    lua_pushnumber(L, GLEditor::m_VisibleColumns);
+    return 1;
+}
+
+int luaCBEdGetVisLines(lua_State * L)
+{
+    lua_pushnumber(L, GLEditor::m_VisibleLines);
+    return 1;
+}
+
+int luaCBEdSetLeftMargin(lua_State * L)
+{
+    g_fEdLeftMargin = luaL_checknumber(L, 1);
+    return 0;
+}
+
+int luaCBEdSetRightMargin(lua_State * L)
+{
+    g_fEdRightMargin = luaL_checknumber(L, 1);
+    return 0;
+}
+
+int luaCBEdSetTopMargin(lua_State * L)
+{
+    g_fEdTopMargin = luaL_checknumber(L, 1);
+    return 0;
+}
+
+int luaCBEdSetBottomMargin(lua_State * L)
+{
+    g_fEdBottomMargin = luaL_checknumber(L, 1);
+    return 0;
+}
+
 int luaEdResizeTexture(lua_State * L)
 {
     int arg = luaL_checknumber(L,1);
@@ -492,6 +533,13 @@ void luaInitCallbacksEditor()
     luaCall("function edKeyDown(k) end");
     luaCall("function edKeyUp(k) end");
 
+    luaCall("function edKeyDownSpecial(k) end");
+
+    //luaCall("function edKeyDown(k) print(\"kd:\" .. k) end");
+    //luaCall("function edKeyUp(k) end");
+
+    //luaCall("function edKeyDownSpecial(k) print(\"special:\" .. k) end");
+
     luaCall("function returnPressed() edInsertNewline() end");
 
     luaCall("function edRenderChar(c,xp,yp) edStrokeCharacter(c,0,0) end");
@@ -518,6 +566,14 @@ void luaInitCallbacksEditor()
 
     lua_register(g_pLuaState, "edSetVisColumns",       luaCBEdSetVisColumns);
     lua_register(g_pLuaState, "edSetVisLines",         luaCBEdSetVisLines);
+
+    lua_register(g_pLuaState, "edGetVisColumns",       luaCBEdGetVisColumns);
+    lua_register(g_pLuaState, "edGetVisLines",         luaCBEdGetVisLines);
+
+    lua_register(g_pLuaState, "edSetLeftMargin",       luaCBEdSetLeftMargin);
+    lua_register(g_pLuaState, "edSetRightMargin",      luaCBEdSetRightMargin);
+    lua_register(g_pLuaState, "edSetTopMargin",        luaCBEdSetTopMargin);
+    lua_register(g_pLuaState, "edSetBottomMargin",     luaCBEdSetBottomMargin);
 
     lua_register(g_pLuaState, "edResizeTexture",       luaEdResizeTexture);
     lua_register(g_pLuaState, "edForceUpdate",         luaEdForceUpdate);
