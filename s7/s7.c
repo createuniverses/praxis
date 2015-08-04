@@ -83,7 +83,10 @@
 
 /* #include "mus-config.h" */
 #define HAVE_COMPLEX_NUMBERS 0
+
+#ifdef __PRAXIS_WINDOWS__
 #define snprintf _snprintf
+#endif
 
 /*
  * Your config file goes here, or just replace that #include line with the defines you need.
