@@ -209,23 +209,32 @@ void PolyGlyph::RenderOutline(const FT_GlyphSlot glyph)
 	}
 }
 
+bool g_bPolyGlyphUsesVertexArrays = true;
+
 void PolyGlyph::RenderGeometry(const GlyphGeometry &geo)
 {
-	/*for (vector<GlyphGeometry::Mesh>::const_iterator i=geo.m_Meshes.begin(); i!=geo.m_Meshes.end(); i++)
-	{
-		glVertexPointer(3,GL_FLOAT,sizeof(float)*3,(void*)(&i->m_Data.begin()->x));
-		glDrawArrays(i->m_Type,0,i->m_Data.size());
-	}*/
+    if(g_bPolyGlyphUsesVertexArrays)
+    {
+        glEnableClientState(GL_VERTEX_ARRAY);
 
-	// i don't like em, but display lists + glbegin are faster than vertex arrays
-	for (vector<GlyphGeometry::Mesh>::const_iterator i=geo.m_Meshes.begin(); i!=geo.m_Meshes.end(); i++)
-	{
-		glBegin(i->m_Type);
-		for (vector<GlyphGeometry::Vec3<float> >::const_iterator p=i->m_Data.begin(); p!=i->m_Data.end(); p++)
-		{
-			glVertex3f(p->x,p->y,p->z);
-		}
-		glEnd();
-	}
+        for (vector<GlyphGeometry::Mesh>::const_iterator i=geo.m_Meshes.begin(); i!=geo.m_Meshes.end(); i++)
+        {
+            glVertexPointer(3,GL_FLOAT,sizeof(float)*3,(void*)(&i->m_Data.begin()->x));
+            glDrawArrays(i->m_Type,0,i->m_Data.size());
+        }
+    }
+    else
+    {
+        // i don't like em, but display lists + glbegin are faster than vertex arrays
+        for (vector<GlyphGeometry::Mesh>::const_iterator i=geo.m_Meshes.begin(); i!=geo.m_Meshes.end(); i++)
+        {
+            glBegin(i->m_Type);
+            for (vector<GlyphGeometry::Vec3<float> >::const_iterator p=i->m_Data.begin(); p!=i->m_Data.end(); p++)
+            {
+                glVertex3f(p->x,p->y,p->z);
+            }
+            glEnd();
+        }
+    }
 }
 

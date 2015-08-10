@@ -1,7 +1,10 @@
-edSetRenderMode(0)
+--edSetRenderMode(0)
 
-edSetTopMargin(0.25)
-edSetVisLines(5)
+--edSetTopMargin(0.25)
+--edSetVisLines(5)
+
+edSetVisLines(40)
+edSetVisColumns(70)
 
 glColor = colorGL
 
@@ -97,6 +100,7 @@ function spirowidget.render(w)
   end
   setmetatable(_G, nil)
 end
+
 
 
 

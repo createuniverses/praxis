@@ -528,6 +528,25 @@ int luaCBEdStrokeCharacter(lua_State * L)
     return 0;
 }
 
+int luaCBEdUseVertexArrays(lua_State * L)
+{
+    extern bool g_bPolyGlyphUsesVertexArrays;
+
+    int nOption = luaL_checkinteger(L, 1);
+    if(nOption > 0)
+    {
+        GLEditor::m_PolyGlyph->ClearCache();
+        g_bPolyGlyphUsesVertexArrays = true;
+    }
+    else
+    {
+        GLEditor::m_PolyGlyph->ClearCache();
+        g_bPolyGlyphUsesVertexArrays = false;
+    }
+
+    return 0;
+}
+
 void luaInitCallbacksEditor()
 {
     luaCall("function edKeyDown(k) end");
@@ -622,4 +641,6 @@ void luaInitCallbacksEditor()
     lua_register(g_pLuaState, "edGetStdCharHeight",    luaCBEdGetStdCharHeight);
 
     lua_register(g_pLuaState, "edStrokeCharacter",     luaCBEdStrokeCharacter);
+
+    lua_register(g_pLuaState, "edUseVertexArrays",     luaCBEdUseVertexArrays);
 }
