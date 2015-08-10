@@ -113,7 +113,7 @@ bool luaCall(std::string sCmd)
             //luaPrintResults(std::string("Command: ") + sCmd);
         }
 
-        lua_pop(g_pLuaState, nResults);
+        //lua_pop(g_pLuaState, nResults);
     }
 
     // Pop the error function sitting on the stack
