@@ -153,10 +153,10 @@ portal = WidgetLib.newPortal()
 
 --edSetRenderMode(5)
 
-dofile("server_multi.lua")
+--dofile("server_multi.lua")
 
-newBuffer()
-loadBuffer("iolangexample.lua")
+--newBuffer()
+--loadBuffer("iolangexample.lua")
 --showEditor()
 
 newBuffer()
@@ -166,5 +166,23 @@ showEditor()
 edSetRenderMode(0)
 --edSetVisColumns(90)
 --edSetVisLines(30)
+
+
+function wait(n)
+  local start = os.time()
+  while os.time() < start + n do end
+end
+
+function run_putty()
+  if platform() == "windows" then
+    os.execute("start cmd /c ..\\..\\utils\\putty.bat")
+  end
+  
+  if platform() == "linux" then
+    os.execute("sh ../../utils/putty.sh")
+  end
+end
+
+
 
 
