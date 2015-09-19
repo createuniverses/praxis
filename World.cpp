@@ -630,6 +630,28 @@ void World::OnKeyDown(unsigned char nKey, int nX, int nY)
     if(!GLEditor::m_bNativeControl)
         return;
 
+    std::cout << "nKey = " << (int)nKey << endl;
+
+    if(nKey == 9)
+    {
+        //std::cout << "tab detected" << endl;
+        //nKey = GLUT_KEY_TAB;
+
+        if(m_buffers.size() > 0)
+        {
+            if(glutGetModifiers() & GLUT_ACTIVE_CTRL)
+            {
+                if(glutGetModifiers() & GLUT_ACTIVE_SHIFT)
+                    PreviousEditor();
+                else
+                    NextEditor();
+
+                // early out here so that tab isn't registered as an editor key
+                return;
+            }
+        }
+    }
+
     if(bCtrlEnter)
     {
         std::string sLine = GetEditor()->GetCurrentLineText();
@@ -667,6 +689,7 @@ void World::OnKeyDown(unsigned char nKey, int nX, int nY)
         if(nKey != 0)
             GetEditor()->Handle(nKey, 0);
 
+        //std::cout << "Key handler called with " << (int)nKey << std::endl;
         //std::cout << "Key = " << (int)nKey << std::endl;
     }
 }
@@ -714,28 +737,40 @@ void World::OnKeyDownSpecial(unsigned char nKey, int nX, int nY)
     if(nKey == GLUT_KEY_F11) luaCall("f11Pressed()");
     if(nKey == GLUT_KEY_F12) luaCall("f12Pressed()");
 
-    if(nKey == GLUT_KEY_TAB)
-    {
-        // std::cout << "tab from special" << endl;
-        if(m_buffers.size() > 0)
-        {
-            if(glutGetModifiers() & GLUT_ACTIVE_CTRL)
-            {
-                if(glutGetModifiers() & GLUT_ACTIVE_SHIFT)
-                    PreviousEditor();
-                else
-                    NextEditor();
+//    if(nKey == GLUT_KEY_TAB)
+//    {
+//        // std::cout << "tab from special" << endl;
+//        if(m_buffers.size() > 0)
+//        {
+//            if(glutGetModifiers() & GLUT_ACTIVE_CTRL)
+//            {
+//                if(glutGetModifiers() & GLUT_ACTIVE_SHIFT)
+//                    PreviousEditor();
+//                else
+//                    NextEditor();
 
-                // early out here so that tab isn't registered as an editor key
-                return;
-            }
-        }
+//                // early out here so that tab isn't registered as an editor key
+//                return;
+//            }
+//        }
 
+        // At the moment, GLUT callback behaviour is different between
+        // windows and linux, therefore I need to put a special case here.
+        // Ideally, I'd like all key presses that correspond to an ASCII
+        // character to go through keydown/up and all that do not to go
+        // into specialkeydown/up. That seems to be the intention of
+        // the "special" version, except for the case of TAB, which
+        // is considered special even though its printable.
+        // I think I may have made that change to OpenGLUT though.
+        // In windows, TAB goes here, but Ctrl-TAB goes into special.
+
+#ifdef __PRAXIS_WINDOWS__
         // Don't handle for TAB at all in this function except for buffer
         // switching, since holding a modifier means TAB triggers here
         // instead of as a printable in OnKeyDown.
-        return;
-    }
+//        return;
+#endif
+//    }
 
     // REPL buffer for one line commands
     // one line commands can be:
@@ -748,6 +783,8 @@ void World::OnKeyDownSpecial(unsigned char nKey, int nX, int nY)
     // Update: Don't handle for TAB at all.
     // TAB for spacing already handled in OnKeyDown
     // TAB for buffer switching already handled earlier.
+
+    // This is for handling arrow keys and other non-ASCII key presses.
     GetEditor()->Handle(0, nKey);
 
     // Function keys and other shortcuts for:

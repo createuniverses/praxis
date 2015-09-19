@@ -1086,11 +1086,8 @@ void oghDispatchEvent( SOG_Event *ev )
                                      &composeStatus
                 );
 
-                /* printf("GLUT Keydown, keySym = %d, len = %d\n", keySym, len);
+                /* printf("GLUT Key, keySym = %d, len = %d\n", keySym, len);
                 fflush(stdout); */
-
-                /* GLUT API tells us to have two separate callbacks... */
-                /* I say, FUCK THE GLUT API, FUCK IT RIGHT THE FUCK OFF - GregS */
 
                 int special = -1;
 
@@ -1114,8 +1111,23 @@ void oghDispatchEvent( SOG_Event *ev )
                 case XK_Up:     special = GLUT_KEY_UP;     break;
                 case XK_Down:   special = GLUT_KEY_DOWN;   break;
 
+                //case XK_ISO_Left_Tab:
+                //case XK_Tab:    special = GLUT_KEY_TAB;    break;
+
+                    // asciiCode[0] is being set to 0
+                    // for some modified ascii keys.
+                    // I'm setting it back.
                 case XK_ISO_Left_Tab:
-                case XK_Tab:    special = GLUT_KEY_TAB;    break;
+                case XK_Tab:    asciiCode[0] = 9;    break;
+                    // Because its set to 0 instead of 9 if you're
+                    // holding shift tab instead of just tab.
+                    // I guess that makes sense because it is no
+                    // longer an ascii character...
+                    // shift of other keys changes their ascii character
+                    // after all
+
+                case XK_space: asciiCode[0] = 32; break;
+
 
                 case XK_KP_Prior:
                 case XK_Prior:  special = GLUT_KEY_PAGE_UP; break;
@@ -1133,8 +1145,12 @@ void oghDispatchEvent( SOG_Event *ev )
                 {
                     if( keyboard_cb )
                     {
-                        /*printf("GLUT Keydown, asciiCode[0] = %d\n", asciiCode[0]);
-                        fflush(stdout);*/
+                        /* printf("GLUT Key, asciiCode[0] = %d, keySym = %d\n", asciiCode[0],keySym);
+                         * fflush(stdout);
+                         *
+                         * 65056 is Shift Tab, XK_ISO_Left_Tab
+                         */
+
 
                         ogSetWindow( window );
                         ogState.Modifiers = ogGetXModifiers( event );
