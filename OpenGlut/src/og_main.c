@@ -1992,19 +1992,22 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
             KEY( VK_RIGHT,  GLUT_KEY_RIGHT     );
             KEY( VK_DOWN,   GLUT_KEY_DOWN      );
             KEY( VK_INSERT, GLUT_KEY_INSERT    );
-            KEY( VK_TAB,    GLUT_KEY_TAB       ); // won't bother adding a special glut key.
-                                                  // - Actually, I am bothered (GregS, 10/6/2013)
-                                                  //   VK_TAB and GLUT_KEY_F9 ended up with the
-                                                  //   same codes.
-                                                  //   There is no corresponding entry in WM_KEYUP
-                                                  //   but I'll ignore this for now while this isn't
-                                                  //   a problem.
-
+            /* KEY( VK_TAB,    GLUT_KEY_TAB       );
+             * The tab key is ASCII TAB
+             */
         case VK_DELETE:
             /* The delete key is ASCII DEL */
             INVOKE_WCB( *window, Keyboard,
                         ( 127, window->State.MouseX, window->State.MouseY )
             );
+            break;
+
+        case VK_TAB:
+            /* The tab key is ASCII TAB */
+            INVOKE_WCB( *window, Keyboard,
+                        ( 9, window->State.MouseX, window->State.MouseY )
+            );
+            break;
         }
 
 #if TARGET_HOST_WINCE
@@ -2135,8 +2138,8 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
             break;
 
         /* GregS 6-Oct-2014 */
-        /*printf("WM_CHAR wParam = %#02x\n", wParam);
-        fflush(stdout);*/
+        printf("WM_CHAR wParam = %#02x\n", wParam);
+        fflush(stdout);
 
         // TAB will only be handled in the WM_KEYDOWN section,
         // (where it wasn't previously)
