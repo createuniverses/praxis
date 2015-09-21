@@ -1419,6 +1419,106 @@ int ogGetWin32Modifiers( void )
 
 void oglcbDoMMWOMDONE(DWORD dwParam1);
 
+int g_nPanBegin = 0;
+int g_nPanStartPos = 0;
+
+LRESULT DecodeGesture(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    // Create a structure to populate and retrieve the extra message info.
+    GESTUREINFO gi;
+    BOOL bResult;
+    BOOL bHandled = FALSE;
+    int delta = 0;
+    int deltaabs=0;
+    int i = 0;
+
+    SOG_Window *window = ogWindowByHandle( hWnd );
+
+    ZeroMemory(&gi, sizeof(GESTUREINFO));
+
+    gi.cbSize = sizeof(GESTUREINFO);
+
+    bResult  = GetGestureInfo((HGESTUREINFO)lParam, &gi);
+    bHandled = FALSE;
+
+
+    if (bResult){
+        // now interpret the gesture
+        switch (gi.dwID){
+           case GID_BEGIN:
+            g_nPanStartPos = gi.ptsLocation.y;
+               //g_nPanBegin = 1;
+               break;
+           case GID_ZOOM:
+               // Code for zooming goes here
+               bHandled = TRUE;
+               break;
+           case GID_PAN:
+            // Code for panning goes here
+               if(1)//(g_nPanBegin>1)
+               {
+                   delta=g_nPanStartPos-gi.ptsLocation.y;
+
+                   deltaabs = delta;
+                   if(deltaabs<0) deltaabs *= -1;
+#if 1
+                   if(delta<-5)
+                       delta=-1;
+                   else if(delta>5)
+                       delta=1;
+                   else
+                       delta=0;
+#endif
+
+                   //for(i=0;i<deltaabs;i++)
+                   {
+                   if(delta!=0)
+                   {
+                       if( FETCH_WCB( *window, MouseWheel ) )
+                           INVOKE_WCB( *window, MouseWheel,
+                                   ( 8,
+                                     delta,
+                                     window->State.MouseX,
+                                     window->State.MouseY
+                                   )
+                       );
+                       g_nPanStartPos = gi.ptsLocation.y;
+                   }
+                   }
+               }
+
+               bHandled = TRUE;
+               break;
+           case GID_ROTATE:
+               // Code for rotation goes here
+               bHandled = TRUE;
+               break;
+           case GID_TWOFINGERTAP:
+               // Code for two-finger tap goes here
+               bHandled = TRUE;
+               break;
+           case GID_PRESSANDTAP:
+               // Code for roll over goes here
+               bHandled = TRUE;
+               break;
+           default:
+               // A gesture was not recognized
+               break;
+        }
+    }else{
+        DWORD dwErr = GetLastError();
+        if (dwErr > 0){
+            //MessageBoxW(hWnd, L"Error!", L"Could not retrieve a GESTUREINFO structure.", MB_OK);
+        }
+    }
+    if (bHandled){
+        return 0;
+    }else{
+        return DefWindowProc(hWnd, message, wParam, lParam);
+    }
+}
+
+
 /*
  * The window procedure for handling Win32 events
  */
@@ -1874,6 +1974,16 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
     }
     break;
 
+    case 0x0119: /* WM_GESTURE */
+        DecodeGesture(hWnd, uMsg, wParam, lParam);
+        break;
+#if 0
+    case 0x011A: /* WM_GESTURENOTIFY */
+        printf("WM_GESTURENOTIFY\n");
+        fflush(stdout);
+        break;
+#endif
+
     case 0x020a:
         /* Should be WM_MOUSEWHEEL but my compiler doesn't recognize it */
     {
@@ -1890,6 +2000,9 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
             direction = -1;
             ticks = -ticks;
         }
+
+        printf("mw %d,%d,%d\n", wheel_number,ticks,direction);
+        fflush(stdout);
 
         /*
          * The mouse cursor has moved. Remember the new mouse cursor's position
@@ -1938,6 +2051,11 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
         ogState.Modifiers = 0xffffffff;
     }
     break;
+
+    case WM_VSCROLL:
+        printf("vscroll\n");
+        fflush(stdout);
+        break;
 
     case WM_SYSKEYDOWN:
     case WM_KEYDOWN:
@@ -2261,7 +2379,15 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
                 /* Followed very closely by a WM_CLOSE message */
                 break;
 
-            case SC_VSCROLL: case SC_HSCROLL: case SC_MOUSEMENU:
+            case SC_VSCROLL:
+            printf("vscroll\n");
+            fflush(stdout);
+                break;
+            case SC_HSCROLL:
+                printf("Hscroll\n");
+                fflush(stdout);
+                    break;
+            case SC_MOUSEMENU:
             case SC_KEYMENU: case SC_ARRANGE: case SC_RESTORE:
             case SC_TASKLIST: case SC_SCREENSAVE: case SC_HOTKEY:
                 break;
