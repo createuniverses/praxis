@@ -79,6 +79,12 @@ public:
     void StrokeCharacter(wchar_t c, float dx = 0, float dy = 0);
     //float StrokeWidth(wchar_t c);
 
+    void SetCharColor(int r, int g, int b, int a);
+    float m_fCharRed;
+    float m_fCharGreen;
+    float m_fCharBlue;
+    float m_fCharAlpha;
+
     static PolyGlyph *m_PolyGlyph;
 
     static int m_VisibleLines;

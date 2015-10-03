@@ -246,6 +246,7 @@ int luaCBGetEditorSExpr(lua_State * L)
 
 int luaCBGetEditorLineStart(lua_State * L)
 {
+    // optional position argument
     lua_pushnumber(L, g_pWorld->GetEditor()->LineStart(g_pWorld->GetEditor()->GetPosition()));
     return 1;
 }
@@ -561,7 +562,7 @@ void luaInitCallbacksEditor()
 
     luaCall("function returnPressed() edInsertNewline() end");
 
-    luaCall("function edRenderChar(c,xp,yp) edStrokeCharacter(c,0,0) end");
+    luaCall("function edRenderChar(c,n,xp,yp) edStrokeCharacter(c,0,0) end");
 
     lua_register(g_pLuaState, "newBuffer",             luaCBNewBuffer);
     lua_register(g_pLuaState, "closeBuffer",           luaCBCloseBuffer);

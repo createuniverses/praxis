@@ -39,7 +39,8 @@ void PolyGlyph::Render(wchar_t ch, float r, float g, float b, float a,
     map<wchar_t,int>::iterator i = m_Cache.find(ch);
 	if (i!=m_Cache.end())
 	{
-        glColor4f(1-r, 1-g, 1-b, a*0.5);
+        //glColor4f(1-r, 1-g, 1-b, a*0.5);
+        glColor4f(0,0,0,1);
         glCallList(i->second+1);
 		glColor4f(r, g, b, a);
 		glCallList(i->second);
@@ -53,7 +54,6 @@ void PolyGlyph::Render(wchar_t ch, float r, float g, float b, float a,
 		int glList = glGenLists(2);
 		GlyphGeometry* geo = new GlyphGeometry;
 		BuildGeometry(m_Slot,*geo);
-
 		glNewList(glList+1, GL_COMPILE);
         RenderOutline(m_Slot);
 		glEndList();
@@ -65,8 +65,9 @@ void PolyGlyph::Render(wchar_t ch, float r, float g, float b, float a,
 		delete geo;
 
 		m_Cache[ch]=glList;
-		glColor4f(1-r, 1-g, 1-b, a*0.5);
-		glCallList(glList+1);
+        //glColor4f(1-r, 1-g, 1-b, a*0.5);
+        glColor4f(0,0,0,1);
+        glCallList(glList+1);
 		glColor4f(r, g, b, a);
 		glCallList(glList);
 	}

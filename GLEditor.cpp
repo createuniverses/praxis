@@ -410,6 +410,11 @@ void GLEditor::StrokeCharacter(wchar_t c, float dx, float dy)
     }
 }
 
+void GLEditor::SetCharColor(int r, int g, int b, int a)
+{
+
+}
+
 //float GLEditor::StrokeWidth(wchar_t c)
 //{
 //    return m_PolyGlyph->CharacterWidth(c);
@@ -783,7 +788,7 @@ void GLEditor::RenderBuffer(bool bBackground)
 
                 stringstream ss;
                 //ss << "edRenderChar([[" << m_Text[n] << "]]," << xpos << "," << ypos << ")";
-                ss << "edRenderChar(string.char(" << (int)m_Text[n] << ")," << xpos << "," << ypos << ")";
+                ss << "edRenderChar(string.char(" << (int)m_Text[n] << ")," << n << "," << xpos << "," << ypos << ")";
                 luaCall(ss.str());
 
                 //StrokeCharacter(m_Text[n], dx, dy);
