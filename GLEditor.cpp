@@ -412,7 +412,10 @@ void GLEditor::StrokeCharacter(wchar_t c, float dx, float dy)
 
 void GLEditor::SetCharColor(int r, int g, int b, int a)
 {
-
+    m_fCharRed = (float)r / 255.0f;
+    m_fCharGreen = (float)g / 255.0f;
+    m_fCharBlue = (float)b / 255.0f;
+    m_fCharAlpha = (float)a / 255.0f;
 }
 
 //float GLEditor::StrokeWidth(wchar_t c)
