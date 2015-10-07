@@ -37,7 +37,8 @@ public:
     void Handle(int key, int special);
 
     void InsertNewline();
-    void Backspace();
+    void Delete();
+    void Backspace(); // probe for references
 
     void InsertTab();
     void InsertKey(int key);

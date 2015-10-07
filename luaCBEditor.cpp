@@ -529,6 +529,18 @@ int luaCBEdStrokeCharacter(lua_State * L)
     return 0;
 }
 
+int luaCBEdBackspace(lua_State * L)
+{
+    g_pWorld->GetEditor()->Backspace();
+    return 0;
+}
+
+int luaCBEdDelete(lua_State * L)
+{
+    g_pWorld->GetEditor()->Delete();
+    return 0;
+}
+
 int luaCBEdUseVertexArrays(lua_State * L)
 {
     extern bool g_bPolyGlyphUsesVertexArrays;
@@ -644,4 +656,7 @@ void luaInitCallbacksEditor()
     lua_register(g_pLuaState, "edStrokeCharacter",     luaCBEdStrokeCharacter);
 
     lua_register(g_pLuaState, "edUseVertexArrays",     luaCBEdUseVertexArrays);
+
+    lua_register(g_pLuaState, "edBackspace",           luaCBEdBackspace);
+    lua_register(g_pLuaState, "edDelete",              luaCBEdDelete);
 }

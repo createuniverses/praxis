@@ -921,15 +921,41 @@ void GLEditor::InsertNewline()
     Update();
 }
 
+void GLEditor::Delete()
+{
+    if (m_Selection)
+    {
+        EraseSelection();
+    }
+    else
+    {
+        m_Text.erase(m_Position,1);
+    }
+
+    Update();
+}
+
+// probe for references
+// none found
+#if 1
 void GLEditor::Backspace()
 {
-    // Now backspace
-    if(m_Position>0)
+    if (m_Selection)
     {
-        m_Text.erase(m_Position-1,1);
-        m_Position--;
+        EraseSelection();
     }
+    else
+    {
+        if(m_Position>0)
+        {
+            m_Text.erase(m_Position-1,1);
+            m_Position--;
+        }
+    }
+
+    Update();
 }
+#endif
 
 
 void GLEditor::InsertTab()
