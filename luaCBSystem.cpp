@@ -44,6 +44,11 @@ int luaCBGetFPS(lua_State * L)
 
 int luaCBGetCurrentDir(lua_State * L)
 {
+    // https://msdn.microsoft.com/en-us/library/windows/desktop/aa364934%28v=vs.85%29.aspx
+    //DWORD WINAPI GetCurrentDirectory(
+    //  _In_  DWORD  nBufferLength,
+    //  _Out_ LPTSTR lpBuffer
+    //);
     return 0;
 }
 

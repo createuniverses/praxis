@@ -246,14 +246,31 @@ int luaCBGetEditorSExpr(lua_State * L)
 
 int luaCBGetEditorLineStart(lua_State * L)
 {
-    // optional position argument
-    lua_pushnumber(L, g_pWorld->GetEditor()->LineStart(g_pWorld->GetEditor()->GetPosition()));
+    int n = lua_gettop(L);
+    int nPosition = g_pWorld->GetEditor()->GetPosition();
+    if(n>=1)
+        nPosition = luaL_checknumber(L, 1);
+    lua_pushnumber(L, g_pWorld->GetEditor()->LineStart(nPosition));
     return 1;
 }
 
+
 int luaCBGetEditorLineEnd(lua_State * L)
 {
-    lua_pushnumber(L, g_pWorld->GetEditor()->LineEnd(g_pWorld->GetEditor()->GetPosition()));
+    int n = lua_gettop(L);
+    int nPosition = g_pWorld->GetEditor()->GetPosition();
+    if(n>=1)
+        nPosition = luaL_checknumber(L, 1);
+    lua_pushnumber(L, g_pWorld->GetEditor()->LineEnd(nPosition));
+    return 1;
+}
+
+int luaCBEdGetCharAt(lua_State * L)
+{
+    int nPosition = luaL_checknumber(L, 1);
+    if(nPosition < 0 || nPosition >= g_pWorld->GetEditor()->m_Text.size())
+        luaL_error(L, "Position out of range.");
+    lua_pushstring(L, g_pWorld->GetEditor()->m_Text.substr(nPosition, 1).c_str());
     return 1;
 }
 
