@@ -13,6 +13,7 @@ win32 {
     DEFINES += __PRAXIS_WINDOWS__
     DEFINES += __WINDOWS_MM__
     DEFINES += FREETYPE2_STATIC
+    DEFINES += _ALLOW_KEYWORD_MACROS
     INCLUDEPATH += ./freetype-2.3.5/include/
     INCLUDEPATH += ./fmodapi375win/inc/
 

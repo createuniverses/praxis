@@ -81,6 +81,12 @@ int luaCBTurnOnBorders(lua_State * L)
 
     rect.right  -= GetSystemMetrics( SM_CXSIZEFRAME ) * 2;
     rect.bottom -= GetSystemMetrics( SM_CYSIZEFRAME ) * 2 + GetSystemMetrics( SM_CYCAPTION );
+
+#ifdef SM_CXPADDEDBORDER
+    rect.right -= GetSystemMetrics( SM_CXPADDEDBORDER ) * 2;
+    rect.bottom -= GetSystemMetrics( SM_CXPADDEDBORDER ) * 2;
+#endif
+
     glutReshapeWindow(rect.right - rect.left, rect.bottom - rect.top);
 #endif
     return 0;

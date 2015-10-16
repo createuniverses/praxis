@@ -139,6 +139,10 @@ static void oghReshapeWindowByHandle( SOG_WindowHandleType handle,
                     w += GetSystemMetrics( SM_CXSIZEFRAME ) * 2;
                     h += GetSystemMetrics( SM_CYSIZEFRAME ) * 2 +
                         GetSystemMetrics( SM_CYCAPTION );
+#ifdef SM_CXPADDEDBORDER
+                    w += GetSystemMetrics( SM_CXPADDEDBORDER ) * 2;
+                    h += GetSystemMetrics( SM_CXPADDEDBORDER ) * 2;
+#endif
                 }
 
 //                w += GetSystemMetrics( SM_CXBORDER ) * 2;
