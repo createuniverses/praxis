@@ -92,6 +92,12 @@ int luaCBTurnOnBorders(lua_State * L)
     return 0;
 }
 
+int luaCBGetPaddedBorder(lua_State * L)
+{
+    lua_pushnumber(L, GetSystemMetrics( SM_CXPADDEDBORDER ));
+    return 1;
+}
+
 int luaCBTurnOffBorders(lua_State * L)
 {
 #ifdef __PRAXIS_WINDOWS__
@@ -201,4 +207,6 @@ void luaInitCallbacksWindow()
     lua_register(g_pLuaState, "windowedMode",          luaCBWindowedMode);
     lua_register(g_pLuaState, "turnOnBorders",         luaCBTurnOnBorders);
     lua_register(g_pLuaState, "turnOffBorders",        luaCBTurnOffBorders);
+
+    lua_register(g_pLuaState, "dbgGetPaddedBorder",    luaCBGetPaddedBorder);
 }

@@ -1,3 +1,5 @@
+print2(dbgGetPaddedBorder())
+
 function mkdoifchanger(fn, varfn)
   local v = { v = varfn() }
   local r = function ()
@@ -17,20 +19,30 @@ end
 
 
 clearError()
+print2(getFunction(f3Pressed))
+function f3Pressed()
+    local p = getEditorLineStart()
+    print(p)
+    print(edGetAt(p, 10))
+--  edSetPosition(p)
+    if edGetAt(p, 1)==" " then
+    edDelete(p)
+    end
+end
 
 
 do
-  lnpr = mkdoifchanger(
-    function ()
-      local p = getEditorLineStart()
-      print(p)
-      print(edGetAt(p, 10))
-      edSetPosition(p)
-      if edGetAt(p, 1)==" " then
-       edDelete()
-      end
-   end,
-   getEditorLineStart) 
+lnpr = mkdoifchanger(
+  function ()
+    local p = getEditorLineStart()
+    print(p)
+    print(edGetAt(p, 10))
+--  edSetPosition(p)
+    if edGetAt(p, 1)==" " then
+--    edDelete(p)
+    end
+  end,
+  getEditorLineStart) 
 end
 
 print2(lnpr.v)
@@ -48,31 +60,31 @@ print2(getErrorText())
 
 [string "lnpr = mkdoifchanger(function () print(getE..."]:1: attempt to call global 'mkdoifchanger' (a nil value)
 stack traceback:
-  [string "function onerror(s) endGL() glResetStencil(..."]:1: in function 'mkdoifchanger'
-  [string "lnpr = mkdoifchanger(function () print(getE..."]:1: in main chunk
+ [string "function onerror(s) endGL() glResetStencil(..."]:1: in function 'mkdoifchanger'
+ [string "lnpr = mkdoifchanger(function () print(getE..."]:1: in main chunk
 
 lnpr()
 clearTrace()
 
 print2(getFunction(edRenderChar))
 function edRenderChar(c,n,xp,yp)
-  local s = 3000
-  if n == lnpr.v.v then --lnpr.get() then
-    drawLine(0,0,0, s, 0, 0)
-  end
-  edStrokeCharacter(c,0,0)
+ local s = 3000
+ if n == lnpr.v.v then --lnpr.get() then
+   drawLine(0,0,0, s, 0, 0)
+ end
+ edStrokeCharacter(c,0,0)
 end
 
 
 
 print2(getFunction(render))
 function render()
-  WidgetLib.renderAll()
-  --WidgetLib.callAll("render")
+ WidgetLib.renderAll()
+ --WidgetLib.callAll("render")
 
-  lnpr.doit()
-  
-  renderGears()
+ lnpr.doit()
+ 
+ renderGears()
   renderGearBots()
   fugue.render()
   
@@ -101,6 +113,7 @@ function render()
   --ttestrender()
   
 end
+
 
 
 

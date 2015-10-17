@@ -556,7 +556,17 @@ int luaCBEdBackspace(lua_State * L)
 
 int luaCBEdDelete(lua_State * L)
 {
-    g_pWorld->GetEditor()->Delete();
+    int n = lua_gettop(L);
+    if (n>0)
+    {
+        int pos = luaL_checknumber(L, 1);
+        g_pWorld->GetEditor()->m_Text.erase(pos,1);
+        g_pWorld->GetEditor()->Update();
+    }
+    else
+    {
+        g_pWorld->GetEditor()->Delete();
+    }
     return 0;
 }
 

@@ -1,4 +1,3 @@
-praxis:
 
 -- composetest.lua
 
@@ -43,4 +42,5 @@ if ps ~= nil then
   fugueUtil.composeFromPhraseSeq(ps)
   fugue.play()
 end
+
 
