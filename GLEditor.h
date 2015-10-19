@@ -60,6 +60,7 @@ public:
 
 	void SetText(const string& s);
     void InsertText(const string & s);
+    void InsertTextAt(const string &s, int pos);
 
     void Load(const string & sFilename);
     void Save();

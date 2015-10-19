@@ -570,7 +570,7 @@ int luaCBEdDelete(lua_State * L)
     return 0;
 }
 
-int luaCBGetAt(lua_State * L)
+int luaCBEdGetAt(lua_State * L)
 {
     int n = lua_gettop(L);
     int w = 1;
@@ -583,6 +583,15 @@ int luaCBGetAt(lua_State * L)
     std::string s = g_pWorld->GetEditor()->m_Text.substr(p, w);
     lua_pushstring(L, s.c_str());
     return 1;
+}
+
+int luaCBInsertTextAt(lua_State * L)
+{
+    int n = lua_gettop(L);
+    std::string sText = luaL_checkstring(L, 1);
+    int pos = luaL_checkinteger(L, 2);
+    g_pWorld->GetEditor()->InsertTextAt(sText, pos);
+    return 0;
 }
 
 int luaCBEdUseVertexArrays(lua_State * L)
@@ -704,5 +713,7 @@ void luaInitCallbacksEditor()
     lua_register(g_pLuaState, "edBackspace",           luaCBEdBackspace);
     lua_register(g_pLuaState, "edDelete",              luaCBEdDelete);
 
-    lua_register(g_pLuaState, "edGetAt",               luaCBGetAt);
+    lua_register(g_pLuaState, "edGetAt",               luaCBEdGetAt);
+
+    lua_register(g_pLuaState, "edInsertTextAt",          luaCBInsertTextAt);
 }

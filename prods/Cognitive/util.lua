@@ -17,18 +17,56 @@ function mkdoifchanger(fn, varfn)
   return { v = v, doit = r, get = get }
 end
 
+print2(getFunction(print2))
+function print2(...)
+  local arg = {...}
+  for i,v in ipairs(arg) do
+  if type(v) ~= "table" then
+    insertBufferText(v .. "\n")
+  end end
+end
+
+
+print2(edGetPosition())
+497
+
 
 clearError()
+
 print2(getFunction(f3Pressed))
 function f3Pressed()
+    local q = findMatchingLeftParen(edGetPosition())
+    q = q - getEditorLineStart(q)
     local p = getEditorLineStart()
-    print(p)
-    print(edGetAt(p, 10))
---  edSetPosition(p)
-    if edGetAt(p, 1)==" " then
-    edDelete(p)
+    --print(q)
+    --print(edGetAt(p, 10))
+    while edGetAt(p, 1)==" " do
+      edDelete(p)
+    end
+    for i = 1, q+2, 1 do
+      edInsertTextAt(" ", p)
     end
 end
+
+
+
+
+function findMatchingLeftParen(p)
+  local q = p
+  local bal = 1
+  while q >=0 and bal > 0 do
+    q = q - 1
+    if edGetAt(q) == "(" then
+      bal = bal - 1
+    end
+    if edGetAt(q) == ")" then
+      bal = bal + 1
+    end
+  end
+  return q
+end
+
+
 
 
 do
@@ -113,6 +151,7 @@ function render()
   --ttestrender()
   
 end
+
 
 
 

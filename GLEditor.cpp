@@ -303,6 +303,13 @@ void GLEditor::InsertText(const string & s)
     Update();
 }
 
+void GLEditor::InsertTextAt(const string &s, int pos)
+{
+    m_Text.insert(pos, s);
+    m_bUpdateRequired = true;
+    Update();
+}
+
 void GLEditor::ClearAllText()
 {
     m_Text="";
