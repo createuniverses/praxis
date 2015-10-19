@@ -221,12 +221,7 @@ void GLEditor::Reshape(unsigned int w,unsigned int h)
 
 int GLEditor::CurrentLine()
 {
-    int ret=0;
-    for (unsigned int i=0; i<m_Position; i++)
-    {
-        if (m_Text[i]=='\n') ret++;
-    }
-    return ret;
+    return GetLine(m_Position);
 }
 
 int GLEditor::GetFirstVisiblePosition()
@@ -831,6 +826,8 @@ void GLEditor::MoveViewDown()
 
 void GLEditor::MoveCursorUp()
 {
+    m_Position = GetUp(m_Position);
+#if 0
     if ((int)LineStart(m_Position) > 0) // if we're not on the first line
     {
         int nOffset = CurrentColumn();
@@ -844,10 +841,13 @@ void GLEditor::MoveCursorUp()
         else
             m_Position = nLineBegin + nOffset;
     }
+#endif
 }
 
 void GLEditor::MoveCursorDown()
 {
+    m_Position = GetDown(m_Position);
+#if 0
     if (LineEnd(m_Position) < m_Text.size()) // if we're not on the last line
     {
         int nOffset = CurrentColumn();
@@ -860,16 +860,19 @@ void GLEditor::MoveCursorDown()
         else
             m_Position = nLineBegin + nOffset;
     }
+#endif
 }
 
 void GLEditor::MoveCursorLeft()
 {
-    if (m_Position>0) m_Position--;
+    m_Position = GetLeft(m_Position);
+    // if (m_Position>0) m_Position--;
 }
 
 void GLEditor::MoveCursorRight()
 {
-    if (!m_Text.empty()) m_Position++;
+    m_Position = GetRight(m_Position);
+    //if (!m_Text.empty()) m_Position++;
 }
 
 void GLEditor::MoveCursorToStart()
@@ -1390,7 +1393,7 @@ void GLEditor::ProcessTabs()
 
 int GLEditor::CurrentColumn()
 {
-    return m_Position-LineStart(m_Position);
+    return GetColumn(m_Position);
 }
 
 int GLEditor::LineLength(int pos)
@@ -1435,6 +1438,68 @@ unsigned int GLEditor::LineEnd(int pos)
     size_t end = m_Text.find("\n",pos);
     if (end==string::npos) end=m_Text.size();
     return end;
+}
+
+int GLEditor::GetLine(int nPosition)
+{
+    int ret=0;
+    for (unsigned int i=0; i<m_Position; i++)
+    {
+        if (m_Text[i]=='\n') ret++;
+    }
+    return ret;
+}
+
+int GLEditor::GetColumn(int nPosition)
+{
+    return nPosition-LineStart(nPosition);
+}
+
+int GLEditor::GetUp(int nPosition)
+{
+    if ((int)LineStart(nPosition) > 0) // if we're not on the first line
+    {
+        int nOffset = GetColumn(nPosition);
+        nPosition = LineStart(nPosition);
+        nPosition--;
+        int nLineEnd = nPosition;
+        nPosition = LineStart(nPosition);
+        int nLineBegin = nPosition;
+        if(nLineBegin + nOffset > nLineEnd)
+            nPosition = nLineEnd;
+        else
+            nPosition = nLineBegin + nOffset;
+    }
+    return nPosition;
+}
+
+int GLEditor::GetDown(int nPosition)
+{
+    if (LineEnd(nPosition) < m_Text.size()) // if we're not on the last line
+    {
+        int nOffset = CurrentColumn();
+        nPosition = LineEnd(nPosition);
+        nPosition++;
+        int nLineBegin = nPosition;
+        int nLineEnd = LineEnd(nPosition);
+        if(nLineBegin + nOffset > nLineEnd)
+            nPosition = nLineEnd;
+        else
+            nPosition = nLineBegin + nOffset;
+    }
+    return nPosition;
+}
+
+int GLEditor::GetLeft(int nPosition)
+{
+    if (nPosition>0) nPosition--;
+    return nPosition;
+}
+
+int GLEditor::GetRight(int nPosition)
+{
+    if (!m_Text.empty()) nPosition++;
+    return nPosition;
 }
 
 void GLEditor::ParseLuaBlock()

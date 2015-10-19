@@ -128,14 +128,22 @@ public:
 	void DrawCharBlock();
 	void DrawCursor();
 	void ProcessTabs();
-	int LineLength(int pos);
-	unsigned int LineStart(int pos);
-	unsigned int LineEnd(int pos);
     IndexPair ParseParentheses(int bias = 0);
     IndexPair ParseOpenParentheses(int pos, int type, int bias = 0);
     IndexPair ParseCloseParentheses(int pos, int type, int bias = 0);
 
     void ParseLuaBlock();
+
+    int LineLength(int pos);
+    unsigned int LineStart(int pos);
+    unsigned int LineEnd(int pos);
+
+    int GetLine(int nPosition);
+    int GetColumn(int nPosition);
+    int GetUp(int nPosition);
+    int GetDown(int nPosition);
+    int GetLeft(int nPosition);
+    int GetRight(int nPosition);
 
     int CurrentLine();
     int CurrentColumn();
