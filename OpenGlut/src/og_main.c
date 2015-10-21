@@ -2090,7 +2090,7 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
 
         /* GregS 21-Oct-2015 */
         keypress = wParam;
-        INVOKE_WCB( *window, Special,
+        INVOKE_WCB( *window, Keyboard,
                     ( keypress,
                       window->State.MouseX, window->State.MouseY )
         );
@@ -2200,9 +2200,8 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
         fflush(stdout);
 
         /* GregS 21-Oct-2014 */
-
         keypress = wParam;
-        INVOKE_WCB( *window, SpecialUp,
+        INVOKE_WCB( *window, KeyboardUp,
                     ( keypress,
                       window->State.MouseX, window->State.MouseY )
         );
@@ -2298,8 +2297,11 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
         //if(wParam == VK_TAB)
         //    break;
 
+        // GregS 21-Oct-2015
+        // Special now means Printable
+        // Keyboard literally refers to the keyboard
         ogState.Modifiers = ogGetWin32Modifiers( );
-        INVOKE_WCB( *window, Keyboard,
+        INVOKE_WCB( *window, Special,
                     ( ( char )wParam,
                       window->State.MouseX, window->State.MouseY )
         );

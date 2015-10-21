@@ -587,7 +587,7 @@ int luaCBEdGetAt(lua_State * L)
 
 int luaCBInsertTextAt(lua_State * L)
 {
-    int n = lua_gettop(L);
+    //int n = lua_gettop(L);
     std::string sText = luaL_checkstring(L, 1);
     int pos = luaL_checkinteger(L, 2);
     g_pWorld->GetEditor()->InsertTextAt(sText, pos);

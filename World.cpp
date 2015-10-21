@@ -563,18 +563,31 @@ void World::OnRButtonUp(int nX, int nY)
 #ifdef __PRAXIS_WINDOWS__
 void World::OnKeyDown(unsigned char nKey, int nX, int nY)
 {
+    //string temp(" "); temp[0] = nKey;
+    stringstream ss;
+    ss << "onKeyDown(" << (int)nKey << ")";
+    luaCall(ss.str());
 }
 
 void World::OnKeyUp(unsigned char nKey, int nX, int nY)
 {
+    stringstream ss;
+    ss << "onKeyUp(" << (int)nKey << ")";
+    luaCall(ss.str());
 }
 
 void World::OnKeyDownSpecial(unsigned char nKey, int nX, int nY)
 {
+    stringstream ss;
+    ss << "onKeyDownSpecial(" << (int)nKey << ")";
+    luaCall(ss.str());
 }
 
 void World::OnKeyUpSpecial(unsigned char nKey, int nX, int nY)
 {
+    stringstream ss;
+    ss << "onKeyUpSpecial(" << (int)nKey << ")";
+    luaCall(ss.str());
 }
 #endif
 

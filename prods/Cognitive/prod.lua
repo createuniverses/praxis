@@ -183,6 +183,5 @@ function run_putty()
   end
 end
 
-
-
+dofile("editor.lua")
 
