@@ -2085,8 +2085,20 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
         window->State.MouseY = mouse_pos.y;
 
         /* GregS 6-Oct-2014 */
-        /*printf("WM_KEYDOWN wParam = %#02x\n", wParam);
-        fflush(stdout);*/
+        printf("WM_KEYDOWN wParam = %#02x\n", wParam);
+        fflush(stdout);
+
+        /* GregS 21-Oct-2015 */
+        keypress = wParam;
+        INVOKE_WCB( *window, Special,
+                    ( keypress,
+                      window->State.MouseX, window->State.MouseY )
+        );
+
+        ogState.Modifiers = 0xffffffff;
+
+        /* GregS 21-Oct-2015 */
+#if 0
 
         /* Convert the Win32 keystroke codes to GLUTtish way */
 #       define KEY(a,b) case a: keypress = b; break;
@@ -2161,6 +2173,7 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
             );
 
         ogState.Modifiers = 0xffffffff;
+#endif
     }
     break;
 
@@ -2183,9 +2196,21 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
         window->State.MouseY = mouse_pos.y;
 
         /* GregS 6-Oct-2014 */
-        /*printf("WM_KEYUP wParam = %#02x\n", wParam);
-        fflush(stdout);*/
+        printf("WM_KEYUP wParam = %#02x\n", wParam);
+        fflush(stdout);
 
+        /* GregS 21-Oct-2014 */
+
+        keypress = wParam;
+        INVOKE_WCB( *window, SpecialUp,
+                    ( keypress,
+                      window->State.MouseX, window->State.MouseY )
+        );
+
+        ogState.Modifiers = 0xffffffff;
+
+        /* GregS 21-Oct-2014 */
+#if 0
         /*
          * Convert the Win32 keystroke codes to GLUTtish way.
          * "KEY(a,b)" was defined under "WM_KEYDOWN"
@@ -2248,6 +2273,7 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
             );
 
         ogState.Modifiers = 0xffffffff;
+#endif
     }
     break;
 

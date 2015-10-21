@@ -560,6 +560,25 @@ void World::OnRButtonUp(int nX, int nY)
     m_bUpdatePickPosition = true;
 }
 
+#ifdef __PRAXIS_WINDOWS__
+void World::OnKeyDown(unsigned char nKey, int nX, int nY)
+{
+}
+
+void World::OnKeyUp(unsigned char nKey, int nX, int nY)
+{
+}
+
+void World::OnKeyDownSpecial(unsigned char nKey, int nX, int nY)
+{
+}
+
+void World::OnKeyUpSpecial(unsigned char nKey, int nX, int nY)
+{
+}
+#endif
+
+#ifdef __PRAXIS_LINUX__
 void World::OnKeyDown(unsigned char nKey, int nX, int nY)
 {
     GLEditor::m_bUpdateRequired = true;
@@ -630,7 +649,7 @@ void World::OnKeyDown(unsigned char nKey, int nX, int nY)
     if(!GLEditor::m_bNativeControl)
         return;
 
-    std::cout << "nKey = " << (int)nKey << endl;
+    // std::cout << "nKey = " << (int)nKey << endl;
 
     if(nKey == 9)
     {
@@ -797,6 +816,11 @@ void World::OnKeyDownSpecial(unsigned char nKey, int nX, int nY)
 
 }
 
+void World::OnKeyUpSpecial(unsigned char nKey, int nX, int nY)
+{
+}
+#endif
+
 void World::NewEditor()
 {
     GLEditor * pNewBuffer = new GLEditor();
@@ -880,10 +904,6 @@ void World::PreviousEditor()
         m_nCurrentBuffer = 0;
     else
         m_nCurrentBuffer = (m_nCurrentBuffer + m_buffers.size() - 1) % m_buffers.size();
-}
-
-void World::OnKeyUpSpecial(unsigned char nKey, int nX, int nY)
-{
 }
 
 void World::Reshape(int nWidth, int nHeight)

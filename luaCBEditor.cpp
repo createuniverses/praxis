@@ -594,6 +594,34 @@ int luaCBInsertTextAt(lua_State * L)
     return 0;
 }
 
+int luaCBEdGetUp(lua_State * L)
+{
+    int pos = luaL_checkinteger(L, 1);
+    lua_pushnumber(L, g_pWorld->GetEditor()->GetUp(pos));
+    return 1;
+}
+
+int luaCBEdGetDown(lua_State * L)
+{
+    int pos = luaL_checkinteger(L, 1);
+    lua_pushnumber(L, g_pWorld->GetEditor()->GetDown(pos));
+    return 1;
+}
+
+int luaCBEdGetLeft(lua_State * L)
+{
+    int pos = luaL_checkinteger(L, 1);
+    lua_pushnumber(L, g_pWorld->GetEditor()->GetLeft(pos));
+    return 1;
+}
+
+int luaCBEdGetRight(lua_State * L)
+{
+    int pos = luaL_checkinteger(L, 1);
+    lua_pushnumber(L, g_pWorld->GetEditor()->GetRight(pos));
+    return 1;
+}
+
 int luaCBEdUseVertexArrays(lua_State * L)
 {
     extern bool g_bPolyGlyphUsesVertexArrays;
@@ -673,7 +701,7 @@ void luaInitCallbacksEditor()
     lua_register(g_pLuaState, "edInsertNewline",       luaCBEdInsertNewline);
 
     lua_register(g_pLuaState, "edGetFlashRate",        luaCBEdGetFlashRate);
-    lua_register(g_pLuaState, "edSetFlashRate",       luaCBEdSetFlashRate);
+    lua_register(g_pLuaState, "edSetFlashRate",        luaCBEdSetFlashRate);
 
     lua_register(g_pLuaState, "gotoBufferStart",       luaCBGotoBufferStart);
     lua_register(g_pLuaState, "gotoBufferEnd",         luaCBGotoBufferEnd);
@@ -715,5 +743,10 @@ void luaInitCallbacksEditor()
 
     lua_register(g_pLuaState, "edGetAt",               luaCBEdGetAt);
 
-    lua_register(g_pLuaState, "edInsertTextAt",          luaCBInsertTextAt);
+    lua_register(g_pLuaState, "edInsertTextAt",        luaCBInsertTextAt);
+
+    lua_register(g_pLuaState, "edGetUp",               luaCBEdGetUp);
+    lua_register(g_pLuaState, "edGetDown",             luaCBEdGetDown);
+    lua_register(g_pLuaState, "edGetLeft",             luaCBEdGetLeft);
+    lua_register(g_pLuaState, "edGetRight",            luaCBEdGetRight);
 }
