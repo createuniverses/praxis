@@ -34,18 +34,21 @@ print2(edGetPosition())
 clearError()
 
 print2(getFunction(f3Pressed))
-function f3Pressed()
+function returnPressed()
+    edInsertNewline()
     local q = findMatchingLeftParen(edGetPosition())
     q = q - getEditorLineStart(q)
     local p = getEditorLineStart()
-    --print(q)
-    --print(edGetAt(p, 10))
+    print(q)
+    print(p)  
+  --print(edGetAt(p, 10))
     while edGetAt(p, 1)==" " do
       edDelete(p)
     end
     for i = 1, q+2, 1 do
       edInsertTextAt(" ", p)
     end
+  edSetPosition(p+q+2)
 end
 
 
@@ -54,7 +57,7 @@ end
 function findMatchingLeftParen(p)
   local q = p
   local bal = 1
-  while q >=0 and bal > 0 do
+  while q > 0 and bal > 0 do
     q = q - 1
     if edGetAt(q) == "(" then
       bal = bal - 1
@@ -151,6 +154,7 @@ function render()
   --ttestrender()
   
 end
+
 
 
 

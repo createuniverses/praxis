@@ -183,5 +183,7 @@ function run_putty()
   end
 end
 
+newBuffer()
+setMaxFramerate(30)
 dofile("editor.lua")
 
