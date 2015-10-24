@@ -1,0 +1,19 @@
+-- praxis:
+
+setClipboardText(getBufferText())
+
+clearError()
+
+
+dofile("editor.lua")
+
+setClipboardText(getFunction(getKeyHandler(46,0)))
+
+keymap[46][0] = function ()
+  edDelete()
+end
+
+clearError()
+
+
+dofile("editor.lua")

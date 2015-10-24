@@ -4,58 +4,68 @@ keymap = {}
 
 lastkeydown = -1
 
-keymap[8] = {}
-keymap[8][0] = function ()
+function getKeyHandler(k,mods)
+  if keymap[k] ~= nil then
+    return keymap[k][mods]
+  else
+    return nil
+  end
+end
+
+function setKeyHandler(k,mods,fn)
+  if keymap[k] == nil then
+    keymap[k] = {}
+  end
+  keymap[k][mods] = fn
+end
+
+setKeyHandler(8,0, function ()
   edBackspace()
-end
+end)
 
-keymap[46] = {}
-keymap[46][0] = function ()
+setKeyHandler(46,0, function ()
   edDelete()
-end
+end)
 
-keymap[9] = {}
-keymap[9][0] = function ()
+setKeyHandler(9,0, function ()
   for i = 1,2,1 do
     edInsertTextAt(" ", edGetPosition())
     edSetPosition(edGetRight(edGetPosition()))
   end
-end
+end)
 
-keymap[13] = {}
-keymap[13][0] = function ()
+setKeyHandler(13,0, function ()
   -- autoindent stuff
   -- shift/ctrl enter
   edInsertNewline()
-end
+end)
 
 -- arrow keys
 
-keymap[37] = {}
-keymap[37][0] = function ()
+setKeyHandler(37,0, function ()
   -- ctrl: word or s-exp left
   -- shift: selection
   edSetPosition(edGetLeft(edGetPosition()))
-end
+end)
 
-keymap[39] = {}
-keymap[39][0] = function ()
+setKeyHandler(39,0, function ()
   edSetPosition(edGetRight(edGetPosition()))
-end
+end)
 
-keymap[38] = {}
-keymap[38][0] = function ()
+setKeyHandler(38,0, function ()
   edSetPosition(edGetUp(edGetPosition()))
-end
+end)
 
-keymap[40] = {}
-keymap[40][0] = function ()
+setKeyHandler(40,0, function ()
   edSetPosition(edGetDown(edGetPosition()))
-end
+end)
 
 function edTypeString(c)
   edInsertTextAt(c, edGetPosition())
-  edSetPosition(edGetRight(edGetPosition()))
+  local l = string.len(c)
+  for i=1,l,1 do
+    edSetPosition(edGetRight(edGetPosition()))
+  end
 end
 
 function edGetKeyModifiers()
@@ -101,6 +111,22 @@ end
 
 function onKeyUpSpecial(k)
   print("-----onKeyUpSpecial " .. k .. "------")
+end
+
+function onKeyDown(k)
+  edTypeString(" kd " .. k)
+end
+
+function onKeyUp(k)
+  edTypeString(" ku " .. k .. "\n")
+end
+
+function onKeyDownSpecial(k)
+  edTypeString(" kds " .. k .. "'" .. string.char(k) .. "'")
+end
+
+function onKeyUpSpecial(k)
+  edTypeString(" kus " .. k .. "\n")
 end
 
 --newBuffer()

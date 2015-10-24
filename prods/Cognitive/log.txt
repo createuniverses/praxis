@@ -1,0 +1,173 @@
+ ku 9
+ kd 65 kds 97'a' ku 65
+ kd 66 kds 98'b' ku 66
+ kd 67 kds 99'c' ku 67
+ kd 68 kds 100'd' ku 68
+ kd 69 kds 101'e' ku 69
+ kd 70 kds 102'f' ku 70
+ kd 71 kds 103'g' ku 71
+ kd 72 kds 104'h' ku 72
+ kd 73 kds 105'i' ku 73
+ kd 74 kds 106'j' ku 74
+ kd 75 kds 107'k' ku 75
+ kd 76 kds 108'l' ku 76
+ kd 77 kds 109'm' ku 77
+ kd 78 kds 110'n' ku 78
+ kd 79 kds 111'o' ku 79
+ kd 80 kds 112'p' ku 80
+ kd 81 kds 113'q' ku 81
+ kd 82 kds 114'r' ku 82
+ kd 83 kds 115's' ku 83
+ kd 84 kds 116't' ku 84
+ kd 85 kds 117'u' ku 85
+ kd 86 kds 118'v' ku 86
+ kd 87 kds 119'w' ku 87
+ kd 88 kds 120'x' ku 88
+ kd 89 kds 121'y' ku 89
+ kd 90 kds 122'z' ku 90
+ kd 16 kd 65 kds 65'A' ku 65
+ kd 66 kds 66'B' ku 66
+ kd 67 kds 67'C' ku 67
+ kd 68 kds 68'D' ku 68
+ kd 69 kds 69'E' ku 69
+ kd 70 kds 70'F' ku 70
+ kd 71 kds 71'G' ku 71
+ kd 72 kds 72'H' ku 72
+ kd 73 kds 73'I' ku 73
+ kd 74 kds 74'J' ku 74
+ kd 75 kds 75'K' ku 75
+ kd 76 kds 76'L' ku 76
+ kd 77 kds 77'M' ku 77
+ kd 78 kds 78'N' ku 78
+ kd 79 kds 79'O' ku 79
+ kd 80 kds 80'P' ku 80
+ kd 81 kds 81'Q' ku 81
+ kd 82 kds 82'R' ku 82
+ kd 83 kds 83'S' ku 83
+ kd 84 kds 84'T' ku 84
+ kd 85 kds 85'U' ku 85
+ kd 86 kds 86'V' ku 86
+ kd 87 kds 87'W' ku 87
+ kd 88 kds 88'X' ku 88
+ kd 89 kds 89'Y' ku 89
+ kd 90 kds 90'Z' ku 90
+ ku 16
+ kd 16 ku 16
+ kd 49 kds 49'1' ku 49
+ kd 50 kds 50'2' ku 50
+ kd 51 kds 51'3' ku 51
+ kd 52 kds 52'4' ku 52
+ kd 53 kds 53'5' ku 53
+ kd 54 kds 54'6' ku 54
+ kd 55 kds 55'7' ku 55
+ kd 56 kds 56'8' ku 56
+ kd 57 kds 57'9' ku 57
+ kd 48 kds 48'0' ku 48
+ kd 16 kd 16 kd 16 kd 16 kd 16 kd 16 kd 16 kd 49 kds 33'!' ku 49
+ ku 16
+ kd 16 kd 49 kds 33'!' ku 49
+ kd 50 kds 64'@' ku 50
+ kd 51 kds 35'#' ku 51
+ kd 52 kds 36'$' ku 52
+ kd 53 kds 37'%' ku 53
+ kd 54 kds 94'^' ku 54
+ kd 55 kds 38'&' ku 55
+ kd 56 kds 42'*' ku 56
+ kd 57 kds 40'(' ku 57
+ kd 48 kds 41')' ku 48
+ kd 189 kds 95'_' ku 189
+ kd 187 kds 43'+' ku 187
+ ku 16
+ kd 189 kds 45'-' ku 189
+ kd 187 kds 61'=' ku 187
+ kd 220 kds 92'\' ku 220
+ kd 221 kds 93']' ku 221
+ kd 219 kds 91'[' ku 219
+ kd 16 kd 220 kds 124'|' ku 220
+ kd 221 kds 125'}' ku 221
+ kd 219 kds 123'{' ku 219
+ ku 16
+ kd 112 ku 112
+ kd 16 kd 112 ku 112
+ ku 16
+ kd 113 ku 113
+ kd 114 ku 114
+ kd 115 ku 115
+ kd 116 ku 116
+ kd 117 ku 117
+ kd 118 ku 118
+ kd 119 ku 119
+ kd 120 ku 120
+ kd 121 ku 121
+ kd 122 ku 122
+ kd 123 ku 123
+ kd 123 ku 123
+ kd 122 ku 122
+ kd 121 ku 121
+ kd 120 ku 120
+ kd 119 ku 119
+ kd 118 ku 118
+ kd 117 ku 117
+ kd 116 ku 116
+ kd 115 ku 115
+ kd 114 ku 114
+ kd 113 ku 113
+ kd 112 ku 112
+ kd 16 kd 112 ku 112
+ kd 113 ku 113
+ kd 114 ku 114
+ kd 115 ku 115
+ kd 116 ku 116
+ kd 117 ku 117
+ kd 118 ku 118
+ kd 119 ku 119
+ kd 120 ku 120
+ kd 121 ku 121
+ kd 122 ku 122
+ kd 123 ku 123
+ ku 16
+ kd 17 kd 112 ku 112
+ kd 113 ku 113
+ kd 114 ku 114
+ kd 115 ku 115
+ kd 116 ku 116
+ kd 117 ku 117
+ kd 118 ku 118
+ kd 119 ku 119
+ kd 120 ku 120
+ kd 121 ku 121
+ kd 122 ku 122
+ kd 123 ku 123
+ ku 17
+ kd 112 ku 112
+ kd 18 kd 112 ku 112
+ kd 113 ku 113
+ kd 114 ku 114
+ kd 115 ku 115
+ kd 116 ku 116
+ kd 117 ku 117
+ kd 118 ku 118
+ kd 119 ku 119
+ kd 120 ku 120
+ kd 121 ku 121
+ kd 122 ku 122
+ kd 123 ku 123
+ ku 18
+ kd 17 kd 67 kds 3'' ku 67
+ ku 17
+ kd 67 kds 99'c' ku 67
+ kd 8 kds 8'' ku 8
+ kd 17 kd 8 kds 127'' ku 8
+ ku 17
+ kd 18 ku 18
+ kd 17 kd 18 kd 18 kd 8 ku 8
+ ku 18
+ ku 17
+ kd 8 kds 8'' ku 8
+ kd 18 kd 8 kds 8'' ku 8
+ ku 18
+ kd 17 kd 8 kds 127'' ku 8
+ ku 17
+ kd 18 ku 9
+ kd 18
+ 
