@@ -31,11 +31,11 @@ unix {
     DEFINES += __PRAXIS_LINUX__
     DEFINES += __LINUX_ALSASEQ__
     QMAKE_CXXFLAGS += $$system(freetype-config --cflags)
-    QMAKE_CXXFLAGS += $$system(sdl-config --cflags)
+    QMAKE_CXXFLAGS += $$system(sdl2-config --cflags)
     QMAKE_CXXFLAGS += -std=c++11
 
     LIBS += $$system(freetype-config --libs)
-    LIBS += $$system(sdl-config --libs)
+    LIBS += $$system(sdl2-config --libs)
     LIBS += -lGL -lGLU -lm -lX11 -ldl -lpthread
     #LIBS += -lsocket -lnsl
     CONFIG += link_pkgconfig

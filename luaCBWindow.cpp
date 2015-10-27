@@ -94,7 +94,12 @@ int luaCBTurnOnBorders(lua_State * L)
 
 int luaCBGetPaddedBorder(lua_State * L)
 {
+#ifdef __PRAXIS_WINDOW__
     lua_pushnumber(L, GetSystemMetrics( SM_CXPADDEDBORDER ));
+#endif
+#ifdef __PRAXIS_LINUX__
+    lua_pushnumber(L, 0);
+#endif
     return 1;
 }
 

@@ -70,6 +70,14 @@ extern HWND g_AppHWND;
 }
 #endif
 
+#ifdef __PRAXIS_LINUX__
+extern "C" {
+extern Display * g_pAppDisplay;
+extern Window g_pAppWindow;
+extern int g_bAppSelectionWaiting;
+}
+#endif
+
 extern VoxelBlock *     g_pVoxelBlock;
 
 extern World *          g_pWorld;

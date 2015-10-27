@@ -560,7 +560,9 @@ void World::OnRButtonUp(int nX, int nY)
     m_bUpdatePickPosition = true;
 }
 
-#ifdef __PRAXIS_WINDOWS__
+//#ifdef __PRAXIS_WINDOWS__
+#if 1
+
 void World::OnKeyDown(unsigned char nKey, int nX, int nY)
 {
     //string temp(" "); temp[0] = nKey;
@@ -589,9 +591,12 @@ void World::OnKeyUpSpecial(unsigned char nKey, int nX, int nY)
     ss << "onKeyUpSpecial(" << (int)nKey << ")";
     luaCall(ss.str());
 }
-#endif
+//#endif
 
-#ifdef __PRAXIS_LINUX__
+//#ifdef __PRAXIS_LINUX__
+
+#else
+
 void World::OnKeyDown(unsigned char nKey, int nX, int nY)
 {
     GLEditor::m_bUpdateRequired = true;

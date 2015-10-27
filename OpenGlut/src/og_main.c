@@ -644,6 +644,37 @@ SOG_Event *oghGetWindowEvent( SOG_Event *event )
 #endif
     return event;
 }
+
+typedef struct {
+    unsigned char *data;
+    int format, count;
+    Atom type;
+} SDL_x11Prop;
+
+/* Reads property
+   Must call X11_XFree on results
+ */
+static void X11_ReadProperty(SDL_x11Prop *p, Display *disp, Window w, Atom prop)
+{
+    unsigned char *ret=NULL;
+    Atom type;
+    int fmt;
+    unsigned long count;
+    unsigned long bytes_left;
+    int bytes_fetch = 0;
+
+    do {
+        if (ret != 0) XFree(ret);
+        XGetWindowProperty(disp, w, prop, 0, bytes_fetch, False, AnyPropertyType, &type, &fmt, &count, &bytes_left, &ret);
+        bytes_fetch += bytes_left;
+    } while (bytes_left != 0);
+
+    p->data=ret;
+    p->format=fmt;
+    p->count=count;
+    p->type=type;
+}
+
 void oghDispatchEvent( SOG_Event *ev )
 {
 #if TARGET_HOST_WIN32 || TARGET_HOST_WINCE
@@ -1028,8 +1059,16 @@ void oghDispatchEvent( SOG_Event *ev )
             GETWINDOW( xkey );
             GETMOUSE( xkey );
 
-            /* printf("\nGLUT Keydown: %d, %d\n", event->xkey.keycode, event->xkey.state);
-            fflush(stdout); */
+            if( KeyPress == event->type )
+            {
+                printf("KeyPress: %d, %d\n", event->xkey.keycode, event->xkey.state);
+                fflush(stdout);
+            }
+            else
+            {
+                printf("KeyRelease: %d, %d\n", event->xkey.keycode, event->xkey.state);
+                fflush(stdout);
+            }
 
             /* Detect repeated keys if configured globally or per-window */
 
@@ -1089,6 +1128,49 @@ void oghDispatchEvent( SOG_Event *ev )
                                      sizeof( asciiCode ), &keySym,
                                      &composeStatus
                 );
+
+                if( KeyPress == event->type )
+                {
+                    printf("KeyPress CB: asciiCode[0] = %d, keySym = %d\n", asciiCode[0],keySym);
+                    fflush(stdout);
+
+                    /* 65056 is Shift Tab, XK_ISO_Left_Tab
+                     */
+
+                    // keyboard
+                    // special
+
+                    ogSetWindow( window );
+                    ogState.Modifiers = ogGetXModifiers( event );
+                    keyboard_cb( event->xkey.keycode, // keySym,
+                                 event->xkey.x, event->xkey.y
+                    );
+                    ogState.Modifiers = 0xffffffff;
+
+                    if(asciiCode[0] != 0)
+                    {
+                        ogSetWindow( window );
+                        ogState.Modifiers = ogGetXModifiers( event );
+                        special_cb( asciiCode[0], event->xkey.x, event->xkey.y );
+                        ogState.Modifiers = 0xffffffff;
+                    }
+                }
+                else
+                {
+                    printf("KeyRelease CB: asciiCode[0] = %d, keySym = %d\n", asciiCode[0],keySym);
+                    fflush(stdout);
+
+                    // keyboard
+
+                    ogSetWindow( window );
+                    ogState.Modifiers = ogGetXModifiers( event );
+                    keyboard_cb( event->xkey.keycode, // keySym,
+                                 event->xkey.x, event->xkey.y
+                    );
+                    ogState.Modifiers = 0xffffffff;
+                }
+
+#if 0
 
                 /* printf("GLUT Key, keySym = %d, len = %d\n", keySym, len);
                 fflush(stdout); */
@@ -1181,6 +1263,7 @@ void oghDispatchEvent( SOG_Event *ev )
                         ogState.Modifiers = 0xffffffff;
                     }
                 }
+#endif
             }
             break;
         }
@@ -1190,6 +1273,78 @@ void oghDispatchEvent( SOG_Event *ev )
 
     case UnmapNotify:
         /* NOP */
+        break;
+
+    case SelectionClear:
+        printf("SelectionClear\n");
+        fflush(stdout);
+        break;
+
+    case SelectionRequest:
+    {
+        printf("SelectionRequest\n");
+        fflush(stdout);
+
+#if 1
+        XSelectionRequestEvent *req;
+        XEvent sevent;
+        int seln_format;
+        unsigned long nbytes;
+        unsigned long overflow;
+        unsigned char *seln_data;
+
+        req = &event->xselectionrequest;
+#if 0
+        printf("window %p: SelectionRequest (requestor = %ld, target = %ld)\n", data,
+            req->requestor, req->target);
+#endif
+
+        //SDL_zero(sevent);
+        sevent.xany.type = SelectionNotify;
+        sevent.xselection.selection = req->selection;
+        sevent.xselection.target = None;
+        sevent.xselection.property = None;
+        sevent.xselection.requestor = req->requestor;
+        sevent.xselection.time = req->time;
+        if (XGetWindowProperty(ogDisplay.Display, DefaultRootWindow(ogDisplay.Display),
+                XA_CUT_BUFFER0, 0, INT_MAX/4, False, req->target,
+                &sevent.xselection.target, &seln_format, &nbytes,
+                &overflow, &seln_data) == Success) {
+            Atom XA_TARGETS = XInternAtom(ogDisplay.Display, "TARGETS", 0);
+            if (sevent.xselection.target == req->target) {
+                XChangeProperty(ogDisplay.Display, req->requestor, req->property,
+                    sevent.xselection.target, seln_format, PropModeReplace,
+                    seln_data, nbytes);
+                sevent.xselection.property = req->property;
+            } else if (XA_TARGETS == req->target) {
+                Atom SupportedFormats[] = { sevent.xselection.target, XA_TARGETS };
+                XChangeProperty(ogDisplay.Display, req->requestor, req->property,
+                    XA_ATOM, 32, PropModeReplace,
+                    (unsigned char*)SupportedFormats,
+                    sizeof(SupportedFormats)/sizeof(*SupportedFormats));
+                sevent.xselection.property = req->property;
+            }
+            XFree(seln_data);
+        }
+        XSendEvent(ogDisplay.Display, req->requestor, False, 0, &sevent);
+        XSync(ogDisplay.Display, False);
+#endif
+    }
+        break;
+
+    case SelectionNotify:
+    {
+        printf("SelectionNotify\n");
+        fflush(stdout);
+#if 1
+#if 1
+        printf("SelectionNotify (requestor = %ld, target = %ld)\n",
+            event->xselection.requestor, event->xselection.target);
+#endif
+        extern int g_bAppSelectionWaiting;
+        g_bAppSelectionWaiting = 0;
+#endif
+    }
         break;
 
     case VisibilityNotify:
@@ -1284,6 +1439,22 @@ void OGAPIENTRY glutMainLoopEvent( void )
     ogCloseWindows( );
     if( ogState.GLDebugSwitch )
         glutReportErrors( );
+}
+
+void OGAPIENTRY glutMainLoopEventOnlySelection( void )
+{
+    SOG_Event event;
+    freeglut_assert_ready; /* XXX Looks like assert() abuse... */
+
+    while( oghPendingWindowEvents( &event ) )
+    {
+        oghGetWindowEvent( &event );
+        printf("glutMainLoopEventOnlySelection %d\n", event.rawEvent.type);
+        if(event.rawEvent.type == SelectionNotify)
+        {
+            oghDispatchEvent( &event );
+        }
+    }
 }
 
 /*!
