@@ -105,7 +105,6 @@ SOG_State ogState =
 #ifdef __PRAXIS_LINUX__
 Display * g_pAppDisplay;
 Window g_pAppWindow;
-int g_bAppSelectionWaiting = 0;
 #endif
 
 /* -- PRIVATE FUNCTIONS ---------------------------------------------------- */

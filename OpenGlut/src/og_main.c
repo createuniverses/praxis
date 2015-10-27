@@ -645,36 +645,6 @@ SOG_Event *oghGetWindowEvent( SOG_Event *event )
     return event;
 }
 
-typedef struct {
-    unsigned char *data;
-    int format, count;
-    Atom type;
-} SDL_x11Prop;
-
-/* Reads property
-   Must call X11_XFree on results
- */
-static void X11_ReadProperty(SDL_x11Prop *p, Display *disp, Window w, Atom prop)
-{
-    unsigned char *ret=NULL;
-    Atom type;
-    int fmt;
-    unsigned long count;
-    unsigned long bytes_left;
-    int bytes_fetch = 0;
-
-    do {
-        if (ret != 0) XFree(ret);
-        XGetWindowProperty(disp, w, prop, 0, bytes_fetch, False, AnyPropertyType, &type, &fmt, &count, &bytes_left, &ret);
-        bytes_fetch += bytes_left;
-    } while (bytes_left != 0);
-
-    p->data=ret;
-    p->format=fmt;
-    p->count=count;
-    p->type=type;
-}
-
 void oghDispatchEvent( SOG_Event *ev )
 {
 #if TARGET_HOST_WIN32 || TARGET_HOST_WINCE
@@ -1282,10 +1252,6 @@ void oghDispatchEvent( SOG_Event *ev )
 
     case SelectionRequest:
     {
-        printf("SelectionRequest\n");
-        fflush(stdout);
-
-#if 1
         XSelectionRequestEvent *req;
         XEvent sevent;
         int seln_format;
@@ -1294,12 +1260,12 @@ void oghDispatchEvent( SOG_Event *ev )
         unsigned char *seln_data;
 
         req = &event->xselectionrequest;
-#if 0
-        printf("window %p: SelectionRequest (requestor = %ld, target = %ld)\n", data,
-            req->requestor, req->target);
-#endif
 
-        //SDL_zero(sevent);
+        printf("SelectionRequest (requestor = %ld, target = %ld)\n",
+            req->requestor, req->target);
+        fflush(stdout);
+
+#if 1
         sevent.xany.type = SelectionNotify;
         sevent.xselection.selection = req->selection;
         sevent.xselection.target = None;
@@ -1334,16 +1300,9 @@ void oghDispatchEvent( SOG_Event *ev )
 
     case SelectionNotify:
     {
-        printf("SelectionNotify\n");
-        fflush(stdout);
-#if 1
-#if 1
         printf("SelectionNotify (requestor = %ld, target = %ld)\n",
             event->xselection.requestor, event->xselection.target);
-#endif
-        extern int g_bAppSelectionWaiting;
-        g_bAppSelectionWaiting = 0;
-#endif
+        fflush(stdout);
     }
         break;
 
@@ -1439,22 +1398,6 @@ void OGAPIENTRY glutMainLoopEvent( void )
     ogCloseWindows( );
     if( ogState.GLDebugSwitch )
         glutReportErrors( );
-}
-
-void OGAPIENTRY glutMainLoopEventOnlySelection( void )
-{
-    SOG_Event event;
-    freeglut_assert_ready; /* XXX Looks like assert() abuse... */
-
-    while( oghPendingWindowEvents( &event ) )
-    {
-        oghGetWindowEvent( &event );
-        printf("glutMainLoopEventOnlySelection %d\n", event.rawEvent.type);
-        if(event.rawEvent.type == SelectionNotify)
-        {
-            oghDispatchEvent( &event );
-        }
-    }
 }
 
 /*!

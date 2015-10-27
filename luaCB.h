@@ -74,7 +74,6 @@ extern HWND g_AppHWND;
 extern "C" {
 extern Display * g_pAppDisplay;
 extern Window g_pAppWindow;
-extern int g_bAppSelectionWaiting;
 }
 #endif
 

@@ -31,19 +31,29 @@ unix {
     DEFINES += __PRAXIS_LINUX__
     DEFINES += __LINUX_ALSASEQ__
     QMAKE_CXXFLAGS += $$system(freetype-config --cflags)
-    QMAKE_CXXFLAGS += $$system(sdl2-config --cflags)
+
+#praxis is compatible with both SDL 1.2 and SDL 2
+    QMAKE_CXXFLAGS += $$system(sdl-config --cflags)
+#    QMAKE_CXXFLAGS += $$system(sdl2-config --cflags)
+
     QMAKE_CXXFLAGS += -std=c++11
 
     LIBS += $$system(freetype-config --libs)
-    LIBS += $$system(sdl2-config --libs)
+
+#praxis is compatible with both SDL 1.2 and SDL 2
+    LIBS += $$system(sdl-config --libs)
+#    LIBS += $$system(sdl2-config --libs)
+
     LIBS += -lGL -lGLU -lm -lX11 -ldl -lpthread
     #LIBS += -lsocket -lnsl
+
     CONFIG += link_pkgconfig
     PKGCONFIG += alsa
 
     #QMAKE_CFLAGS_RELEASE -= -O2
 
-    message(output from freetype-config --cflags added to QMAKE_CXXFLAGS= $$QMAKE_CXXFLAGS)
+    message(QMAKE_CXXFLAGS = $$QMAKE_CXXFLAGS)
+    message(LIBS = $$LIBS)
 }
 
 DEFINES += _CRT_SECURE_NO_WARNINGS

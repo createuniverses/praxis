@@ -189,8 +189,13 @@ void SingleWorldConfiguration_keyDown ( unsigned char key, int x, int y )
 {
 	g_pSingleWorldConfiguration_World->OnKeyDown(key, x, y);
 
+#ifdef __PRAXIS_WINDOWS__
 	if(key == 27) // Escape
-	{
+#endif
+#ifdef __PRAXIS_LINUX__
+    if(key == 9) // Escape
+#endif
+    {
 		glutLeaveMainLoop();
 	}
 }

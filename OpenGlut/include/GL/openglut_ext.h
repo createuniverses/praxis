@@ -72,8 +72,6 @@ extern "C" {
 OGAPI void    OGAPIENTRY glutMainLoopEvent( void );
 OGAPI void    OGAPIENTRY glutLeaveMainLoop( void );
 
-OGAPI void    OGAPIENTRY glutMainLoopEventOnlySelection( void );
-
 /*
  * Window-specific callback functions, see freeglut_callbacks.c
  */
