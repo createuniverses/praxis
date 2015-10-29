@@ -28,11 +28,13 @@ int X11_SetClipboardText(const char *text)
         (const unsigned char *)text, strlen(text));
 
     if (XA_CLIPBOARD != None &&
-        XGetSelectionOwner(display, XA_CLIPBOARD) != window) {
+        XGetSelectionOwner(display, XA_CLIPBOARD) != window)
+    {
         XSetSelectionOwner(display, XA_CLIPBOARD, window, CurrentTime);
     }
 
-    if (XGetSelectionOwner(display, XA_PRIMARY) != window) {
+    if (XGetSelectionOwner(display, XA_PRIMARY) != window)
+    {
         XSetSelectionOwner(display, XA_PRIMARY, window, CurrentTime);
     }
 
@@ -54,7 +56,8 @@ char * X11_GetClipboardText()
     char *text;
 
     Atom XA_CLIPBOARD = XInternAtom(display, "CLIPBOARD", 0);
-    if (XA_CLIPBOARD == None) {
+    if (XA_CLIPBOARD == None)
+    {
         printf("Couldn't access X clipboard\n");
         return strdup("");
     }
@@ -63,41 +66,39 @@ char * X11_GetClipboardText()
 
     /* Get the window that holds the selection */
     owner = XGetSelectionOwner(display, XA_CLIPBOARD);
-    if ((owner == None) || (owner == window)) {
+    if ((owner == None) || (owner == window))
+    {
         owner = DefaultRootWindow(display);
         selection = XA_CUT_BUFFER0;
-    } else {
+    }
+    else
+    {
         /* Request that the selection owner copy the data to our window */
         owner = window;
         selection = XInternAtom(display, "PRAXIS_SELECTION", False);
         XConvertSelection(display, XA_CLIPBOARD, format, selection, owner,
             CurrentTime);
+        XFlush(display);
     }
 
-    // This can change in between calls, so its being called twice so the
-    // "latest" property is obtained. A delay is necessary as well.
-    // XGetWindowProperty may be generating an event in the current selection
-    // owner, but the XLib documentation doesn't say.
-    for(int i = 0; i < 2; i++)
+    usleep(100000);
+
+    if (XGetWindowProperty(display, owner, selection, 0, INT_MAX/4, False,
+            format, &seln_type, &seln_format, &nbytes, &overflow, &src)
+            == Success)
     {
-        if (XGetWindowProperty(display, owner, selection, 0, INT_MAX/4, False,
-                format, &seln_type, &seln_format, &nbytes, &overflow, &src)
-                == Success) {
-            if (seln_type == format) {
-                text = (char *)malloc(nbytes+1);
-                if (text) {
-                    memcpy(text, src, nbytes);
-                    text[nbytes] = '\0';
-                }
+        if (seln_type == format) {
+            text = (char *)malloc(nbytes+1);
+            if (text) {
+                memcpy(text, src, nbytes);
+                text[nbytes] = '\0';
             }
-            XFree(src);
         }
-
-        if(i == 0)
-            usleep(100000);
+        XFree(src);
     }
 
-    if (!text) {
+    if (!text)
+    {
         text = strdup("");
     }
 
