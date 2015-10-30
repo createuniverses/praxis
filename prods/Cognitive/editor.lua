@@ -2,11 +2,15 @@
 
 keymap = {}
 
-lastkeydown = -1
-
 function getKeyHandler(k,mods)
+  local found = false
   if keymap[k] ~= nil then
-    return keymap[k][mods]
+    if keymap[k][mods] ~= nil then
+      found = true
+    end
+  end
+  if found == true then
+    return keymap[k][mods].fn
   else
     return nil
   end
@@ -16,25 +20,54 @@ function setKeyHandler(k,mods,fn)
   if keymap[k] == nil then
     keymap[k] = {}
   end
-  keymap[k][mods] = fn
+  if keymap[k][mods] == nil then
+    keymap[k][mods] = {}
+  end
+  keymap[k][mods].fn = fn
 end
 
-setKeyHandler(8,0, function ()
+stdkeyids = {}
+stdkeyids.backspace = 8
+stdkeyids.delete = 46
+stdkeyids.enter = 13
+stdkeyids.tab = 9
+stdkeyids.up = 38
+stdkeyids.down = 40
+stdkeyids.left = 37
+stdkeyids.right = 39
+--stdkeyids.f1 = 0
+--stdkeyids.a = 0
+
+if platform() == "windows" then
+end
+
+if platform() == "linux" then
+  stdkeyids.backspace = 22
+  stdkeyids.delete = 119
+  stdkeyids.enter = 36
+  stdkeyids.tab = 23
+  stdkeyids.up = 111
+  stdkeyids.down = 116
+  stdkeyids.left = 113
+  stdkeyids.right = 114
+end
+
+setKeyHandler(stdkeyids.backspace,0, function ()
   edBackspace()
 end)
 
-setKeyHandler(46,0, function ()
+setKeyHandler(stdkeyids.delete,0, function ()
   edDelete()
 end)
 
-setKeyHandler(9,0, function ()
+setKeyHandler(stdkeyids.tab,0, function ()
   for i = 1,2,1 do
     edInsertTextAt(" ", edGetPosition())
     edSetPosition(edGetRight(edGetPosition()))
   end
 end)
 
-setKeyHandler(13,0, function ()
+setKeyHandler(stdkeyids.enter,0, function ()
   -- autoindent stuff
   -- shift/ctrl enter
   edInsertNewline()
@@ -42,21 +75,21 @@ end)
 
 -- arrow keys
 
-setKeyHandler(37,0, function ()
+setKeyHandler(stdkeyids.left,  0, function ()
   -- ctrl: word or s-exp left
   -- shift: selection
   edSetPosition(edGetLeft(edGetPosition()))
 end)
 
-setKeyHandler(39,0, function ()
+setKeyHandler(stdkeyids.right, 0, function ()
   edSetPosition(edGetRight(edGetPosition()))
 end)
 
-setKeyHandler(38,0, function ()
+setKeyHandler(stdkeyids.up,    0, function ()
   edSetPosition(edGetUp(edGetPosition()))
 end)
 
-setKeyHandler(40,0, function ()
+setKeyHandler(stdkeyids.down,  0, function ()
   edSetPosition(edGetDown(edGetPosition()))
 end)
 
@@ -77,56 +110,40 @@ function edGetKeyModifiers()
 end
 
 function onKeyDown(k)
-  if editorVisible() then
-    local action = keymap[k]
-    if action ~= nil then
-      local mods = edGetKeyModifiers()
-      action = action[mods]
-      if action ~= nil then
-    	  action()
-      end
-	  end
-  end
-  lastkeydown = k
   print("onKeyDown " .. k)
+  local mods = edGetKeyModifiers()
+  if editorVisible() then
+    local action = getKeyHandler(k, mods)
+    if action ~= nil then
+      onKeyDownSpecial = onKeyDownSpecial_Plain
+      action()
+    else
+      print("Missing key handler for " .. k .. ", mods = " .. edGetKeyModifiers())
+      replaceFunction("onKeyDownSpecial", onKeyDownSpecial_Plain,
+        function (k2)
+          print("  Setting key handler for " .. k .. ", mods " .. mods)
+          print("  to print " .. string.char(k2) .. " (" .. k2 .. ")")
+          setKeyHandler(k, mods,
+            function ()
+              edTypeString(string.char(k2))
+            end)
+        end, 1)
+    end
+  end
 end
 
 function onKeyUp(k)
   print("onKeyUp   " .. k)
 end
 
-function onKeyDownSpecial(k)
-  if lastkeydown ~= -1 then
-    if keymap[lastkeydown] == nil then
-      keymap[lastkeydown] = {}
-    end
-    local mods = edGetKeyModifiers()
-    if keymap[lastkeydown][mods] == nil then
-      print(lastkeydown .. " with mods = " .. mods .. " maps to " .. string.char(k))
-      keymap[lastkeydown][mods] = function () edTypeString(string.char(k)) end
-    end
-  end
-  print("     onKeyDownSpecial " .. k)
+function onKeyDownSpecial_Plain(k)
+  print("  onKeyDownSpecial " .. k)
 end
+
+onKeyDownSpecial = onKeyDownSpecial_Plain
 
 function onKeyUpSpecial(k)
-  print("-----onKeyUpSpecial " .. k .. "------")
-end
-
-function onKeyDown(k)
-  edTypeString(" kd " .. k)
-end
-
-function onKeyUp(k)
-  edTypeString(" ku " .. k .. "\n")
-end
-
-function onKeyDownSpecial(k)
-  edTypeString(" kds " .. k .. "'" .. string.char(k) .. "'")
-end
-
-function onKeyUpSpecial(k)
-  edTypeString(" kus " .. k .. "\n")
+  print("  onKeyUpSpecial " .. k)
 end
 
 --newBuffer()

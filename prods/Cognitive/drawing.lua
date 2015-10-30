@@ -79,7 +79,7 @@ function drawTexQuad(pos,s)
   normalGL(0,1,0)
   vectorGL(pos.x,   pos.y, pos.z)
   
-  texGL(1,0)
+  texGL(0,1)
   normalGL(0,1,0)
   vectorGL(pos.x,   pos.y, pos.z+s)
   
@@ -87,7 +87,7 @@ function drawTexQuad(pos,s)
   normalGL(0,1,0)
   vectorGL(pos.x+s, pos.y, pos.z+s)
   
-  texGL(0,1)
+  texGL(1,0)
   normalGL(0,1,0)
   vectorGL(pos.x+s, pos.y, pos.z)
   
