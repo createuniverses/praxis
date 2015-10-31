@@ -26,6 +26,12 @@ function setKeyHandler(k,mods,fn)
   keymap[k][mods].fn = fn
 end
 
+function setKeyHandlerProgram(k,mods,prog)
+  local fn = loadstring(prog)
+  setKeyHandler(k, mods, fn)
+  keymap[k][mods].program = prog
+end
+
 stdkeyids = {}
 stdkeyids.backspace = 8
 stdkeyids.delete = 46
@@ -123,11 +129,14 @@ function onKeyDown(k)
         function (k2)
           print("  Setting key handler for " .. k .. ", mods " .. mods)
           print("  to print " .. string.char(k2) .. " (" .. k2 .. ")")
-          setKeyHandler(k, mods,
-            function ()
-              edTypeString(string.char(k2))
-            end)
-        end, 1)
+          setKeyHandlerProgram(k, mods,
+            [[edTypeString("]]..string.char(k2) .. [[")]])
+         end, 1)
+          --setKeyHandler(k, mods,
+          --  function ()
+          --    edTypeString(string.char(k2))
+          --  end)
+        --end, 1)
     end
   end
 end

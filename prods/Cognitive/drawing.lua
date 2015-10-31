@@ -96,6 +96,32 @@ function drawTexQuad(pos,s)
   disableTexturing()
 end
 
+function drawTexQuad2(pos,s)
+  enableTexturing()
+  
+  beginQuadGL()
+  
+  texGL(0,0)
+  normalGL(0,1,0)
+  vectorGL(pos.x,   pos.y,   pos.z)
+  
+  texGL(0,1)
+  normalGL(0,1,0)
+  vectorGL(pos.x,   pos.y+s, pos.z)
+  
+  texGL(1,1)
+  normalGL(0,1,0)
+  vectorGL(pos.x+s, pos.y+s, pos.z)
+  
+  texGL(1,0)
+  normalGL(0,1,0)
+  vectorGL(pos.x+s, pos.y,   pos.z)
+  
+  endGL()
+  
+  --disableTexturing()
+end
+
 function drawEmptyPolygon(pos,r,n,s)
   angstep = (math.pi * 2) / n
   for i=s,math.pi * 2+s,angstep do
