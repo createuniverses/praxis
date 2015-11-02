@@ -221,7 +221,8 @@ function Inspector:putValue(v)
   elseif tv == 'table' then
     self:putTable(v)
   else
-    self:puts('<',tv,' ',self:getId(v),'>')
+    --self:puts('<',tv,' ',self:getId(v),'>')
+    self:puts('nil --[[<',tv,' ',self:getId(v),'>]]')
   end
   return self
 end

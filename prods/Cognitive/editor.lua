@@ -10,6 +10,9 @@ function getKeyHandler(k,mods)
     end
   end
   if found == true then
+    if keymap[k][mods].fn == nil then
+      keymap[k][mods].fn = loadstring(keymap[k][mods].program)
+    end
     return keymap[k][mods].fn
   else
     return nil
@@ -58,46 +61,28 @@ if platform() == "linux" then
   stdkeyids.right = 114
 end
 
-setKeyHandler(stdkeyids.backspace,0, function ()
-  edBackspace()
-end)
-
-setKeyHandler(stdkeyids.delete,0, function ()
-  edDelete()
-end)
-
-setKeyHandler(stdkeyids.tab,0, function ()
+function edTab()
   for i = 1,2,1 do
     edInsertTextAt(" ", edGetPosition())
     edSetPosition(edGetRight(edGetPosition()))
   end
-end)
+end
 
-setKeyHandler(stdkeyids.enter,0, function ()
-  -- autoindent stuff
-  -- shift/ctrl enter
-  edInsertNewline()
-end)
+setKeyHandlerProgram(stdkeyids.backspace, 0, [[edBackspace()]])
+setKeyHandlerProgram(stdkeyids.delete,    0, [[edDelete()]])
+setKeyHandlerProgram(stdkeyids.tab,       0, [[edTab()]])
+
+-- autoindent stuff
+-- shift/ctrl enter
+setKeyHandlerProgram(stdkeyids.enter,     0, [[edInsertNewline()]])
 
 -- arrow keys
-
-setKeyHandler(stdkeyids.left,  0, function ()
-  -- ctrl: word or s-exp left
-  -- shift: selection
-  edSetPosition(edGetLeft(edGetPosition()))
-end)
-
-setKeyHandler(stdkeyids.right, 0, function ()
-  edSetPosition(edGetRight(edGetPosition()))
-end)
-
-setKeyHandler(stdkeyids.up,    0, function ()
-  edSetPosition(edGetUp(edGetPosition()))
-end)
-
-setKeyHandler(stdkeyids.down,  0, function ()
-  edSetPosition(edGetDown(edGetPosition()))
-end)
+-- ctrl: word or s-exp left
+-- shift: selection
+setKeyHandlerProgram(stdkeyids.left,  0, [[edSetPosition(edGetLeft(edGetPosition()))]])
+setKeyHandlerProgram(stdkeyids.right, 0, [[edSetPosition(edGetRight(edGetPosition()))]])
+setKeyHandlerProgram(stdkeyids.up,    0, [[edSetPosition(edGetUp(edGetPosition()))]])
+setKeyHandlerProgram(stdkeyids.down,  0, [[edSetPosition(edGetDown(edGetPosition()))]])
 
 function edTypeString(c)
   edInsertTextAt(c, edGetPosition())
@@ -129,9 +114,13 @@ function onKeyDown(k)
         function (k2)
           print("  Setting key handler for " .. k .. ", mods " .. mods)
           print("  to print " .. string.char(k2) .. " (" .. k2 .. ")")
+          local stringrep = string.char(k2)
+          if string.char(k2) == "\\" then
+            stringrep = "\\\\"
+          end
           setKeyHandlerProgram(k, mods,
-            [[edTypeString("]]..string.char(k2) .. [[")]])
-         end, 1)
+            [[edTypeString("]]..stringrep .. [[")]])
+        end, 1)
           --setKeyHandler(k, mods,
           --  function ()
           --    edTypeString(string.char(k2))

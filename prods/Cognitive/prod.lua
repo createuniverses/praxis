@@ -186,4 +186,5 @@ end
 newBuffer()
 setMaxFramerate(30)
 dofile("editor.lua")
+dofile("replacefn.lua")
 
