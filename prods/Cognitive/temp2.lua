@@ -579,12 +579,74 @@ setClipboardText(inspect(keymap))
 dofile("editor.lua")
 dofile("keymap.lua")
 continue()
+playSound()
+stopSound()
 clearError()
 hideTrace()
 hideError()
 loadBuffer("editor.lua")
 newBuffer()
+showTrace()
 
+setKeyHandlerProgram(67, 0, "f1Pressed()")
+
+dofile("editor.lua")
+dofile("keymap.lua")
+keymap[48] = nil
+
+setClipboardText(getErrorText())
+editor.lua:88: attempt to call global 'stdKeyHandlerProgram' (a nil value)
+stack traceback:
+	[string "function onerror(s) endGL() glResetStencil(..."]:1: in function 'stdKeyHandlerProgram'
+	editor.lua:88: in main chunk
+	[C]: in function 'dofile'
+	[string "dofile("editor.lua")..."]:1: in main chunk
+
+setClipboardText(inspect(keymap[48]))
+{ {
+    program = 'edTypeString("\"")'
+  },
+  [0] = {
+    program = "edTypeString(\"'\")"
+  }
+}'edTypeString(""")'
+
+{ {
+    program = 'edTypeString(""")'
+  },
+  [0] = {
+    program = "edTypeString(\"'\")"
+  }
+}
+{ {
+    program = 'edTypeString(""")'
+  },
+  [0] = {
+    program = "edTypeString(\"'\")"
+  }
+}
+
+keymap[48] =
+{ {
+    fn = nil,
+    program = 'edTypeString("\\\"")'
+  },
+  [0] = {
+    fn = nil --[[<function 1>]],
+    program = "edTypeString(\"'\")"
+  }
+}
+setClipboardText(getErrorText())
+
+[string "blah..."]:2: '=' expected near '<eof>'
+User break.
+stack traceback:
+	[string "function onerror(s) endGL() glResetStencil(..."]:1: in function <[string "function onerror(s) endGL() glResetStencil(..."]:1>
+	synth.lua:181: in function 'makeRBuffer'
+	synth.lua:166: in function 'updateSynthNode'
+	main.lua:32: in function 'update'
+	[string "update()"]:1: in main chunk
+clearError()
 
 blah
 

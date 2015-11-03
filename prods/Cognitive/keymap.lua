@@ -1,12 +1,13 @@
 
 --setClipboardText(inspect(keymap))
 
-keymap =
+keymap = 
 {
   [10] = { {
       program = 'edTypeString("!")'
     },
     [0] = {
+      fn = nil --[[<function 1>]],
       program = 'edTypeString("1")'
     }
   },
@@ -14,6 +15,7 @@ keymap =
       program = 'edTypeString("@")'
     },
     [0] = {
+      fn = nil --[[<function 2>]],
       program = 'edTypeString("2")'
     }
   },
@@ -60,6 +62,7 @@ keymap =
     }
   },
   [18] = { {
+      fn = nil --[[<function 3>]],
       program = 'edTypeString("(")'
     },
     [0] = {
@@ -67,9 +70,11 @@ keymap =
     }
   },
   [19] = { {
+      fn = nil --[[<function 4>]],
       program = 'edTypeString(")")'
     },
     [0] = {
+      fn = nil --[[<function 5>]],
       program = 'edTypeString("0")'
     }
   },
@@ -84,12 +89,13 @@ keymap =
       program = 'edTypeString("+")'
     },
     [0] = {
+      fn = nil --[[<function 6>]],
       program = 'edTypeString("=")'
     }
   },
   [22] = {
     [0] = {
-      fn = nil --[[<function 1>]],
+      fn = nil --[[<function 7>]],
       program = "edBackspace()"
     }
   },
@@ -102,7 +108,6 @@ keymap =
       program = 'edTypeString("Q")'
     },
     [0] = {
-      fn = nil --[[<function 2>]],
       program = 'edTypeString("q")'
     }
   },
@@ -110,7 +115,6 @@ keymap =
       program = 'edTypeString("W")'
     },
     [0] = {
-      fn = nil --[[<function 3>]],
       program = 'edTypeString("w")'
     }
   },
@@ -118,7 +122,7 @@ keymap =
       program = 'edTypeString("E")'
     },
     [0] = {
-      fn = nil --[[<function 4>]],
+      fn = nil --[[<function 8>]],
       program = 'edTypeString("e")'
     }
   },
@@ -126,7 +130,7 @@ keymap =
       program = 'edTypeString("R")'
     },
     [0] = {
-      fn = nil --[[<function 5>]],
+      fn = nil --[[<function 9>]],
       program = 'edTypeString("r")'
     }
   },
@@ -134,7 +138,7 @@ keymap =
       program = 'edTypeString("T")'
     },
     [0] = {
-      fn = nil --[[<function 6>]],
+      fn = nil --[[<function 10>]],
       program = 'edTypeString("t")'
     }
   },
@@ -142,7 +146,6 @@ keymap =
       program = 'edTypeString("Y")'
     },
     [0] = {
-      fn = nil --[[<function 7>]],
       program = 'edTypeString("y")'
     }
   },
@@ -150,7 +153,6 @@ keymap =
       program = 'edTypeString("U")'
     },
     [0] = {
-      fn = nil --[[<function 8>]],
       program = 'edTypeString("u")'
     }
   },
@@ -158,7 +160,7 @@ keymap =
       program = 'edTypeString("I")'
     },
     [0] = {
-      fn = nil --[[<function 9>]],
+      fn = nil --[[<function 11>]],
       program = 'edTypeString("i")'
     }
   },
@@ -166,7 +168,7 @@ keymap =
       program = 'edTypeString("O")'
     },
     [0] = {
-      fn = nil --[[<function 10>]],
+      fn = nil --[[<function 12>]],
       program = 'edTypeString("o")'
     }
   },
@@ -174,30 +176,27 @@ keymap =
       program = 'edTypeString("P")'
     },
     [0] = {
-      fn = nil --[[<function 11>]],
+      fn = nil --[[<function 13>]],
       program = 'edTypeString("p")'
     }
   },
   [34] = { {
-      fn = nil --[[<function 12>]],
       program = 'edTypeString("{")'
     },
     [0] = {
-      fn = nil --[[<function 13>]],
       program = 'edTypeString("[")'
     }
   },
   [35] = { {
-      fn = nil --[[<function 14>]],
       program = 'edTypeString("}")'
     },
     [0] = {
-      fn = nil --[[<function 15>]],
       program = 'edTypeString("]")'
     }
   },
   [36] = {
     [0] = {
+      fn = nil --[[<function 14>]],
       program = "edInsertNewline()"
     }
   },
@@ -212,7 +211,6 @@ keymap =
       program = 'edTypeString("S")'
     },
     [0] = {
-      fn = nil --[[<function 16>]],
       program = 'edTypeString("s")'
     }
   },
@@ -220,6 +218,7 @@ keymap =
       program = 'edTypeString("D")'
     },
     [0] = {
+      fn = nil --[[<function 15>]],
       program = 'edTypeString("d")'
     }
   },
@@ -227,6 +226,7 @@ keymap =
       program = 'edTypeString("F")'
     },
     [0] = {
+      fn = nil --[[<function 16>]],
       program = 'edTypeString("f")'
     }
   },
@@ -241,6 +241,7 @@ keymap =
       program = 'edTypeString("H")'
     },
     [0] = {
+      fn = nil --[[<function 17>]],
       program = 'edTypeString("h")'
     }
   },
@@ -262,6 +263,7 @@ keymap =
       program = 'edTypeString("L")'
     },
     [0] = {
+      fn = nil --[[<function 18>]],
       program = 'edTypeString("l")'
     }
   },
@@ -273,9 +275,11 @@ keymap =
     }
   },
   [48] = { {
-      program = 'edTypeString(""")'
+      fn = nil --[[<function 19>]],
+      program = 'edTypeString("\"")'
     },
     [0] = {
+      fn = nil --[[<function 20>]],
       program = "edTypeString(\"'\")"
     }
   },
@@ -283,17 +287,14 @@ keymap =
       program = 'edTypeString("~")'
     },
     [0] = {
-      fn = nil --[[<function 17>]],
       program = 'edTypeString("`")'
     }
   },
   [51] = { {
-      fn = nil --[[<function 18>]],
       program = 'edTypeString("|")'
     },
     [0] = {
-      fn = nil --[[<function 19>]],
-      program = 'edTypeString("\\")'
+      program = 'edTypeString("\")'
     }
   },
   [52] = { {
@@ -335,6 +336,7 @@ keymap =
       program = 'edTypeString("N")'
     },
     [0] = {
+      fn = nil --[[<function 21>]],
       program = 'edTypeString("n")'
     }
   },
@@ -342,6 +344,7 @@ keymap =
       program = 'edTypeString("M")'
     },
     [0] = {
+      fn = nil --[[<function 22>]],
       program = 'edTypeString("m")'
     }
   },
@@ -349,6 +352,7 @@ keymap =
       program = 'edTypeString("<")'
     },
     [0] = {
+      fn = nil --[[<function 23>]],
       program = 'edTypeString(",")'
     }
   },
@@ -356,6 +360,7 @@ keymap =
       program = 'edTypeString(">")'
     },
     [0] = {
+      fn = nil --[[<function 24>]],
       program = 'edTypeString(".")'
     }
   },
@@ -368,7 +373,14 @@ keymap =
   },
   [65] = {
     [0] = {
+      fn = nil --[[<function 25>]],
       program = 'edTypeString(" ")'
+    }
+  },
+  [67] = {
+    [0] = {
+      fn = nil --[[<function 26>]],
+      program = "f1Pressed()"
     }
   },
   [111] = {
@@ -397,4 +409,5 @@ keymap =
     }
   }
 }
+
 

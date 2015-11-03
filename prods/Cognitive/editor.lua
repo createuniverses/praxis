@@ -3,17 +3,17 @@
 keymap = {}
 
 function getKeyHandler(k,mods)
-  local found = false
+  local handler = nil
   if keymap[k] ~= nil then
     if keymap[k][mods] ~= nil then
-      found = true
+      handler = keymap[k][mods]
     end
   end
-  if found == true then
-    if keymap[k][mods].fn == nil then
-      keymap[k][mods].fn = loadstring(keymap[k][mods].program)
+  if handler ~= nil then
+    if handler.fn == nil then
+      handler.fn = loadstring(handler.program)
     end
-    return keymap[k][mods].fn
+    return handler.fn
   else
     return nil
   end
@@ -59,6 +59,7 @@ if platform() == "linux" then
   stdkeyids.down = 116
   stdkeyids.left = 113
   stdkeyids.right = 114
+  stdkeyids.f1 = 67
 end
 
 function edTab()
@@ -83,6 +84,8 @@ setKeyHandlerProgram(stdkeyids.left,  0, [[edSetPosition(edGetLeft(edGetPosition
 setKeyHandlerProgram(stdkeyids.right, 0, [[edSetPosition(edGetRight(edGetPosition()))]])
 setKeyHandlerProgram(stdkeyids.up,    0, [[edSetPosition(edGetUp(edGetPosition()))]])
 setKeyHandlerProgram(stdkeyids.down,  0, [[edSetPosition(edGetDown(edGetPosition()))]])
+
+setKeyHandlerProgram(stdkeyids.f1,    0, [[f1Pressed()]])
 
 function edTypeString(c)
   edInsertTextAt(c, edGetPosition())
@@ -117,6 +120,9 @@ function onKeyDown(k)
           local stringrep = string.char(k2)
           if string.char(k2) == "\\" then
             stringrep = "\\\\"
+          end
+          if string.char(k2) == "\"" then
+            stringrep = "\\\""
           end
           setKeyHandlerProgram(k, mods,
             [[edTypeString("]]..stringrep .. [[")]])
