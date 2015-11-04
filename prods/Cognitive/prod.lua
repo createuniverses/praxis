@@ -187,4 +187,4 @@ newBuffer()
 setMaxFramerate(30)
 dofile("editor.lua")
 dofile("replacefn.lua")
-
+dofile("keymap.lua")

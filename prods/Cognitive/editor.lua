@@ -35,57 +35,12 @@ function setKeyHandlerProgram(k,mods,prog)
   keymap[k][mods].program = prog
 end
 
-stdkeyids = {}
-stdkeyids.backspace = 8
-stdkeyids.delete = 46
-stdkeyids.enter = 13
-stdkeyids.tab = 9
-stdkeyids.up = 38
-stdkeyids.down = 40
-stdkeyids.left = 37
-stdkeyids.right = 39
---stdkeyids.f1 = 0
---stdkeyids.a = 0
-
-if platform() == "windows" then
-end
-
-if platform() == "linux" then
-  stdkeyids.backspace = 22
-  stdkeyids.delete = 119
-  stdkeyids.enter = 36
-  stdkeyids.tab = 23
-  stdkeyids.up = 111
-  stdkeyids.down = 116
-  stdkeyids.left = 113
-  stdkeyids.right = 114
-  stdkeyids.f1 = 67
-end
-
 function edTab()
   for i = 1,2,1 do
     edInsertTextAt(" ", edGetPosition())
     edSetPosition(edGetRight(edGetPosition()))
   end
 end
-
-setKeyHandlerProgram(stdkeyids.backspace, 0, [[edBackspace()]])
-setKeyHandlerProgram(stdkeyids.delete,    0, [[edDelete()]])
-setKeyHandlerProgram(stdkeyids.tab,       0, [[edTab()]])
-
--- autoindent stuff
--- shift/ctrl enter
-setKeyHandlerProgram(stdkeyids.enter,     0, [[edInsertNewline()]])
-
--- arrow keys
--- ctrl: word or s-exp left
--- shift: selection
-setKeyHandlerProgram(stdkeyids.left,  0, [[edSetPosition(edGetLeft(edGetPosition()))]])
-setKeyHandlerProgram(stdkeyids.right, 0, [[edSetPosition(edGetRight(edGetPosition()))]])
-setKeyHandlerProgram(stdkeyids.up,    0, [[edSetPosition(edGetUp(edGetPosition()))]])
-setKeyHandlerProgram(stdkeyids.down,  0, [[edSetPosition(edGetDown(edGetPosition()))]])
-
-setKeyHandlerProgram(stdkeyids.f1,    0, [[f1Pressed()]])
 
 function edTypeString(c)
   edInsertTextAt(c, edGetPosition())

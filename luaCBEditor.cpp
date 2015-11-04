@@ -641,6 +641,54 @@ int luaCBEdUseVertexArrays(lua_State * L)
     return 0;
 }
 
+// Expose existing C++ functionality before rewriting in Lua
+
+int luaCBEdSetSelectionAnchor(lua_State * L)
+{
+    int pos = luaL_checkinteger(L, 1);
+    g_pWorld->GetEditor()->m_HighlightAnchor = pos;
+    return 0;
+}
+
+int luaCBEdShowSelection(lua_State * L)
+{
+    g_pWorld->GetEditor()->m_Selection = true;
+    return 0;
+}
+
+int luaCBEdHideSelection(lua_State * L)
+{
+    g_pWorld->GetEditor()->m_Selection = false;
+    return 0;
+}
+
+int luaCBEdGetSelectionPositions(lua_State * L)
+{
+    int begin    = g_pWorld->GetEditor()->SelectionBegin();
+    int end      = g_pWorld->GetEditor()->SelectionEnd();
+    int anchor   = g_pWorld->GetEditor()->m_HighlightAnchor;
+    lua_pushnumber(L, begin);
+    lua_pushnumber(L, end);
+    lua_pushnumber(L, anchor);
+    return 3;
+}
+
+int luaCBEdGetLuaBlock(lua_State * L)
+{
+    std::string s = g_pWorld->GetEditor()->GetLuaBlock();
+    lua_pushstring(L, s.c_str());
+    return 1;
+}
+
+int luaCBEdGetLuaBlockPosition(lua_State * L)
+{
+    int p1 = g_pWorld->GetEditor()->m_LuaBlockHighlight[0];
+    int p2 = g_pWorld->GetEditor()->m_LuaBlockHighlight[1];
+    lua_pushnumber(L, p1);
+    lua_pushnumber(L, p2);
+    return 2;
+}
+
 void luaInitCallbacksEditor()
 {
     luaCall("function edKeyDown(k) end");
@@ -749,4 +797,17 @@ void luaInitCallbacksEditor()
     lua_register(g_pLuaState, "edGetDown",             luaCBEdGetDown);
     lua_register(g_pLuaState, "edGetLeft",             luaCBEdGetLeft);
     lua_register(g_pLuaState, "edGetRight",            luaCBEdGetRight);
+
+    lua_register(g_pLuaState, "edSetSelectionAnchor",  luaCBEdSetSelectionAnchor);
+
+    lua_register(g_pLuaState, "edShowSelection",       luaCBEdShowSelection);
+    lua_register(g_pLuaState, "edHideSelection",       luaCBEdHideSelection);
+
+    lua_register(g_pLuaState, "edGetSelectionPositions", luaCBEdGetSelectionPositions);
+
+    lua_register(g_pLuaState, "edGetLuaBlock",          luaCBEdGetLuaBlock);
+    lua_register(g_pLuaState, "edGetLuaBlockPosition",  luaCBEdGetLuaBlockPosition);
+
+    // page up/down
+    // Cut Copy Paste
 }
