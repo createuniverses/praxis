@@ -662,6 +662,12 @@ int luaCBEdHideSelection(lua_State * L)
     return 0;
 }
 
+int luaCBEdIsSelectionActive(lua_State * L)
+{
+    lua_pushboolean(L, g_pWorld->GetEditor()->m_Selection);
+    return 1;
+}
+
 int luaCBEdGetSelectionPositions(lua_State * L)
 {
     int begin    = g_pWorld->GetEditor()->SelectionBegin();
@@ -802,6 +808,7 @@ void luaInitCallbacksEditor()
 
     lua_register(g_pLuaState, "edShowSelection",       luaCBEdShowSelection);
     lua_register(g_pLuaState, "edHideSelection",       luaCBEdHideSelection);
+    lua_register(g_pLuaState, "edIsSelectionActive",   luaCBEdIsSelectionActive);
 
     lua_register(g_pLuaState, "edGetSelectionPositions", luaCBEdGetSelectionPositions);
 

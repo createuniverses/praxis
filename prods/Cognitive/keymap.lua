@@ -950,12 +950,28 @@ setKeyHandlerProgram(stdkeyids.enter,     2,
     luaCall(sCode)
   ]])
   
+function edShiftUp()
+  if not edIsSelectionActive() then
+    print("setting selection anchor: " .. edGetPosition())
+    edSetSelectionAnchor(edGetPosition())
+  end
+  edShowSelection()
+  edUp()
+end
+
+function edUp()
+  edHideSelection()
+  edSetPosition(edGetUp(edGetPosition()))
+end
+
 -- arrow keys
 -- ctrl: word or s-exp left
 -- shift: selection
 setKeyHandlerProgram(stdkeyids.left,  0, [[edSetPosition(edGetLeft(edGetPosition()))]])
 setKeyHandlerProgram(stdkeyids.right, 0, [[edSetPosition(edGetRight(edGetPosition()))]])
-setKeyHandlerProgram(stdkeyids.up,    0, [[edSetPosition(edGetUp(edGetPosition()))]])
+setKeyHandlerProgram(stdkeyids.up,    0, [[edUp()]])
 setKeyHandlerProgram(stdkeyids.down,  0, [[edSetPosition(edGetDown(edGetPosition()))]])
+
+setKeyHandlerProgram(stdkeyids.up,    1, [[edShiftUp()]])
 
 --setKeyHandlerProgram(stdkeyids.f1,    0, [[f1Pressed()]])
