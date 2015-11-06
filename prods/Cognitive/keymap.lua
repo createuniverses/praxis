@@ -1,6 +1,8 @@
 
 --setClipboardText(inspect(keymap))
 
+keymap = {}
+
 if platform() == "windows" then
 keymap = 
 {
@@ -906,7 +908,15 @@ if platform() == "windows" then
   stdkeyids.down = 40
   stdkeyids.left = 37
   stdkeyids.right = 39
-  --stdkeyids.f1 = 0
+  stdkeyids["s"] = 83
+  stdkeyids["x"] = 88
+  stdkeyids["c"] = 67
+  stdkeyids["v"] = 86
+  stdkeyids.pgup = 33
+  stdkeyids.pgdn = 34
+  stdkeyids.home   = 36
+  stdkeyids.endkey = 35
+  stdkeyids.fnkey = function (n) return 111 + n end
   --stdkeyids.a = 0
 end
 
@@ -956,16 +966,20 @@ setKeyHandlerProgram(stdkeyids.enter,     2,
     luaCall(sCode)
   ]])
   
+function edSelecting()
+  if not edIsSelectionActive() then
+    edSetSelectionAnchor(edGetPosition())
+  end
+  edShowSelection()
+end
+
 function edApplyMove(fn)
   edHideSelection()
   edSetPosition(fn(edGetPosition()))
 end
 
 function edApplySelectionMove(fn)
-  if not edIsSelectionActive() then
-    edSetSelectionAnchor(edGetPosition())
-  end
-  edShowSelection()
+  edSelecting()
   edSetPosition(fn(edGetPosition()))
 end
 
@@ -1019,4 +1033,33 @@ setKeyHandlerProgram(stdkeyids["s"], 2, [[saveBuffer()]])
 -- Ctrl-tab, Ctrl-Shift-tab, next/prev buffer
 setKeyHandlerProgram(stdkeyids.tab, 2, [[nextEditor()]])
 setKeyHandlerProgram(stdkeyids.tab, 3, [[previousEditor()]])
+
+setKeyHandlerProgram(stdkeyids.home, 0, [[ edApplyMove(getEditorLineStart) ]])
+setKeyHandlerProgram(stdkeyids.home, 1, [[ edApplySelectionMove(getEditorLineStart) ]])
+setKeyHandlerProgram(stdkeyids.home, 2, [[ edHideSelection() gotoBufferStart() ]])
+setKeyHandlerProgram(stdkeyids.home, 3, [[ edSelecting() gotoBufferStart() ]])
+
+setKeyHandlerProgram(stdkeyids.endkey, 0, [[ edApplyMove(getEditorLineEnd) ]])
+setKeyHandlerProgram(stdkeyids.endkey, 1, [[ edApplySelectionMove(getEditorLineEnd) ]])
+setKeyHandlerProgram(stdkeyids.endkey, 2, [[ edHideSelection() gotoBufferEnd() ]])
+setKeyHandlerProgram(stdkeyids.endkey, 3, [[ edSelecting() gotoBufferEnd() ]])
+
+function edTypeString(c)
+  if edIsSelectionActive() then
+    edDelete()
+    edHideSelection()
+  end
+  edInsertTextAt(c, edGetPosition())
+  local l = string.len(c)
+  for i=1,l,1 do
+    edSetPosition(edGetRight(edGetPosition()))
+  end
+end
+
+
+if platform() == "windows" then
+  for i=1,12,1 do
+    setKeyHandlerProgram(stdkeyids.fnkey(i), 0, "f"..i.."Pressed()")
+  end
+end
 

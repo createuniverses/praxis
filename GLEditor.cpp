@@ -543,10 +543,13 @@ void GLEditor::Update()
     // Set the left text position according to the position of the cursor
     // within the current line
     int nOffset = CurrentColumn();
-    if (nOffset>m_VisibleColumns)
+    if (nOffset > m_LeftTextPosition+m_VisibleColumns)
         m_LeftTextPosition=nOffset-m_VisibleColumns;
-    else
-        m_LeftTextPosition=0;
+//    else
+//        m_LeftTextPosition=0;
+
+    if (nOffset < m_LeftTextPosition)
+        m_LeftTextPosition = nOffset;
 
     m_LuaBlockHighlight[0]=-1;
     m_LuaBlockHighlight[1]=-1;

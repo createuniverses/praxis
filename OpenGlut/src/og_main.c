@@ -2119,8 +2119,8 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
             ticks = -ticks;
         }
 
-        printf("mw %d,%d,%d\n", wheel_number,ticks,direction);
-        fflush(stdout);
+        //printf("mw %d,%d,%d\n", wheel_number,ticks,direction);
+        //fflush(stdout);
 
         /*
          * The mouse cursor has moved. Remember the new mouse cursor's position
@@ -2171,8 +2171,8 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
     break;
 
     case WM_VSCROLL:
-        printf("vscroll\n");
-        fflush(stdout);
+    //printf("vscroll\n");
+    //fflush(stdout);
         break;
 
     case WM_SYSKEYDOWN:
@@ -2199,8 +2199,8 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
         window->State.MouseY = mouse_pos.y;
 
         /* GregS 6-Oct-2014 */
-        printf("WM_KEYDOWN wParam = %#02x\n", wParam);
-        fflush(stdout);
+        //printf("WM_KEYDOWN wParam = %#02x\n", wParam);
+        //fflush(stdout);
 
         /* GregS 21-Oct-2015 */
         keypress = wParam;
@@ -2310,8 +2310,8 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
         window->State.MouseY = mouse_pos.y;
 
         /* GregS 6-Oct-2014 */
-        printf("WM_KEYUP wParam = %#02x\n", wParam);
-        fflush(stdout);
+        //printf("WM_KEYUP wParam = %#02x\n", wParam);
+        //fflush(stdout);
 
         /* GregS 21-Oct-2014 */
         keypress = wParam;
@@ -2399,8 +2399,8 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
             break;
 
         /* GregS 6-Oct-2014 */
-        printf("WM_CHAR wParam = %#02x\n", wParam);
-        fflush(stdout);
+        //printf("WM_CHAR wParam = %#02x\n", wParam);
+        //fflush(stdout);
 
         // TAB will only be handled in the WM_KEYDOWN section,
         // (where it wasn't previously)
@@ -2526,13 +2526,13 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
                 break;
 
             case SC_VSCROLL:
-            printf("vscroll\n");
-            fflush(stdout);
+            //printf("vscroll\n");
+            //fflush(stdout);
                 break;
             case SC_HSCROLL:
-                printf("Hscroll\n");
-                fflush(stdout);
-                    break;
+            //printf("Hscroll\n");
+            //fflush(stdout);
+                break;
             case SC_MOUSEMENU:
             case SC_KEYMENU: case SC_ARRANGE: case SC_RESTORE:
             case SC_TASKLIST: case SC_SCREENSAVE: case SC_HOTKEY:
