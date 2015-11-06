@@ -760,7 +760,7 @@ keymap =
   },
   [48] = { {
       fn = nil --[[<function 19>]],
-      program = 'edTypeString("\"")'
+      program = "edTypeString(string.char(34))" -- double quote
     },
     [0] = {
       fn = nil --[[<function 20>]],
@@ -778,7 +778,7 @@ keymap =
       program = 'edTypeString("|")'
     },
     [0] = {
-      program = 'edTypeString("\")'
+      program = "edTypeString(string.char(92))" -- slash
     }
   },
   [52] = { {
@@ -920,6 +920,12 @@ if platform() == "linux" then
   stdkeyids.left = 113
   stdkeyids.right = 114
   stdkeyids.f1 = 67
+  stdkeyids["s"] = 39
+  stdkeyids["x"] = 53
+  stdkeyids["c"] = 54
+  stdkeyids["v"] = 55
+  stdkeyids.pgup = 112
+  stdkeyids.pgdn = 117
 end
 
 setKeyHandlerProgram(stdkeyids.backspace, 0, [[edBackspace()]])
@@ -950,28 +956,67 @@ setKeyHandlerProgram(stdkeyids.enter,     2,
     luaCall(sCode)
   ]])
   
-function edShiftUp()
+function edApplyMove(fn)
+  edHideSelection()
+  edSetPosition(fn(edGetPosition()))
+end
+
+function edApplySelectionMove(fn)
   if not edIsSelectionActive() then
-    print("setting selection anchor: " .. edGetPosition())
     edSetSelectionAnchor(edGetPosition())
   end
   edShowSelection()
-  edUp()
-end
-
-function edUp()
-  edHideSelection()
-  edSetPosition(edGetUp(edGetPosition()))
+  edSetPosition(fn(edGetPosition()))
 end
 
 -- arrow keys
 -- ctrl: word or s-exp left
 -- shift: selection
-setKeyHandlerProgram(stdkeyids.left,  0, [[edSetPosition(edGetLeft(edGetPosition()))]])
-setKeyHandlerProgram(stdkeyids.right, 0, [[edSetPosition(edGetRight(edGetPosition()))]])
-setKeyHandlerProgram(stdkeyids.up,    0, [[edUp()]])
-setKeyHandlerProgram(stdkeyids.down,  0, [[edSetPosition(edGetDown(edGetPosition()))]])
+setKeyHandlerProgram(stdkeyids.left,  0, [[ edApplyMove(edGetLeft) ]])
+setKeyHandlerProgram(stdkeyids.right, 0, [[ edApplyMove(edGetRight) ]])
+setKeyHandlerProgram(stdkeyids.up,    0, [[ edApplyMove(edGetUp) ]])
+setKeyHandlerProgram(stdkeyids.down,  0, [[ edApplyMove(edGetDown) ]])
 
-setKeyHandlerProgram(stdkeyids.up,    1, [[edShiftUp()]])
+setKeyHandlerProgram(stdkeyids.left,  1, [[ edApplySelectionMove(edGetLeft) ]])
+setKeyHandlerProgram(stdkeyids.right, 1, [[ edApplySelectionMove(edGetRight) ]])
+setKeyHandlerProgram(stdkeyids.up,    1, [[ edApplySelectionMove(edGetUp) ]])
+setKeyHandlerProgram(stdkeyids.down,  1, [[ edApplySelectionMove(edGetDown) ]])
 
 --setKeyHandlerProgram(stdkeyids.f1,    0, [[f1Pressed()]])
+
+function edGetPageUp(p)
+  local p2 = p
+  for i=1,edGetVisLines(),1 do
+    p2 = edGetUp(p2)
+  end
+  return p2
+end
+
+function edGetPageDown(p)
+  local p2 = p
+  for i=1,edGetVisLines(),1 do
+    p2 = edGetDown(p2)
+  end
+  return p2
+end
+
+setKeyHandlerProgram(stdkeyids.pgup,  0, [[ edApplyMove(edGetPageUp) ]])
+setKeyHandlerProgram(stdkeyids.pgdn,  0, [[ edApplyMove(edGetPageDown) ]])
+setKeyHandlerProgram(stdkeyids.pgup,  1, [[ edApplySelectionMove(edGetPageUp) ]])
+setKeyHandlerProgram(stdkeyids.pgdn,  1, [[ edApplySelectionMove(edGetPageDown) ]])
+
+-- Ctrl x,c,v
+setKeyHandlerProgram(stdkeyids["x"], 2, [[edCopyBuffer = getSelectedText() edDelete()]])
+setKeyHandlerProgram(stdkeyids["c"], 2, [[edCopyBuffer = getSelectedText()]])
+setKeyHandlerProgram(stdkeyids["v"], 2, [[ edTypeString(edCopyBuffer) ]] )
+
+function b2s(b)
+  if b then return "true" else return "false" end
+end
+
+setKeyHandlerProgram(stdkeyids["s"], 2, [[saveBuffer()]])
+
+-- Ctrl-tab, Ctrl-Shift-tab, next/prev buffer
+setKeyHandlerProgram(stdkeyids.tab, 2, [[nextEditor()]])
+setKeyHandlerProgram(stdkeyids.tab, 3, [[previousEditor()]])
+

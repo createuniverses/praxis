@@ -58,8 +58,12 @@ function edGetKeyModifiers()
   return n
 end
 
+edEchoKeys = false
+
 function onKeyDown(k)
-  print("onKeyDown " .. k)
+  if edEchoKeys then
+    print("onKeyDown " .. k)
+  end
   local mods = edGetKeyModifiers()
   if editorVisible() then
     local action = getKeyHandler(k, mods)
@@ -67,7 +71,9 @@ function onKeyDown(k)
       onKeyDownSpecial = onKeyDownSpecial_Plain
       action()
     else
-      print("Missing key handler for " .. k .. ", mods = " .. edGetKeyModifiers())
+      if edEchoKeys then
+        print("Missing key handler for " .. k .. ", mods = " .. edGetKeyModifiers())
+      end
       replaceFunction("onKeyDownSpecial", onKeyDownSpecial_Plain,
         function (k2)
           print("  Setting key handler for " .. k .. ", mods " .. mods)
@@ -92,22 +98,29 @@ function onKeyDown(k)
 end
 
 function onKeyUp(k)
-  print("onKeyUp   " .. k)
+  if edEchoKeys then
+    print("onKeyUp   " .. k)
+  end
 end
 
 function onKeyDownSpecial_Plain(k)
-  print("  onKeyDownSpecial " .. k)
+  if edEchoKeys then
+    print("  onKeyDownSpecial " .. k)
+  end
 end
 
 onKeyDownSpecial = onKeyDownSpecial_Plain
 
 function onKeyUpSpecial(k)
-  print("  onKeyUpSpecial " .. k)
+  if edEchoKeys then
+    print("  onKeyUpSpecial " .. k)
+  end
 end
 
 --newBuffer()
-setBufferText("")
+--setBufferText("")
 clearError()
+clearTrace()
 
 print("Loaded editor.lua")
 

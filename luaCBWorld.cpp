@@ -214,6 +214,18 @@ int luaCBEditorVisible(lua_State * L)
     return 1;
 }
 
+int luaCBNextEditor(lua_State * L)
+{
+    g_pWorld->NextEditor();
+    return 0;
+}
+
+int luaCBPreviousEditor(lua_State * L)
+{
+    g_pWorld->PreviousEditor();
+    return 0;
+}
+
 int luaCBIsShiftDown(lua_State * L)
 {
     bool bShift  = (glutGetModifiers() & GLUT_ACTIVE_SHIFT);
@@ -291,6 +303,9 @@ void luaInitCallbacksWorld()
     lua_register(g_pLuaState, "showEditor",            luaCBShowEditor);
     lua_register(g_pLuaState, "hideEditor",            luaCBHideEditor);
     lua_register(g_pLuaState, "editorVisible",         luaCBEditorVisible);
+
+    lua_register(g_pLuaState, "nextEditor",            luaCBNextEditor);
+    lua_register(g_pLuaState, "previousEditor",        luaCBPreviousEditor);
 
     lua_register(g_pLuaState, "isAltDown",             luaCBIsAltDown);
     lua_register(g_pLuaState, "isShiftDown",           luaCBIsShiftDown);
