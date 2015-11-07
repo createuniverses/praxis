@@ -2,7 +2,9 @@
 
 keymap = {}
 
-function getKeyHandler(k,mods)
+keymap2 = {}
+
+function getKeyHandler(keymap,k,mods)
   local handler = nil
   if keymap[k] ~= nil then
     if keymap[k][mods] ~= nil then
@@ -19,7 +21,7 @@ function getKeyHandler(k,mods)
   end
 end
 
-function setKeyHandler(k,mods,fn)
+function setKeyHandler(keymap,k,mods,fn)
   if keymap[k] == nil then
     keymap[k] = {}
   end
@@ -29,9 +31,9 @@ function setKeyHandler(k,mods,fn)
   keymap[k][mods].fn = fn
 end
 
-function setKeyHandlerProgram(k,mods,prog)
+function setKeyHandlerProgram(keymap,k,mods,prog)
   local fn = loadstring(prog)
-  setKeyHandler(k, mods, fn)
+  setKeyHandler(keymap, k, mods, fn)
   keymap[k][mods].program = prog
 end
 
@@ -66,7 +68,7 @@ function onKeyDown(k)
   end
   local mods = edGetKeyModifiers()
   if editorVisible() then
-    local action = getKeyHandler(k, mods)
+    local action = getKeyHandler(keymap, k, mods)
     if action ~= nil then
       onKeyDownSpecial = onKeyDownSpecial_Plain
       action()
@@ -85,14 +87,15 @@ function onKeyDown(k)
           if string.char(k2) == "\"" then
             stringrep = "\\\""
           end
-          setKeyHandlerProgram(k, mods,
+          setKeyHandlerProgram(keymap, k, mods,
             [[edTypeString("]]..stringrep .. [[")]])
         end, 1)
-          --setKeyHandler(k, mods,
-          --  function ()
-          --    edTypeString(string.char(k2))
-          --  end)
-        --end, 1)
+    end
+  else
+    -- Separate key handler table.
+    local action = getKeyHandler(keymap2, k, mods)
+    if action ~= nil then
+      action()
     end
   end
 end

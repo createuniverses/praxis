@@ -936,16 +936,20 @@ if platform() == "linux" then
   stdkeyids["v"] = 55
   stdkeyids.pgup = 112
   stdkeyids.pgdn = 117
+
+  stdkeyids.home   = 110
+  stdkeyids.endkey = 115
+  stdkeyids.fnkey = function (n) return 66 + n end
 end
 
-setKeyHandlerProgram(stdkeyids.backspace, 0, [[edBackspace()]])
-setKeyHandlerProgram(stdkeyids.delete,    0, [[edDelete()]])
-setKeyHandlerProgram(stdkeyids.tab,       0, [[edTab()]])
+setKeyHandlerProgram(keymap, stdkeyids.backspace, 0, [[edBackspace()]])
+setKeyHandlerProgram(keymap, stdkeyids.delete,    0, [[edDelete()]])
+setKeyHandlerProgram(keymap, stdkeyids.tab,       0, [[edTab()]])
 
 -- autoindent stuff
 -- shift/ctrl enter
-setKeyHandlerProgram(stdkeyids.enter,     0, [[edInsertNewline()]])
-setKeyHandlerProgram(stdkeyids.enter,     1,
+setKeyHandlerProgram(keymap, stdkeyids.enter,     0, [[edInsertNewline()]])
+setKeyHandlerProgram(keymap, stdkeyids.enter,     1,
   [[
     local sCode = edGetLuaBlock()
     local p1,p2 = edGetLuaBlockPosition()
@@ -957,7 +961,7 @@ setKeyHandlerProgram(stdkeyids.enter,     1,
     edInsertNewline()
     luaCall(sCode)
   ]])
-setKeyHandlerProgram(stdkeyids.enter,     2,
+setKeyHandlerProgram(keymap, stdkeyids.enter,     2,
   [[
     local sCode = edGetLuaBlock()
     if sCode == "" then
@@ -986,17 +990,17 @@ end
 -- arrow keys
 -- ctrl: word or s-exp left
 -- shift: selection
-setKeyHandlerProgram(stdkeyids.left,  0, [[ edApplyMove(edGetLeft) ]])
-setKeyHandlerProgram(stdkeyids.right, 0, [[ edApplyMove(edGetRight) ]])
-setKeyHandlerProgram(stdkeyids.up,    0, [[ edApplyMove(edGetUp) ]])
-setKeyHandlerProgram(stdkeyids.down,  0, [[ edApplyMove(edGetDown) ]])
+setKeyHandlerProgram(keymap, stdkeyids.left,  0, [[ edApplyMove(edGetLeft) ]])
+setKeyHandlerProgram(keymap, stdkeyids.right, 0, [[ edApplyMove(edGetRight) ]])
+setKeyHandlerProgram(keymap, stdkeyids.up,    0, [[ edApplyMove(edGetUp) ]])
+setKeyHandlerProgram(keymap, stdkeyids.down,  0, [[ edApplyMove(edGetDown) ]])
 
-setKeyHandlerProgram(stdkeyids.left,  1, [[ edApplySelectionMove(edGetLeft) ]])
-setKeyHandlerProgram(stdkeyids.right, 1, [[ edApplySelectionMove(edGetRight) ]])
-setKeyHandlerProgram(stdkeyids.up,    1, [[ edApplySelectionMove(edGetUp) ]])
-setKeyHandlerProgram(stdkeyids.down,  1, [[ edApplySelectionMove(edGetDown) ]])
+setKeyHandlerProgram(keymap, stdkeyids.left,  1, [[ edApplySelectionMove(edGetLeft) ]])
+setKeyHandlerProgram(keymap, stdkeyids.right, 1, [[ edApplySelectionMove(edGetRight) ]])
+setKeyHandlerProgram(keymap, stdkeyids.up,    1, [[ edApplySelectionMove(edGetUp) ]])
+setKeyHandlerProgram(keymap, stdkeyids.down,  1, [[ edApplySelectionMove(edGetDown) ]])
 
---setKeyHandlerProgram(stdkeyids.f1,    0, [[f1Pressed()]])
+--setKeyHandlerProgram(keymap, stdkeyids.f1,    0, [[f1Pressed()]])
 
 function edGetPageUp(p)
   local p2 = p
@@ -1014,35 +1018,35 @@ function edGetPageDown(p)
   return p2
 end
 
-setKeyHandlerProgram(stdkeyids.pgup,  0, [[ edApplyMove(edGetPageUp) ]])
-setKeyHandlerProgram(stdkeyids.pgdn,  0, [[ edApplyMove(edGetPageDown) ]])
-setKeyHandlerProgram(stdkeyids.pgup,  1, [[ edApplySelectionMove(edGetPageUp) ]])
-setKeyHandlerProgram(stdkeyids.pgdn,  1, [[ edApplySelectionMove(edGetPageDown) ]])
+setKeyHandlerProgram(keymap, stdkeyids.pgup,  0, [[ edApplyMove(edGetPageUp) ]])
+setKeyHandlerProgram(keymap, stdkeyids.pgdn,  0, [[ edApplyMove(edGetPageDown) ]])
+setKeyHandlerProgram(keymap, stdkeyids.pgup,  1, [[ edApplySelectionMove(edGetPageUp) ]])
+setKeyHandlerProgram(keymap, stdkeyids.pgdn,  1, [[ edApplySelectionMove(edGetPageDown) ]])
 
 -- Ctrl x,c,v
-setKeyHandlerProgram(stdkeyids["x"], 2, [[edCopyBuffer = getSelectedText() edDelete()]])
-setKeyHandlerProgram(stdkeyids["c"], 2, [[edCopyBuffer = getSelectedText()]])
-setKeyHandlerProgram(stdkeyids["v"], 2, [[ edTypeString(edCopyBuffer) ]] )
+setKeyHandlerProgram(keymap, stdkeyids["x"], 2, [[edCopyBuffer = getSelectedText() edDelete()]])
+setKeyHandlerProgram(keymap, stdkeyids["c"], 2, [[edCopyBuffer = getSelectedText()]])
+setKeyHandlerProgram(keymap, stdkeyids["v"], 2, [[ edTypeString(edCopyBuffer) ]] )
 
 function b2s(b)
   if b then return "true" else return "false" end
 end
 
-setKeyHandlerProgram(stdkeyids["s"], 2, [[saveBuffer()]])
+setKeyHandlerProgram(keymap, stdkeyids["s"], 2, [[saveBuffer()]])
 
 -- Ctrl-tab, Ctrl-Shift-tab, next/prev buffer
-setKeyHandlerProgram(stdkeyids.tab, 2, [[nextEditor()]])
-setKeyHandlerProgram(stdkeyids.tab, 3, [[previousEditor()]])
+setKeyHandlerProgram(keymap, stdkeyids.tab, 2, [[nextEditor()]])
+setKeyHandlerProgram(keymap, stdkeyids.tab, 3, [[previousEditor()]])
 
-setKeyHandlerProgram(stdkeyids.home, 0, [[ edApplyMove(getEditorLineStart) ]])
-setKeyHandlerProgram(stdkeyids.home, 1, [[ edApplySelectionMove(getEditorLineStart) ]])
-setKeyHandlerProgram(stdkeyids.home, 2, [[ edHideSelection() gotoBufferStart() ]])
-setKeyHandlerProgram(stdkeyids.home, 3, [[ edSelecting() gotoBufferStart() ]])
+setKeyHandlerProgram(keymap, stdkeyids.home, 0, [[ edApplyMove(getEditorLineStart) ]])
+setKeyHandlerProgram(keymap, stdkeyids.home, 1, [[ edApplySelectionMove(getEditorLineStart) ]])
+setKeyHandlerProgram(keymap, stdkeyids.home, 2, [[ edHideSelection() gotoBufferStart() ]])
+setKeyHandlerProgram(keymap, stdkeyids.home, 3, [[ edSelecting() gotoBufferStart() ]])
 
-setKeyHandlerProgram(stdkeyids.endkey, 0, [[ edApplyMove(getEditorLineEnd) ]])
-setKeyHandlerProgram(stdkeyids.endkey, 1, [[ edApplySelectionMove(getEditorLineEnd) ]])
-setKeyHandlerProgram(stdkeyids.endkey, 2, [[ edHideSelection() gotoBufferEnd() ]])
-setKeyHandlerProgram(stdkeyids.endkey, 3, [[ edSelecting() gotoBufferEnd() ]])
+setKeyHandlerProgram(keymap, stdkeyids.endkey, 0, [[ edApplyMove(getEditorLineEnd) ]])
+setKeyHandlerProgram(keymap, stdkeyids.endkey, 1, [[ edApplySelectionMove(getEditorLineEnd) ]])
+setKeyHandlerProgram(keymap, stdkeyids.endkey, 2, [[ edHideSelection() gotoBufferEnd() ]])
+setKeyHandlerProgram(keymap, stdkeyids.endkey, 3, [[ edSelecting() gotoBufferEnd() ]])
 
 function edTypeString(c)
   if edIsSelectionActive() then
@@ -1056,10 +1060,19 @@ function edTypeString(c)
   end
 end
 
+for i=1,12,1 do
+  setKeyHandlerProgram(keymap,  stdkeyids.fnkey(i), 0, "f"..i.."Pressed()")
+  setKeyHandlerProgram(keymap2, stdkeyids.fnkey(i), 0, "f"..i.."Pressed()")
+end
 
-if platform() == "windows" then
-  for i=1,12,1 do
-    setKeyHandlerProgram(stdkeyids.fnkey(i), 0, "f"..i.."Pressed()")
-  end
+if platform() == "linux" then
+  stdkeyids.f11 = 95
+  stdkeyids.f12 = 96
+
+  setKeyHandlerProgram(keymap,  stdkeyids.f11, 0, "f11Pressed()")
+  setKeyHandlerProgram(keymap,  stdkeyids.f12, 0, "f12Pressed()")
+
+  setKeyHandlerProgram(keymap2, stdkeyids.f11, 0, "f11Pressed()")
+  setKeyHandlerProgram(keymap2, stdkeyids.f12, 0, "f12Pressed()")
 end
 

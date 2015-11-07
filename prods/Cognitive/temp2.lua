@@ -11,12 +11,25 @@ local test = {}
 local get = function () return test[1] or test[1][1] end
 
 dofile("replacefn.lua")
+
+clearError()
 dofile("editor.lua")
+dofile("keymap.lua")
 
 
 setClipboardText(getErrorText())
+editor.lua:25: attempt to index local 'keymap' (a number value)
+stack traceback:
+	[string "function onerror(s) endGL() glResetStencil(..."]:1: in function <[string "function onerror(s) endGL() glResetStencil(..."]:1>
+	editor.lua:25: in function 'setKeyHandler'
+	editor.lua:36: in function 'setKeyHandlerProgram'
+	keymap.lua:945: in main chunk
+	[C]: in function 'dofile'
+	[string "clearError()..."]:3: in main chunk
 
 dofile("editor.lua")
+dofile("keymap.lua")
+
 dofile("replacefn.lua")
 clearTrace()
 clearError()
