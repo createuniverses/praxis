@@ -16,6 +16,10 @@ dofile("queue.lua")
 dofile("widgets.lua")
 dofile("slider.lua")
 
+dofile("replacefn.lua")
+dofile("editor.lua")
+dofile("keymap.lua")
+
 function update()
 end
 

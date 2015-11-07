@@ -18,6 +18,10 @@ dofile("slider.lua")
 dofile("drawto.lua")
 dofile("intersection.lua")
 
+dofile("replacefn.lua")
+dofile("editor.lua")
+dofile("keymap.lua")
+
 dofile("timeline.lua")
 
 dofile("track.lua")

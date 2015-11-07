@@ -5,6 +5,10 @@ dofile("heightmap.lua")
 dofile("brat.lua")
 dofile("mp3.lua")
 
+dofile("replacefn.lua")
+dofile("editor.lua")
+dofile("keymap.lua")
+
 dofile("reflect.lua")
 inspect = require 'inspect'
 

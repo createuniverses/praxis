@@ -1,5 +1,9 @@
 -- Name: prod.lua
 
+dofile("replacefn.lua")
+dofile("editor.lua")
+dofile("keymap.lua")
+
 makeVoxelBlock()
 
 function render()
