@@ -215,6 +215,15 @@ int luaCBTransformSide(lua_State * L)
     return 3;
 }
 
+int luaCBTransformNormalise(lua_State * L)
+{
+    int n = lua_gettop(L);
+    if(n!=1) luaL_error(L, "1 argument (the transform) expected.");
+    mlTransform * t = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
+    t->Normalise();
+    return 0;
+}
+
 int luaCBTransformLookAt(lua_State * L)
 {
     int n = lua_gettop(L);
@@ -353,6 +362,7 @@ void luaInitCallbacksTransformLib()
         {"localToGlobal",     luaCBTransformLocalToGlobal},
         {"globalToLocal",     luaCBTransformGlobalToLocal},
         {"copy",              luaCBTransformCopyFrom},
+        {"normalise",         luaCBTransformNormalise},
         {NULL, NULL}
     };
 
