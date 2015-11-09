@@ -14,17 +14,28 @@ controls =
 }
 end
 
-stdkeyids["w"] = 87
-stdkeyids["a"] = 65
-stdkeyids["s"] = 83
-stdkeyids["d"] = 68
-stdkeyids["e"] = 69
-stdkeyids["q"] = 81
+if platform() == "windows" then
+  stdkeyids["w"] = 87
+  stdkeyids["a"] = 65
+  stdkeyids["s"] = 83
+  stdkeyids["d"] = 68
+  stdkeyids["e"] = 69
+  stdkeyids["q"] = 81
+  
+  stdkeyids["r"] = 82
+  stdkeyids["f"] = 70
+end
 
-stdkeyids["r"] = 82
-stdkeyids["f"] = 70
-
---print(string.byte('F'))
+if platform() == "linux" then
+  stdkeyids["a"] = 38
+  stdkeyids["s"] = 39
+  stdkeyids["d"] = 40
+  stdkeyids["f"] = 41
+  stdkeyids["q"] = 24
+  stdkeyids["w"] = 25
+  stdkeyids["e"] = 26
+  stdkeyids["r"] = 27
+end
 
 
 do
@@ -193,6 +204,17 @@ do
   glEnd()
   renderModelIdx = renderModelIdx + 1
   end
+end
+
+do
+  local center = vec3d(0,100,0)
+  local fanAround = function (c, d, r)
+    local points = {}
+    for a = 0,360,10 do
+      --table.insert(points, vec3d(math.sin(a) * r, c.y - d, math.cos(a))
+    end
+  end
+  
 end
 
 function projectPoint(p,t)
@@ -379,5 +401,6 @@ do
   
   end
 end
+
 
 
