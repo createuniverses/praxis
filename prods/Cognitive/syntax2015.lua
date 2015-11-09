@@ -82,7 +82,7 @@ do
     forward = vec3d(transform.forward(o.lspace))
     up = vec3d(transform.up(o.lspace))
 
-    if true then
+    if false then
       --transform.copy(transform.cameraBase(), o.lspace)
       transform.copy(transform.camera(), o.lspace)
 
@@ -109,7 +109,214 @@ clearTrace()
 --print2(getFunction(Widgets[2].render))
 
 do
+  planemodel = {}
+  function deg2rad(a)
+    return math.pi * (a/180)
+  end
+  function rad2deg(a)
+    return 180 * (a/math.pi)
+  end
+  local points = {}
+  for a = -90,90,10 do
+    local p = vec3d(math.sin(deg2rad(a)), math.cos(deg2rad(a)), 0)
+    p = p * 10
+    table.insert(points, p)
+  end
+  
+  local displacement = vec3d(0,0,5)
+  local scale = vec3d((math.random(60) + 70) * 0.01, (math.random(60) + 70) * 0.01, 1)
+  
+  local points2 = {}
+  
+  for i = 1,#points,1 do
+    local p1 = points[i]
+    local p2 = p1 + displacement
+    p2 = p2 * scale
+    table.insert(points2, p2)
+  end
+  
+  for i = 1,#points - 1,1 do
+    local p1 = points[i]
+    --local p2 = p1 + displacement
+    local p2 = points2[i]
+    local p3 = points[i+1]
+    --local p4 = p3 + displacement
+    local p4 = points2[i+1]
+    --table.insert(points2, p2)
+    table.insert(planemodel, {p1, p2, p3, p4})
+  end
+  
+  --print("wotwot")
+  
+  for i=1,10,1 do
+    points = points2
+    points2 = {}
+    
+    local scale = vec3d((math.random(60) + 70) * 0.01, (math.random(60) + 70) * 0.01, 1)
+    for i = 1,#points,1 do
+      local p1 = points[i]
+      local p2 = p1 + displacement
+      --p2 = p2 * vec3d(0.9, 1.3, 1)
+      p2 = p2 * scale
+      table.insert(points2, p2)
+    end
+    
+    for i = 1,#points - 1,1 do
+      local p1 = points[i]
+      --local p2 = p1 + displacement
+      local p2 = points2[i]
+      local p3 = points[i+1]
+      --local p4 = p3 + displacement
+      local p4 = points2[i+1]
+      --table.insert(points2, p2)
+      table.insert(planemodel, {p1, p2, p3, p4})
+    end
+  end
+  
+  function renderModel(m)
+  glBeginQuads()
+    for i=1,#m,1 do
+      colorGL(0,255,0,255)
+      vectorGL(m[i][1].x, m[i][1].y, m[i][1].z)
+      colorGL(200,0,0,255)
+      vectorGL(m[i][2].x, m[i][2].y, m[i][2].z)
+      colorGL(100,50,250,255)
+      vectorGL(m[i][4].x, m[i][4].y, m[i][4].z)
+      colorGL(0,100,100,255)
+      vectorGL(m[i][3].x, m[i][3].y, m[i][3].z)
+    end
+  glEnd()
+  end
+end
+
+function projectPoint(p,t)
+  local pp = nil
+  local inside = false
+  return pp,inside
+end
+
+function renderTextUsingStrokeChar(s)
+  -- using StrokeChar
+end
+
+function projectPointToLine(p,la,lb)
+  local f = lb - la
+  local fn = Vector3D.normalize(f);
+  local dp = Vector3D.dot(fn, p-la)
+  return la + (fn * dp)
+end
+
+function gentesttri()
+  testtriangle = 
+  {
+    vec3d(0,0,0),
+    vec3d(math.random(60) - 30,0,math.random(60) - 30),
+    vec3d(math.random(60) - 30,0,math.random(60) - 30)
+  }
+end
+
+gentesttri()
+
+function renderInsideOutside()
+  local t = 
+  {
+    cvec3d(testtriangle[1]),
+    cvec3d(testtriangle[2]),
+    cvec3d(testtriangle[3])
+  }
+  
+  t[1] = t[1] + vec3d(100,0,100)
+  t[2] = t[2] + vec3d(100,0,100)
+  t[3] = t[3] + vec3d(100,0,100)
+  
+  local t2 = 
+  {
+    projectPointToLine(t[1], t[2], t[3]),
+    projectPointToLine(t[2], t[1], t[3]),
+    projectPointToLine(t[3], t[1], t[2])
+  }
+  
+  local p = vec3d(getMouseCursorPos())
+  
+  d1 = Vector3D.dot(p - t2[1],t[1] - t2[1])
+  d2 = Vector3D.dot(p - t2[2],t[2] - t2[2])
+  d3 = Vector3D.dot(p - t2[3],t[3] - t2[3])
+  
+  local result = true
+  
+  if d1 < 0 then result = false end
+  if d2 < 0 then result = false end
+  if d3 < 0 then result = false end
+  
+  clearTrace()
+  print(d1)
+  print(d2)
+  print(d3)
+  
+  t2[1] = t2[1] + vec3d(0,2,0)
+  t2[2] = t2[2] + vec3d(0,2,0)
+  t2[3] = t2[3] + vec3d(0,2,0)
+  
+  print("" .. t2[1].x ..",".. t2[1].y ..",".. t2[1].z)
+  print("" .. t2[2].x ..",".. t2[2].y ..",".. t2[2].z)
+  print("" .. t2[3].x ..",".. t2[3].y ..",".. t2[3].z)
+  
+  glBeginTriangles()
+    if result then
+      colorGL(0,255,0,255)
+    else
+      colorGL(255,0,0,255)
+    end
+    vectorGL(t[1].x, t[1].y, t[1].z)
+    vectorGL(t[2].x, t[2].y, t[2].z)
+    vectorGL(t[3].x, t[3].y, t[3].z)
+    
+    colorGL(255,0,255,255)
+    vectorGL(t2[1].x, t2[1].y, t2[1].z)
+    vectorGL(t2[2].x, t2[2].y, t2[2].z)
+    vectorGL(t2[3].x, t2[3].y, t2[3].z)
+  glEnd()
+end
+
+-- editor remembers "preferred" column, tries to go to it
+-- up and down use preferred column.
+
+--[[
+utIntersectionResult utIntersectionPosition(const mlVector3D & rayPoint, const mlVector3D & rayVector, const mlTriangle & plane)
+{
+	mlVector3D planeNormal = plane.Normal().Normalised();
+	
+	mlFloat rayLengthTowardPlane = rayVector * planeNormal;
+
+	//rayLengthTowardPlane = mlFabs(rayLengthTowardPlane);
+	
+	if(rayLengthTowardPlane == 0.0f)
+	{
+		return utIntersectionResult();
+	}
+	
+	mlVector3D planePointToRay = plane.a - rayPoint;
+	
+	mlFloat distanceToPlane = planePointToRay * planeNormal;
+	
+	//distanceToPlane = mlFabs(distanceToPlane);
+
+	mlFloat lineLengthener = distanceToPlane / rayLengthTowardPlane;
+	
+	return utIntersectionResult(lineLengthener, rayPoint + (rayVector * lineLengthener));
+}
+]]
+
+function rayModelIntersection(m,r)
+  -- iterate all quads
+  -- project to quad
+  -- point in quad
+end
+
+do
   Widgets[2].render = function (o)
+  
+  renderInsideOutside()
   
   -- Grid
   glBeginLines()
@@ -128,8 +335,10 @@ do
   glBeginQuads()
     colorGL(255,0,255,255)
     vectorGL(0, 0, 0)
+    colorGL(255,0,0,255)
     vectorGL(5, 0, 0)
     vectorGL(5, 0, 5)
+    colorGL(0,0,255,255)
     vectorGL(0, 0, 5)
   glEnd()
   
@@ -151,10 +360,14 @@ do
     colorGL(255,0,0,255)
     vectorGL(0,       -20, 0)
     vectorGL(o.width, -20, 0)
+    colorGL(0,0,255,255)
     vectorGL(o.width, -20, o.depth)
     vectorGL(0,       -20, o.depth)
   glEnd()
   
   glRemoveStencil()
+  
+  renderModel(planemodel)
+  
   end
 end

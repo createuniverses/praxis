@@ -54,7 +54,11 @@ function Vector3D.sub(a,b)
 end
 
 function Vector3D.scale(v,s)
-  return Vector3D.new(v.x * s, v.y * s, v.z * s)
+  if getmetatable(s) == Vector3D_meta then
+    return Vector3D.new(v.x * s.x, v.y * s.y, v.z * s.z)
+  else
+    return Vector3D.new(v.x * s, v.y * s, v.z * s)
+  end
 end
 
 function Vector3D.ortho2D(v)
