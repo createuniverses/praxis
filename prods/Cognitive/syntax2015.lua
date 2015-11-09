@@ -172,10 +172,14 @@ do
       table.insert(planemodel, {p1, p2, p3, p4})
     end
   end
+
+  renderModelIdx = 1
   
   function renderModel(m)
   glBeginQuads()
-    for i=1,#m,1 do
+    for j=1,180,1 do
+      local i = ((renderModelIdx + j) % #m) + 1
+      if math.random(100) < 120 then
       colorGL(0,255,0,255)
       vectorGL(m[i][1].x, m[i][1].y, m[i][1].z)
       colorGL(200,0,0,255)
@@ -184,8 +188,10 @@ do
       vectorGL(m[i][4].x, m[i][4].y, m[i][4].z)
       colorGL(0,100,100,255)
       vectorGL(m[i][3].x, m[i][3].y, m[i][3].z)
+      end
     end
   glEnd()
+  renderModelIdx = renderModelIdx + 1
   end
 end
 
@@ -217,7 +223,7 @@ end
 
 gentesttri()
 
-function renderInsideOutside()
+function renderInsideOutside(o)
   local t = 
   {
     cvec3d(testtriangle[1]),
@@ -237,6 +243,8 @@ function renderInsideOutside()
   }
   
   local p = vec3d(getMouseCursorPos())
+  
+  p = vec3d(transform.globalToLocal(o.lspace, p.x, p.y, p.z))
   
   d1 = Vector3D.dot(p - t2[1],t[1] - t2[1])
   d2 = Vector3D.dot(p - t2[2],t[2] - t2[2])
@@ -284,26 +292,26 @@ end
 --[[
 utIntersectionResult utIntersectionPosition(const mlVector3D & rayPoint, const mlVector3D & rayVector, const mlTriangle & plane)
 {
-	mlVector3D planeNormal = plane.Normal().Normalised();
-	
-	mlFloat rayLengthTowardPlane = rayVector * planeNormal;
+  mlVector3D planeNormal = plane.Normal().Normalised();
+  
+  mlFloat rayLengthTowardPlane = rayVector * planeNormal;
 
-	//rayLengthTowardPlane = mlFabs(rayLengthTowardPlane);
-	
-	if(rayLengthTowardPlane == 0.0f)
-	{
-		return utIntersectionResult();
-	}
-	
-	mlVector3D planePointToRay = plane.a - rayPoint;
-	
-	mlFloat distanceToPlane = planePointToRay * planeNormal;
-	
-	//distanceToPlane = mlFabs(distanceToPlane);
+  //rayLengthTowardPlane = mlFabs(rayLengthTowardPlane);
+  
+  if(rayLengthTowardPlane == 0.0f)
+  {
+    return utIntersectionResult();
+  }
+  
+  mlVector3D planePointToRay = plane.a - rayPoint;
+  
+  mlFloat distanceToPlane = planePointToRay * planeNormal;
+  
+  //distanceToPlane = mlFabs(distanceToPlane);
 
-	mlFloat lineLengthener = distanceToPlane / rayLengthTowardPlane;
-	
-	return utIntersectionResult(lineLengthener, rayPoint + (rayVector * lineLengthener));
+  mlFloat lineLengthener = distanceToPlane / rayLengthTowardPlane;
+  
+  return utIntersectionResult(lineLengthener, rayPoint + (rayVector * lineLengthener));
 }
 ]]
 
@@ -316,7 +324,7 @@ end
 do
   Widgets[2].render = function (o)
   
-  renderInsideOutside()
+  renderInsideOutside(o)
   
   -- Grid
   glBeginLines()
@@ -371,3 +379,5 @@ do
   
   end
 end
+
+
