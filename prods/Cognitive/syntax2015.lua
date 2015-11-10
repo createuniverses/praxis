@@ -110,8 +110,8 @@ do
 end
 
 transform.copy(Widgets[2].lspace, transform.identity())
-transform.copy(transform.cameraBase(), transform.identity())
-transform.copy(transform.camera(), transform.identity())
+--transform.copy(transform.cameraBase(), transform.identity())
+--transform.copy(transform.camera(), transform.identity())
 
 continue()
 clearError()
@@ -191,30 +191,91 @@ do
     for j=1,180,1 do
       local i = ((renderModelIdx + j) % #m) + 1
       if math.random(100) < 120 then
-      colorGL(0,255,0,255)
+      colorGL(50,20,205,255)
       vectorGL(m[i][1].x, m[i][1].y, m[i][1].z)
-      colorGL(200,0,0,255)
+      colorGL(100,50,200,255)
       vectorGL(m[i][2].x, m[i][2].y, m[i][2].z)
-      colorGL(100,50,250,255)
+      colorGL(100,50,200,255)
       vectorGL(m[i][4].x, m[i][4].y, m[i][4].z)
-      colorGL(0,100,100,255)
+      colorGL(40,30,220,255)
       vectorGL(m[i][3].x, m[i][3].y, m[i][3].z)
       end
     end
   glEnd()
   renderModelIdx = renderModelIdx + 1
   end
+  
+  function renderModel(m)
+    for i=1,#m,1 do
+      if m[i].t == nil then
+        m[i].t = transform.new()
+        transform.setTranslation(m[i].t, m[i][1].x, m[i][1].y, m[i][1].z)
+        local p2 = m[i][2] - m[i][1]
+        transform.lookAt(m[i].t, p2.x, p2.y, p2.z)
+        transform.rotate(m[i].t, 0, math.pi * 0.5)
+        
+        local p3 = m[i][3] - m[i][1]
+        local p4 = m[i][4] - m[i][1]
+        
+        m[i][1] = vec3d(0,0,0)
+        m[i][2] = p2
+        m[i][3] = p3
+        m[i][4] = p4
+      end
+      
+      glPushMatrix()
+      glApplyTransform(m[i].t)
+      
+      glBeginQuads()
+      colorGL(50,20,205,255)
+      vectorGL(m[i][1].x, m[i][1].y, m[i][1].z)
+      colorGL(100,50,200,255)
+      vectorGL(m[i][2].x, m[i][2].y, m[i][2].z)
+      colorGL(100,50,200,255)
+      vectorGL(m[i][4].x, m[i][4].y, m[i][4].z)
+      colorGL(40,30,220,255)
+      vectorGL(m[i][3].x, m[i][3].y, m[i][3].z)
+      glEnd()
+      
+      glPopMatrix()
+    end
+  end
 end
 
 do
-  local center = vec3d(0,100,0)
-  local fanAround = function (c, d, r)
+  fanAroundPoint = function (c, d, r, m)
+    local model = {}
     local points = {}
+    local c2 = c - vec3d(0,d,0)
     for a = 0,360,10 do
-      --table.insert(points, vec3d(math.sin(a) * r, c.y - d, math.cos(a))
+      local a = deg2rad(a)
+      local p = c2 + (vec3d(math.sin(a), 0, math.cos(a)) * r)
+      table.insert(points, p)
     end
+    for i=1,#points-1,1 do
+      table.insert(m, { c, points[i], points[i+1] })
+    end
+    return points
   end
   
+  function extrude(pts, d, r, m)
+  end
+  
+  model2 = {}
+  local mpts = fanAroundPoint(vec3d(0,100,0), 20, 10, model2)
+  
+  function renderTriModel(m)
+    glBeginTriangles()
+      for i=1,#m,1 do
+        colorGL(250,20,205,255)
+        vectorGL(m[i][1].x, m[i][1].y, m[i][1].z)
+        colorGL(10,50,200,255)
+        vectorGL(m[i][2].x, m[i][2].y, m[i][2].z)
+        colorGL(100,50,200,255)
+        vectorGL(m[i][3].x, m[i][3].y, m[i][3].z)
+      end
+    glEnd()
+  end
 end
 
 function projectPoint(p,t)
@@ -347,6 +408,8 @@ do
   Widgets[2].render = function (o)
   
   renderInsideOutside(o)
+  
+  renderTriModel(model2)
   
   -- Grid
   glBeginLines()
