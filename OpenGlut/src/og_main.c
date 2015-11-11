@@ -1921,8 +1921,10 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
         window->State.MouseX = 320-HIWORD( lParam );
         window->State.MouseY = LOWORD( lParam );
 #else
-        window->State.MouseX = LOWORD( lParam );
-        window->State.MouseY = HIWORD( lParam );
+        // recasting unsigned short to signed short corrects discontinuity
+        // when mouse moves past left or top border
+        window->State.MouseX = (signed short)(LOWORD( lParam ));
+        window->State.MouseY = (signed short)(HIWORD( lParam ));
 #endif
 
         if( window->ActiveMenu )

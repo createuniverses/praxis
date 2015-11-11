@@ -227,7 +227,7 @@ int luaCBTransformNormalise(lua_State * L)
 int luaCBTransformLookAt(lua_State * L)
 {
     int n = lua_gettop(L);
-    if(n!=4) luaL_error(L, "4 arguments expected.");
+    if(n!=4 && n!=7) luaL_error(L, "4 or 7 arguments expected.");
 
     mlTransform * t = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
 
@@ -238,9 +238,17 @@ int luaCBTransformLookAt(lua_State * L)
 
     vForward.Normalise();
 
-    mlQuaternion rotLookAt = mlQuaternionFromDirection(vForward, mlVector3D(0.0f, 1.0f, 0.0f));
-
-    t->SetRotation(rotLookAt);
+    if(n>4)
+    {
+        mlVector3D vUp(luaL_checknumber(L, 5), luaL_checknumber(L, 6), luaL_checknumber(L, 7));
+        mlQuaternion rotLookAt = mlQuaternionFromDirection(vForward, vUp);
+        t->SetRotation(rotLookAt);
+    }
+    else
+    {
+        mlQuaternion rotLookAt = mlQuaternionFromDirection(vForward, mlVector3D(0.0f, 1.0f, 0.0f));
+        t->SetRotation(rotLookAt);
+    }
 
     return 0;
 }

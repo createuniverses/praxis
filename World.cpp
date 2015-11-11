@@ -443,6 +443,13 @@ void World::UpdateMousePos(int nX, int nY)
 
 void World::OnMouseMove(int nX, int nY)
 {
+    // Although this works, the recast in ogWindowProc is a better solution.
+//    if(nX > 32768) nX -= 65536;
+//    if(nY > 32768) nY -= 65536;
+
+//    printf("OnMouseMove: %d, %d\n", nX, nY);
+//    fflush(stdout);
+
     UpdateMousePos(nX, nY);
 
     // lets try this - nope

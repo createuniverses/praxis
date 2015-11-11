@@ -134,8 +134,9 @@ do
     table.insert(points, p)
   end
   
-  local displacement = vec3d(0,0,5)
-  local scale = vec3d((math.random(60) + 70) * 0.01, (math.random(60) + 70) * 0.01, 1)
+  local displacement = vec3d(0,0,1)
+  --local scale = vec3d((math.random(60) + 70) * 0.01, (math.random(60) + 70) * 0.01, 1)
+  local scale = vec3d(0.99, 1.01, 1)
   
   local points2 = {}
   
@@ -159,11 +160,14 @@ do
   
   --print("wotwot")
   
-  for i=1,10,1 do
+  for i=1,72,1 do
+    --local r = 5
+    --displacement = vec3d(r*math.sin(deg2rad(i*10)), 0, r*math.cos(deg2rad(i*10)))
     points = points2
     points2 = {}
     
-    local scale = vec3d((math.random(60) + 70) * 0.01, (math.random(60) + 70) * 0.01, 1)
+    --local scale = vec3d((math.random(60) + 70) * 0.01, (math.random(60) + 70) * 0.01, 1)
+    --local scale = vec3d(0.99, 1.01, 1)
     for i = 1,#points,1 do
       local p1 = points[i]
       local p2 = p1 + displacement
@@ -205,29 +209,48 @@ do
   renderModelIdx = renderModelIdx + 1
   end
   
+  function quadToTransform(q)
+    local t = transform.new()
+    transform.setTranslation(t, q[1].x, q[1].y, q[1].z)
+    
+    local p1 = vec3d(0,0,0)
+    local p2 = q[2] - q[1]
+    local p3 = q[3] - q[1]
+    local p4 = q[4] - q[1]
+    
+    if false then
+      q[1] = p1
+      q[2] = p2
+      q[3] = p3
+      q[4] = p4
+    else
+      local d2 = Vector3D.magnitude(p2)
+      local d3 = Vector3D.magnitude(p3)
+      local d4 = Vector3D.magnitude(p4)
+      
+      local up = Vector3D.cross(p2, p3)
+      transform.lookAt(t, q[2].x, q[2].y, q[2].z, up.x, up.y, up.z)
+      
+      q[1] = vec3d(0,0,0)
+      q[2] = vec3d(0,0,d2)
+      q[3] = vec3d(d3,0,0)
+      q[4] = vec3d(d3,0,d2)
+    end
+    
+    return t
+  end
+  
   function renderModel(m)
     for i=1,#m,1 do
       if m[i].t == nil then
-        m[i].t = transform.new()
-        transform.setTranslation(m[i].t, m[i][1].x, m[i][1].y, m[i][1].z)
-        local p2 = m[i][2] - m[i][1]
-        transform.lookAt(m[i].t, p2.x, p2.y, p2.z)
-        transform.rotate(m[i].t, 0, math.pi * 0.5)
-        
-        local p3 = m[i][3] - m[i][1]
-        local p4 = m[i][4] - m[i][1]
-        
-        m[i][1] = vec3d(0,0,0)
-        m[i][2] = p2
-        m[i][3] = p3
-        m[i][4] = p4
+        m[i].t = quadToTransform(m[i])
       end
       
       glPushMatrix()
       glApplyTransform(m[i].t)
       
       glBeginQuads()
-      colorGL(50,20,205,255)
+      colorGL(250,20,205,255)
       vectorGL(m[i][1].x, m[i][1].y, m[i][1].z)
       colorGL(100,50,200,255)
       vectorGL(m[i][2].x, m[i][2].y, m[i][2].z)
@@ -238,6 +261,10 @@ do
       glEnd()
       
       glPopMatrix()
+      
+      transform.rotate(m[i].t, 0, deg2rad(2 + i*0.01))
+      transform.normalise(m[i].t)
+      --transform.rotate(m[i].t, deg2rad(2),0)
     end
   end
 end
