@@ -466,7 +466,26 @@ void World::OnMouseMove(int nX, int nY)
     {
         if(m_bRightMouseDown)
         {
-            PanCamera(m_vMouse2DPositionDelta.x, m_vMouse2DPositionDelta.y);
+            if(glutGetModifiers() & GLUT_ACTIVE_SHIFT)
+            {
+                float fStepSize = m_vMouse2DPositionDelta.y * 0.2;
+
+                mlVector3D vCamera = GetCameraTransform()->GetTranslation();
+                float fDistance = (m_vMousePickPosition - vCamera).Magnitude();
+                fStepSize *= fDistance * 0.05f;
+
+                fStepSize = mlClamp(fStepSize, -20.0f, 20.0f);
+
+                mlVector3D vForward = vCamera - m_vMousePickPosition;
+                vForward.Normalise();
+                vForward *= fStepSize;
+
+                m_trnCamera.ApplyTranslation(vForward);
+            }
+            else
+            {
+                PanCamera(m_vMouse2DPositionDelta.x, m_vMouse2DPositionDelta.y);
+            }
         }
 
         if(m_bLeftMouseDown)
