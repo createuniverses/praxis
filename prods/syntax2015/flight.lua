@@ -1,7 +1,7 @@
 
 airplane = airplane or WidgetLib.newSimple()
 
-transform.setTranslation(airplane.lspace, 150,70,150)
+transform.setTranslation(airplane.lspace, 150,250,150)
 
 do
 controls =
@@ -67,11 +67,14 @@ do
   airplane.followcam = true
 end
 
+airplane.target = vec3d(0,0,0)
+
 do airplane.pilot = function (o)
  local p = Queue.get(streamer, 1)
  if p~=nil then
   p = cvec3d(p)
   p.x, p.y, p.z = transform.localToGlobal(spirowidget.lspace, p.x, p.y, p.z)
+  o.target = cvec3d(p)
   p.x, p.y, p.z = transform.globalToLocal(o.lspace, p.x, p.y, p.z)
   p = p + vec3d(0,5,0)
   
@@ -160,13 +163,44 @@ do
     forward = vec3d(transform.forward(o.lspace))
     up = vec3d(transform.up(o.lspace))
 
+    o.camerayaw = o.camerayaw or 0
+    o.camerayawctrl = o.camerayawctrl or 0
+    o.camerapitch = o.camerapitch or 0
+
     if airplane.followcam then
-      --transform.copy(transform.cameraBase(), o.lspace)
       transform.copy(transform.camera(), o.lspace)
 
       local offset = up * 5 + side * 0
   
       transform.translate(transform.camera(), offset.x, offset.y, offset.z)
+      --lookAt(Vector3D.getArgs(o.target))
+
+      transform.rotate(transform.camera(),
+        o.camerayaw,up.x, up.y, up.z)
+      
+      local camspace =
+        vec3d(transform.globalToLocal(
+                transform.camera(),
+                Vector3D.getArgs(o.target)))
+      
+      if camspace.x < -10 then
+        o.camerayawctrl = dampTo(
+            o.camerayawctrl,
+            deg2rad(-2), 0.1)
+      elseif camspace.x > 10 then
+        o.camerayawctrl = dampTo(
+            o.camerayawctrl,
+            deg2rad(2), 0.1)
+      else
+        o.camerayawctrl = dampTo(
+            o.camerayawctrl,
+            0, 0.1)
+      end
+      o.camerayaw = o.camerayaw + o.camerayawctrl
+      if o.camerayaw < deg2rad(-30) then
+         o.camerayaw = deg2rad(-30) end
+      if o.camerayaw > deg2rad(30) then
+         o.camerayaw = deg2rad(30) end
     end
     
     o.speed = o.speed + (controls.thrust - o.speed) * 0.1
@@ -212,9 +246,19 @@ do
     end
     glEnd()
   end
+
+  airplane.lwing = Queue.new()
+  airplane.rwing = Queue.new()
+  airplane.smax = 50
   
   airplane.render = function (o)
     renderModel(planemodel)
+    addPointToStreamer2(o.lwing,
+      vec3d(transform.localToGlobal(o.lspace, 15,-3,0)),
+      o.smax)
+    addPointToStreamer2(o.rwing,
+      vec3d(transform.localToGlobal(o.lspace, -15,-3,0)),
+      o.smax)
    if true then
     local p = Queue.get(streamer, 1)
     if p~=nil then
@@ -234,6 +278,11 @@ do
    end
   end
 end
+
+
+
+
+
 
 
 

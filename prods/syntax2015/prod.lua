@@ -45,8 +45,41 @@ function update()
   WidgetLib.callAll("update")
 end
 
+skythings = {}
+for i=1,15,1 do
+  skythings[i] =
+  { p = vec3d(math.random(1000) - 500,
+              math.random(300) + 50,
+              math.random(1000) - 500),
+    r = math.random(10) + 2 }
+end
+
 function render()
   WidgetLib.renderAll()
+
+  --[[glColor(0, 0, 0)
+  glBeginQuads()
+    glVertex(-500,-2,-500)
+    glVertex(-500,-2, 500)
+    glVertex( 500,-2, 500)
+    glVertex( 500,-2,-500)
+  glEnd()]]
+
+  glColor(150 + math.random(100),110,20)
+
+  renderStreamer(airplane.lwing)
+  renderStreamer(airplane.rwing)
+
+  for i=1,#skythings,1 do
+    local thing = skythings[i]
+    glPushMatrix()
+      glTranslate(Vector3D.getArgs(thing.p))
+      glColor(200,200,0)
+      glutSolidSphere(thing.r)
+      glColor(100,100,100)
+      glutWireSphere(thing.r + 1)
+    glPopMatrix()
+  end
 end
 
 function OnMouseMove(dx,dy,x,y)
@@ -68,5 +101,43 @@ end
 function RMBUp(x,y)
   WidgetLib.callAllInRange("rmbup")
 end
+
+playMp3()
+fullscreenMode()
+hideEditor()
+hideTrace()
+hideError()
+
+
+function makeCamPosSaver()
+  local x,y,z = getCamPos()
+  x = math.floor(x)
+  y = math.floor(y)
+  z = math.floor(z)
+  local s = "setCamPos("..x..","..y..","..z..")"
+  print2(s)
+end
+--makeCamPosSaver()
+--print2(getMouseCursorPos())
+
+do
+  airplane.followcam = false
+  setCamPos(-184,293,42)
+  lookAt(225,0,300)
+  showdiscs = true
+  showarms = true
+end
+
+maxstreamersegments = 300
+
+do
+  airplane.followcam = true
+  showdiscs = false
+  showarms = false
+end
+
+--hideFPS()
+showFPS()
+
 
 

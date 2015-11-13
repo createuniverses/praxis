@@ -83,6 +83,8 @@ public:
     bool m_bRenderProbesHUD;
     bool m_bRenderMousePickSphere;
 
+    bool m_bRenderFPS;
+
     //GLEditor * m_pCurrentBuffer;
     int m_nCurrentBuffer;
     // Need several editors so we can have multiple buffers

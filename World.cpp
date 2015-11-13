@@ -81,6 +81,8 @@ World::World()
     m_bRenderError = true;
     m_bRenderEditor = true;
 
+    m_bRenderFPS = true;
+
     m_bRunning = true;
 
     // MIDI
@@ -377,9 +379,7 @@ void World::Render()
         DrawText2D(mlVector3D(5,2), std::string("Buffer: ") + GetEditor()->GetName());
     }
 
-    bool bRenderFPS = true;
-
-    if(bRenderFPS)
+    if(m_bRenderFPS)
     {
 #ifdef __PRAXIS_WINDOWS__
         int nCurrentTime = ::timeGetTime();
@@ -1010,7 +1010,10 @@ void World::BuildGLMatrices()
     //gluPerspective(m_fFieldOfView, fAspect, 0.1f, 20000.0f);
     //gluPerspective(m_fFieldOfView, fAspect, 0.01f, 1000.0f);
     //gluPerspective(m_fFieldOfView, fAspect, 0.1f, 1000.0f);
-    gluPerspective(m_fFieldOfView, fAspect, 1.0f, 1000.0f);
+
+    //gluPerspective(m_fFieldOfView, fAspect, 1.0f, 1000.0f);
+    gluPerspective(m_fFieldOfView, fAspect, 1.0f, 2000.0f);
+
     // gluPerspective makes a "-Z is in" matrix. I prefer +Z.
     glScalef(1,1,-1);
 

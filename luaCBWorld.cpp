@@ -249,11 +249,13 @@ int luaCBIsAltDown(lua_State * L)
 
 int luaCBShowFPS(lua_State * L)
 {
+    g_pWorld->m_bRenderFPS = true;
     return 0;
 }
 
 int luaCBHideFPS(lua_State * L)
 {
+    g_pWorld->m_bRenderFPS = false;
     return 0;
 }
 

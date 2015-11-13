@@ -33,25 +33,52 @@ transform.setTranslation(spirowidget.lspace, 163,20,173)
 --setBufferName("spirograph3d.lua")
 
 transform.scale(spirowidget.lspace, 30,10,30)
-transform.translate(spirowidget.lspace, 0,110,0)
+transform.translate(spirowidget.lspace, 0,180,0)
+
+maxstreamersegments = 300
 
 streamer = Queue.new()
 function addPointToStreamer(s, p)
   Queue.pushfirst(s, p)
-  if Queue.size(s) > 700 then
+  if Queue.size(s) > maxstreamersegments then
+    Queue.poplast(s)
+  end
+end
+
+function addPointToStreamer2(s, p, max)
+  Queue.pushfirst(s, p)
+  if Queue.size(s) > max then
     Queue.poplast(s)
   end
 end
 
 function renderStreamer(s)
   beginLinGL()
-  colorGL(255,255,255,255)
   for i=1,Queue.size(s)-1,1 do
     local p1 = Queue.get(s,i)
     local p2 = Queue.get(s,i+1)
     glVec(p1)
     glVec(p2)
   end
+  endGL()
+  
+  if false then
+  for i=1,Queue.size(s)-1,1 do
+    local draw = true
+    if i > 200 and i > math.random(300) then
+      --draw = false
+    end
+    if draw then
+      local p1 = Queue.get(s,i)
+      local p2 = Queue.get(s,i+1)
+      crazyLine(p1,p2,2,5)
+    end
+  end
+  end
+end
+
+function renderStreamerCar(s)
+  beginLinGL()
   if Queue.size(s) > 50 then
     local i = 40
     local p1 = Queue.get(s,i)
@@ -145,6 +172,22 @@ do
      p1 = p2
    end
  end
+
+ function randomVec(d)
+   local v = vec3d(math.random(d) - d*0.5,
+                   math.random(d) - d*0.5,
+                   math.random(d) - d*0.5)
+   v = v * 0.01
+   return v
+ end
+
+ function crazyLine(p1, p2, n, d)
+   for i=1,n,1 do
+     local a = p1 + randomVec(d)
+     local b = p2 + randomVec(d)
+     drawLine(a.x, a.y, a.z, b.x, b.y, b.z)
+   end
+ end
  
  function spirowidget.render(w)
   local cogs = w.cogs
@@ -160,8 +203,13 @@ do
   p[2] = arm
 
   glColor(190,190,10)
-  drawLine(p[1].x,p[1].y,p[1].z, p[2].x,p[2].y,p[2].z)
-  spirowidget.renderDisc(cogs[1],p[1])
+  if showarms then
+    crazyLine(p[1], p[2], 10, 10)
+  end
+  --drawLine(p[1].x,p[1].y,p[1].z, p[2].x,p[2].y,p[2].z)
+  if showdiscs then
+    spirowidget.renderDisc(cogs[1],p[1])
+  end
 
   for i=2,#cogs,1 do
     local arm = p[i] + (cogs[i].zero * cogs[i].radius)
@@ -175,22 +223,34 @@ do
     p[i+1] = p2
     
     glColor(190,190,10)
-    drawLine(p1.x,p1.y,p1.z, p2.x,p2.y,p2.z)
-    spirowidget.renderDisc(cogs[i],p[i])
+    if showarms then
+      crazyLine(p1, p2, 10, 10)
+    end
+    --drawLine(p1.x,p1.y,p1.z, p2.x,p2.y,p2.z)
+    if showdiscs then
+      spirowidget.renderDisc(cogs[i],p[i])
+    end
 
     if i==#cogs then
       addPointToStreamer(streamer, vec3d(p2.x, p2.y, p2.z))
     end
   end
 
-
+  glColor(255,255,255,255)
   renderStreamer(streamer)
+  --renderStreamerCar(streamer)
   
   for i=1,#cogs,1 do
     cogs[i].angle = cogs[i].angle + ((cogs[i].speed / 180) * math.pi * 0.3)
   end
  end
 end
+
+
+
+
+
+
 
 
 
