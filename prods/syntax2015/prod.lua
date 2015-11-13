@@ -202,11 +202,12 @@ function update()
   
   for i=1,#skythings,1 do
     local thing = skythings[i]
-    local tween = thing.p - vec3d(transform.getTranslation(airplane.lspace))
+    local planepos = vec3d(transform.getTranslation(airplane.lspace))
+    local tween = thing.p - planepos
     local dist = Vector3D.magnitude(tween)
     tween = Vector3D.normalize(tween)
-    if dist < 30 then
-      thing.p = thing.p + (tween * 5)
+    if dist < (30 + thing.r) then
+      thing.p = planepos + (tween * (30+thing.r))
     end
   end
   
