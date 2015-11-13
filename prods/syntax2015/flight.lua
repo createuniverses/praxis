@@ -1,6 +1,8 @@
 
 airplane = airplane or WidgetLib.newSimple()
 
+transform.setTranslation(airplane.lspace, 150,70,150)
+
 do
 controls =
 {
@@ -10,6 +12,9 @@ controls =
   bankright = false,
   yawleft = false,
   yawright = false,
+  pitch = 0,
+  bank = 0,
+  yaw = 0,
   thrust = 0
 }
 end
@@ -71,73 +76,83 @@ do airplane.pilot = function (o)
   p = p + vec3d(0,5,0)
   
   local dist = Vector3D.magnitude(p)
-  local adjust = false
+  controls.adjust = false
   controls.bankleft = false
   controls.bankright = false
   if p.x > 5 then
    controls.bankleft = true
-   adjust = true
+   controls.adjust = true
   end
   if p.x < -5 then
    controls.bankright = true
-   adjust = true
+   controls.adjust = true
   end
   
   controls.pitchup = false
   controls.pitchdown = false
   if p.y > 5 then
    controls.pitchdown = true
-   adjust = true
+   controls.adjust = true
   end
   if p.y < -5 then
    controls.pitchup = true
-   adjust = true
+   controls.adjust = true
   end
   
-  if p.z > 0 then
+  if p.z < 0 then
    controls.pitchup = true
-   adjust = true
+   controls.adjust = true
   end
   
-  if adjust then
-    controls.thrust = 0.1
+  if controls.adjust then
+    controls.thrust = 3.55
   else
-    controls.thrust = 0.55
+    controls.thrust = 7.55
   end
 
  end
 end end
 
 do
+  function dampTo(s,t,d)
+    return s + ((t - s) * d)
+  end
+
   airplane.update = function (o)
     airplane.pilot(o)
+    
     local side = vec3d(transform.side(o.lspace))
     local forward = vec3d(transform.forward(o.lspace))
     local up = vec3d(transform.up(o.lspace))
 
-    local rs = 2
+    local rs = 5
 
     if controls.pitchup then
-      transform.rotate(o.lspace, rs * (math.pi/180),side.x,side.y,side.z)
-    end
-    if controls.pitchdown then
-      transform.rotate(o.lspace, -rs * (math.pi/180),side.x,side.y,side.z)
+      controls.pitch = dampTo(controls.pitch, rs, 0.1)
+    elseif controls.pitchdown then
+      controls.pitch = dampTo(controls.pitch, -rs, 0.1)
+    else
+      controls.pitch = dampTo(controls.pitch, 0, 0.1)
     end
     if controls.bankleft then
-      transform.rotate(o.lspace, rs * (math.pi/180),forward.x, forward.y, forward.z)
-    end
-    if controls.bankright then
-      transform.rotate(o.lspace, -rs * (math.pi/180),forward.x, forward.y, forward.z)
+      controls.bank = dampTo(controls.bank, rs*0.5, 0.1)
+    elseif controls.bankright then
+      controls.bank = dampTo(controls.bank, -rs*0.5, 0.1)
+    else
+      controls.bank = dampTo(controls.bank, 0, 0.1)
     end
     if controls.yawleft then
-      transform.rotate(o.lspace, -rs * (math.pi/180),up.x, up.y, up.z)
+      controls.yaw = dampTo(controls.yaw, -rs, 0.1)
+    elseif controls.yawright then
+      controls.yaw = dampTo(controls.yaw, rs, 0.1)
+    else
+      controls.yaw = dampTo(controls.yaw, 0, 0.1)
     end
-    if controls.yawright then
-      transform.rotate(o.lspace, rs * (math.pi/180),up.x, up.y, up.z)
-    end
-    --if controls.thrust then
-    --  transform.translate(o.lspace, forward.x, forward.y, forward.z)
-    --end
+
+    transform.rotate(o.lspace, controls.pitch * (math.pi/180),side.x,side.y,side.z)
+    transform.rotate(o.lspace, controls.bank * (math.pi/180),forward.x, forward.y, forward.z)
+    transform.rotate(o.lspace, controls.yaw * (math.pi/180),up.x, up.y, up.z)
+    
     local vel = forward * o.speed
     transform.translate(o.lspace, vel.x, vel.y, vel.z)
 
@@ -200,6 +215,7 @@ do
   
   airplane.render = function (o)
     renderModel(planemodel)
+   if true then
     local p = Queue.get(streamer, 1)
     if p~=nil then
       p = cvec3d(p)
@@ -207,9 +223,19 @@ do
       p.x, p.y, p.z = transform.globalToLocal(o.lspace, p.x, p.y, p.z)
       p = p + vec3d(0,5,0)
       glColor(255,50,50,255)
-      drawLine(0,0,0,p.x,p.y,p.z)
-      drawText3D("here", p.x,p.y,p.z)
+      glBeginTriangles()
+        glVertex(p.x - 10, p.y, p.z)
+        glVertex(p.x + 10, p.y, p.z)
+        glVertex(p.x, p.y+10, p.z+0)
+      glEnd()
+      --drawLine(0,0,0,p.x,p.y,p.z)
+      --drawText3D("here", p.x,p.y,p.z)
     end
+   end
   end
 end
+
+
+
+
 
