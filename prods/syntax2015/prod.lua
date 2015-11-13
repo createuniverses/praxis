@@ -16,6 +16,15 @@ function lookDown()
   rotateCam(0, math.pi * -0.5)
 end
 
+function deg2rad(a)
+  return math.pi * (a/180)
+end
+
+function rad2deg(a)
+  return 180 * (a/math.pi)
+end
+
+
 dofile("unpack2.lua")
 dofile("reflect.lua")
 dofile("geometry.lua")
@@ -29,8 +38,8 @@ dofile("editor.lua")
 dofile("keymap.lua")
 
 dofile("fnkeys.lua")
-dofile("spirograph.lua")
-dofile("syntax2015.lua")
+dofile("flight.lua")
+dofile("spirograph3d.lua")
 
 function update()
   WidgetLib.callAll("update")
@@ -59,4 +68,5 @@ end
 function RMBUp(x,y)
   WidgetLib.callAllInRange("rmbup")
 end
+
 

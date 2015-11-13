@@ -94,6 +94,7 @@ end
 
 function Vector3D.rotate(p,p1,p2,theta)
 
+   --[[
     q = vec3d(0,0,0)
     r = vec3d(0,0,0)
 
@@ -103,6 +104,10 @@ function Vector3D.rotate(p,p1,p2,theta)
     p.x = p.x - p1.x;
     p.y = p.y - p1.y;
     p.z = p.z - p1.z;
+    ]]
+    local q = vec3d(0,0,0)
+    local r = p2 - p1
+    local p = p - p1
     r = Vector3D.normalize(r);
 
     local costheta = math.cos(theta);
@@ -126,3 +131,11 @@ function Vector3D.rotate(p,p1,p2,theta)
 
     return q;
 end
+
+function Vector3D.fromEulerAngles(zero,hdg,pitch)
+  local v = zero
+  v = Vector3D.rotate(v,vec3d(0,0,0),vec3d(1,0,0),pitch)
+  v = Vector3D.rotate(v,vec3d(0,0,0),vec3d(0,1,0),hdg)
+  return v
+end
+

@@ -25,6 +25,11 @@ if spirowidget == nil then
   spirowidget = WidgetLib.newSimple()
 end
 
+--transform.setTranslation(spirowidget.lspace, getMouseCursorPos())
+--makePositionSaver("spirowidget")
+transform.setTranslation(spirowidget.lspace, 163,-1,173)
+
+
 streamer = Queue.new()
 function addPointToStreamer(s, p)
   Queue.pushfirst(s, p)
@@ -100,6 +105,8 @@ function spirowidget.render(w)
   end
   setmetatable(_G, nil)
 end
+
+
 
 
 

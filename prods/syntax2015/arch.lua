@@ -1,3 +1,4 @@
+setBufferName("arch.lua")
 
 airplane = airplane or WidgetLib.newSimple()
 
@@ -113,8 +114,24 @@ do
   end
 end
 
+transform.copy(Widgets[2].lspace, transform.identity())
+--transform.copy(transform.cameraBase(), transform.identity())
+--transform.copy(transform.camera(), transform.identity())
+
+continue()
+clearError()
+clearTrace()
+
+--print2(getFunction(Widgets[2].render))
+
 do
   planemodel = {}
+  function deg2rad(a)
+    return math.pi * (a/180)
+  end
+  function rad2deg(a)
+    return 180 * (a/math.pi)
+  end
   local points = {}
   for a = -90,90,10 do
     local p = vec3d(math.sin(deg2rad(a)), math.cos(deg2rad(a)), 0)
@@ -466,6 +483,7 @@ do
   
   end
 end
+
 
 
 
