@@ -69,7 +69,7 @@ end
 
 airplane.target = vec3d(0,0,0)
 
-do airplane.pilot = function (o)
+do airplane.normalpilot = function (o)
  local p = Queue.get(streamer, 1)
  if p~=nil then
   p = cvec3d(p)
@@ -115,6 +115,23 @@ do airplane.pilot = function (o)
 
  end
 end end
+
+takeoffthrust = 0.6
+
+do airplane.takeoffpilot = function (o)
+  controls.pitchup = false
+  controls.pitchdown = false
+  controls.bankleft = false
+  controls.bankright = false
+  controls.yawleft = false
+  controls.yawright = false
+  controls.pitch = 0
+  controls.bank = 0
+  controls.yaw = 0
+  controls.thrust = takeoffthrust
+end end
+
+airplane.pilot = airplane.normalpilot
 
 do
   function dampTo(s,t,d)
@@ -166,6 +183,7 @@ do
     o.camerayaw = o.camerayaw or 0
     o.camerayawctrl = o.camerayawctrl or 0
     o.camerapitch = o.camerapitch or 0
+    o.camerapitchctrl = o.camerapitchctrl or 0
 
     if airplane.followcam then
       transform.copy(transform.camera(), o.lspace)
@@ -174,6 +192,9 @@ do
   
       transform.translate(transform.camera(), offset.x, offset.y, offset.z)
       --lookAt(Vector3D.getArgs(o.target))
+
+      transform.rotate(transform.camera(),
+        o.camerapitch,side.x, side.y, side.z)
 
       transform.rotate(transform.camera(),
         o.camerayaw,up.x, up.y, up.z)
@@ -196,11 +217,32 @@ do
             o.camerayawctrl,
             0, 0.1)
       end
+
+      if camspace.y < -10 then
+        o.camerapitchctrl = dampTo(
+            o.camerapitchctrl,
+            deg2rad(-2), 0.1)
+      elseif camspace.y > 10 then
+        o.camerapitchctrl = dampTo(
+            o.camerapitchctrl,
+            deg2rad(2), 0.1)
+      else
+        o.camerapitchctrl = dampTo(
+            o.camerapitchctrl,
+            0, 0.1)
+      end
+
       o.camerayaw = o.camerayaw + o.camerayawctrl
       if o.camerayaw < deg2rad(-30) then
          o.camerayaw = deg2rad(-30) end
       if o.camerayaw > deg2rad(30) then
          o.camerayaw = deg2rad(30) end
+
+      o.camerapitch = o.camerapitch + o.camerapitchctrl
+      if o.camerapitch < deg2rad(-5) then
+         o.camerapitch = deg2rad(-5) end
+      if o.camerapitch > deg2rad(5) then
+         o.camerapitch = deg2rad(5) end
     end
     
     o.speed = o.speed + (controls.thrust - o.speed) * 0.1
@@ -278,6 +320,9 @@ do
    end
   end
 end
+
+
+
 
 
 

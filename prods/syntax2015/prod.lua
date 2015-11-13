@@ -40,19 +40,31 @@ dofile("keymap.lua")
 dofile("fnkeys.lua")
 dofile("flight.lua")
 dofile("spirograph3d.lua")
+dofile("arch.lua")
 
+showTrace()
 function update()
   WidgetLib.callAll("update")
+  if getMp3Time() > 17 then
+    airplane.pilot = airplane.normalpilot
+  end
+  clearTrace()
+  print(""..getMp3Time())
 end
 
 skythings = {}
-for i=1,15,1 do
+function makeskythings()
+ for i=1,17,1 do
   skythings[i] =
   { p = vec3d(math.random(1000) - 500,
               math.random(300) + 50,
               math.random(1000) - 500),
     r = math.random(10) + 2 }
+ end
 end
+
+makeskythings()
+makeskythings()
 
 function render()
   WidgetLib.renderAll()
@@ -136,8 +148,75 @@ do
   showarms = false
 end
 
---hideFPS()
-showFPS()
+hideFPS()
+--showFPS()
 
+airplane.pilot = airplane.normalpilot
+airplane.pilot = function (o) airplane.takeoffpilot(o) controls.thrust = 0 end
 
+function airplane.allstoppilot(o)
+  airplane.takeoffpilot(o)
+  controls.thrust = 0
+end
 
+--makePositionSaver("airplane")
+do
+  setCamPos(0,35,-30)
+  lookAt(0,0,50)
+  stopMp3()
+  playMp3()
+  airplane.lspace=transform.new()
+  transform.translate(airplane.lspace, 0,10,0)
+  airplane.pilot = airplane.takeoffpilot
+end
+
+--makeCamPosSaver()
+setCamPos(0,35,-30)
+lookAt(0,0,50)
+
+showTrace()
+hideTrace()
+
+function update()
+  WidgetLib.callAll("update")
+  
+  if getMp3Time() > 117 then
+    airplane.followcam = false
+    airplane.pilot = airplane.allstoppilot
+  elseif getMp3Time() > 105 then
+    airplane.followcam = true
+    showdiscs = false
+    showarms = false
+  elseif getMp3Time() > 78 then
+    do
+      airplane.followcam = false
+      lookAt(transform.getTranslation(airplane.lspace))
+      showdiscs = true
+      showarms = true
+    end
+  elseif getMp3Time() > 16 then
+    airplane.pilot = airplane.normalpilot
+  end
+  --clearTrace()
+  --print(""..getMp3Time())
+  
+  for i=1,#skythings,1 do
+    local thing = skythings[i]
+    local tween = thing.p - vec3d(transform.getTranslation(airplane.lspace))
+    local dist = Vector3D.magnitude(tween)
+    tween = Vector3D.normalize(tween)
+    if dist < 30 then
+      thing.p = thing.p + (tween * 5)
+    end
+  end
+  
+  if isMp3Playing() == false then
+    os.exit()
+  end
+end
+
+setPickSphere(false)
+
+takeoffthrust = 0.75
+
+makeskythings()
