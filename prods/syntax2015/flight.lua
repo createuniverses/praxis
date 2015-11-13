@@ -59,30 +59,81 @@ end
 
 do
   airplane.speed = 0
-  airplane.followcam = false
+  airplane.followcam = true
+end
+
+do airplane.pilot = function (o)
+ local p = Queue.get(streamer, 1)
+ if p~=nil then
+  p = cvec3d(p)
+  p.x, p.y, p.z = transform.localToGlobal(spirowidget.lspace, p.x, p.y, p.z)
+  p.x, p.y, p.z = transform.globalToLocal(o.lspace, p.x, p.y, p.z)
+  p = p + vec3d(0,5,0)
   
+  local dist = Vector3D.magnitude(p)
+  local adjust = false
+  controls.bankleft = false
+  controls.bankright = false
+  if p.x > 5 then
+   controls.bankleft = true
+   adjust = true
+  end
+  if p.x < -5 then
+   controls.bankright = true
+   adjust = true
+  end
+  
+  controls.pitchup = false
+  controls.pitchdown = false
+  if p.y > 5 then
+   controls.pitchdown = true
+   adjust = true
+  end
+  if p.y < -5 then
+   controls.pitchup = true
+   adjust = true
+  end
+  
+  if p.z > 0 then
+   controls.pitchup = true
+   adjust = true
+  end
+  
+  if adjust then
+    controls.thrust = 0.1
+  else
+    controls.thrust = 0.55
+  end
+
+ end
+end end
+
+do
   airplane.update = function (o)
+    airplane.pilot(o)
     local side = vec3d(transform.side(o.lspace))
     local forward = vec3d(transform.forward(o.lspace))
     local up = vec3d(transform.up(o.lspace))
 
+    local rs = 2
+
     if controls.pitchup then
-      transform.rotate(o.lspace, 5 * (math.pi/180),side.x,side.y,side.z)
+      transform.rotate(o.lspace, rs * (math.pi/180),side.x,side.y,side.z)
     end
     if controls.pitchdown then
-      transform.rotate(o.lspace, -5 * (math.pi/180),side.x,side.y,side.z)
+      transform.rotate(o.lspace, -rs * (math.pi/180),side.x,side.y,side.z)
     end
     if controls.bankleft then
-      transform.rotate(o.lspace, 5 * (math.pi/180),forward.x, forward.y, forward.z)
+      transform.rotate(o.lspace, rs * (math.pi/180),forward.x, forward.y, forward.z)
     end
     if controls.bankright then
-      transform.rotate(o.lspace, -5 * (math.pi/180),forward.x, forward.y, forward.z)
+      transform.rotate(o.lspace, -rs * (math.pi/180),forward.x, forward.y, forward.z)
     end
     if controls.yawleft then
-      transform.rotate(o.lspace, -5 * (math.pi/180),up.x, up.y, up.z)
+      transform.rotate(o.lspace, -rs * (math.pi/180),up.x, up.y, up.z)
     end
     if controls.yawright then
-      transform.rotate(o.lspace, 5 * (math.pi/180),up.x, up.y, up.z)
+      transform.rotate(o.lspace, rs * (math.pi/180),up.x, up.y, up.z)
     end
     --if controls.thrust then
     --  transform.translate(o.lspace, forward.x, forward.y, forward.z)
@@ -149,12 +200,16 @@ do
   
   airplane.render = function (o)
     renderModel(planemodel)
+    local p = Queue.get(streamer, 1)
+    if p~=nil then
+      p = cvec3d(p)
+      p.x, p.y, p.z = transform.localToGlobal(spirowidget.lspace, p.x, p.y, p.z)
+      p.x, p.y, p.z = transform.globalToLocal(o.lspace, p.x, p.y, p.z)
+      p = p + vec3d(0,5,0)
+      glColor(255,50,50,255)
+      drawLine(0,0,0,p.x,p.y,p.z)
+      drawText3D("here", p.x,p.y,p.z)
+    end
   end
 end
-
-
-
-
-
-
 

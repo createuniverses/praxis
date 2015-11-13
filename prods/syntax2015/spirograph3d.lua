@@ -27,6 +27,7 @@ end
 
 --transform.setTranslation(spirowidget.lspace, getMouseCursorPos())
 --makePositionSaver("spirowidget")
+spirowidget.lspace = transform.new()
 transform.setTranslation(spirowidget.lspace, 163,20,173)
 
 --setBufferName("spirograph3d.lua")
@@ -37,7 +38,7 @@ transform.translate(spirowidget.lspace, 0,50,0)
 streamer = Queue.new()
 function addPointToStreamer(s, p)
   Queue.pushfirst(s, p)
-  if Queue.size(s) > 1000 then
+  if Queue.size(s) > 5000 then
     Queue.poplast(s)
   end
 end
@@ -186,7 +187,8 @@ do
   renderStreamer(streamer)
   
   for i=1,#cogs,1 do
-    cogs[i].angle = cogs[i].angle + ((cogs[i].speed / 180) * math.pi)
+    cogs[i].angle = cogs[i].angle + ((cogs[i].speed / 180) * math.pi * 0.1)
   end
  end
 end
+
