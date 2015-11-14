@@ -117,7 +117,10 @@ names = {{n = "Greetings to"},
          {n = "Chicken"},
          {n = "jazzcat"},
          {n = "conjuror"},
-         {n = "Ript"} }
+         {n = "Ript"}}
+--         {n = "Aday"},
+--         {n = "Brannigan"},
+--         {n = "gaia"}}
          
 for i=1,#names,1 do
   local name = names[i]
@@ -216,6 +219,8 @@ function OnMouseMove(dx,dy,x,y)
 end
 
 function LMBDown(x,y)
+  --showTrace()
+  --print(getMp3Time())
   WidgetLib.callAllInRange("lmbdown")
 end
 
@@ -300,11 +305,11 @@ function update()
   if getMp3Time() > 117 then
     airplane.followcam = false
     airplane.pilot = airplane.allstoppilot
-  elseif getMp3Time() > 105 then
+  elseif getMp3Time() > 105.6 then
     airplane.followcam = true
     showdiscs = false
     showarms = false
-  elseif getMp3Time() > 78 then
+  elseif getMp3Time() > 79 then
     do
       airplane.followcam = false
       lookAt(transform.getTranslation(airplane.lspace))
