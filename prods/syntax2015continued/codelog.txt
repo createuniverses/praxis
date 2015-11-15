@@ -1,0 +1,139 @@
+Entry 1
+print("test")
+
+Entry 2
+print2(codelog[1]))
+
+Entry 3
+print2(codelog[1])
+
+Entry 4
+print2(codelog[2])
+
+Entry 5
+print2(codelog[3])
+
+Entry 6
+print2(codelog[#codelog])
+
+Entry 7
+print2(codelog[#codelog])
+
+Entry 8
+do
+ setKeyHandlerProgram(keymap, stdkeyids.enter,     2,
+  [[
+    local sCode = edGetLuaBlock()
+    if sCode == "" then
+      sCode = getEditorLineText()
+    end
+    luaCall(sCode)
+    table.insert(codelog, sCode)
+    print("Done.")
+  ]])
+end
+
+Entry 9
+
+
+Entry 10
+print2(codelog[#codelog-1])
+
+Entry 11
+do
+  closeBuffer()
+end
+
+Entry 12
+  closeBuffer()
+
+Entry 13
+closeBuffer()
+
+Entry 14
+ closeBuffer()
+
+Entry 15
+loadBuffer("temp.lua")
+
+Entry 16
+closeBuffer()
+
+Entry 17
+loadBuffer("fnkeys.lua")
+
+Entry 18
+function f3Pressed()
+ local name = getBufferName()
+ newBuffer(getBufferName() .. " - command")
+ local s = [[
+  local name = "]] .. name .. [["
+  closeBuffer()
+  switchToBuffer(name)
+  local text = getBufferText()
+  local pos = string.find(text, "", edGetPosition())
+  edSetPosition(pos-1)]]
+ setBufferText(s)
+ edSetPosition(131)
+end
+
+Entry 19
+closeBuffer()
+
+Entry 20
+loadBuffer("keymap.lua")
+
+Entry 21
+print2(getErrorText())
+
+Entry 22
+  closeBuffer()
+
+Entry 23
+closeBuffer()
+
+Entry 24
+closeBuffer()
+
+Entry 25
+closeBuffer()
+
+Entry 26
+closeBuffer()
+
+Entry 27
+closeBuffer()
+
+Entry 28
+loadBuffer("dome.lua")
+
+Entry 29
+do
+ playMp3()
+ airplane.followcam = true
+ airplane.pilot = airplane.takeoffpilot
+end
+
+Entry 30
+clearError()
+
+Entry 31
+hideTrace()
+
+Entry 32
+function makeCodeLogBuffer()
+  local sText = ""
+  for i=1,#codelog,1 do
+    sText = sText .. "Entry " .. i .. "\n"
+    sText = sText .. codelog[i] .. "\n\n"
+  end
+  newBuffer("codelog.txt")
+  setBufferText(sText)
+end
+
+Entry 33
+showTrace()
+
+Entry 34
+clearTrace()
+
