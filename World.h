@@ -92,6 +92,8 @@ public:
     std::vector<GLEditor *> m_buffers;
     GLEditor * GetEditor() { return m_buffers[m_nCurrentBuffer]; }
 
+    void AddEditor(GLEditor * pNewBuffer);
+
     void NewEditor();
     void SwitchToEditor(int n);
     void SwitchToEditor(const std::string & sName);
@@ -163,6 +165,10 @@ private:
     float      m_fMousePickDepth;
     mlVector3D m_vMouseFloorPickPosition;
     float      m_fMouseFloorPickDepth;
+
+    int m_nFloorGridRed;
+    int m_nFloorGridGreen;
+    int m_nFloorGridBlue;
 
     bool m_bDoubleClick;
 

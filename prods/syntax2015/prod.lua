@@ -344,3 +344,5 @@ takeoffthrust = 0.75
 
 makeskythings()
 
+--dofile("video.lua")
+--prepareForVideoCapture()

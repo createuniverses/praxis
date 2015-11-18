@@ -432,7 +432,7 @@ int luaCBEdSetBottomMargin(lua_State * L)
     return 0;
 }
 
-int luaEdResizeTexture(lua_State * L)
+int luaCBEdResizeTexture(lua_State * L)
 {
     int arg = luaL_checknumber(L,1);
     GLEditor::m_nDesiredTextureSize = arg;
@@ -440,7 +440,7 @@ int luaEdResizeTexture(lua_State * L)
     return 0;
 }
 
-int luaEdForceUpdate(lua_State * L)
+int luaCBEdForceUpdate(lua_State * L)
 {
     GLEditor::m_bUpdateRequired = true;
     return 0;
@@ -695,6 +695,65 @@ int luaCBEdGetLuaBlockPosition(lua_State * L)
     return 2;
 }
 
+int luaCBEditorNew(lua_State * L)
+{
+    GLEditor ** t = (GLEditor **)lua_newuserdata(L, sizeof(GLEditor *));
+
+    *t = new GLEditor();
+
+    luaL_getmetatable(L, "LiveCode.editor");
+    lua_setmetatable(L, -2);
+
+    return 1;
+}
+
+int luaCBEditorGet(lua_State * L)
+{
+    int nType = lua_type(L, 1);
+
+    if (nType == LUA_TNUMBER)
+    {
+        int nIndex = luaL_checknumber(L, 1);
+        if(nIndex < 0 || nIndex > g_pWorld->m_buffers.size())
+            luaL_error(L, "No editor at index %d in range (0, %d)", nIndex, g_pWorld->m_buffers.size());
+
+        GLEditor ** ppEditor = (GLEditor **)lua_newuserdata(L, sizeof(GLEditor *));
+
+        // Refer to the existing camera.
+        (*ppEditor) = g_pWorld->m_buffers[nIndex];
+
+        luaL_getmetatable(L, "LiveCode.editor");
+        lua_setmetatable(L, -2);
+
+        return 1;
+    }
+    else if (nType == LUA_TSTRING)
+    {
+        std::string sName = luaL_checkstring(L, 1);
+        GLEditor * pEditor = g_pWorld->GetEditor(sName);
+        if(pEditor == 0)
+            luaL_error(L, "No editor by the name %s", sName.c_str());
+
+        GLEditor ** ppEditor = (GLEditor **)lua_newuserdata(L, sizeof(GLEditor *));
+
+        (*ppEditor) = pEditor;
+
+        luaL_getmetatable(L, "LiveCode.editor");
+        lua_setmetatable(L, -2);
+
+        return 1;
+    }
+    else
+    {
+        luaL_error(L, "Arg 1 needs to be an index number or the buffer name.");
+
+        lua_pushnil(L);
+        return 1;
+    }
+}
+
+// GLEditor * t = *(GLEditor **)luaL_checkudata(L, 1, "LiveCode.editor");
+
 void luaInitCallbacksEditor()
 {
     luaCall("function edKeyDown(k) end");
@@ -742,8 +801,8 @@ void luaInitCallbacksEditor()
     lua_register(g_pLuaState, "edSetTopMargin",        luaCBEdSetTopMargin);
     lua_register(g_pLuaState, "edSetBottomMargin",     luaCBEdSetBottomMargin);
 
-    lua_register(g_pLuaState, "edResizeTexture",       luaEdResizeTexture);
-    lua_register(g_pLuaState, "edForceUpdate",         luaEdForceUpdate);
+    lua_register(g_pLuaState, "edResizeTexture",       luaCBEdResizeTexture);
+    lua_register(g_pLuaState, "edForceUpdate",         luaCBEdForceUpdate);
 
     lua_register(g_pLuaState, "edGetTopPosition",      luaCBEdGetTopPosition);
     lua_register(g_pLuaState, "edGetBottomPosition",   luaCBEdGetBottomPosition);
@@ -817,4 +876,19 @@ void luaInitCallbacksEditor()
 
     // page up/down
     // Cut Copy Paste
+
+    const struct luaL_Reg lua_editorlib [] = {
+        {"new",               luaCBEditorNew},
+        {"getEditor",         luaCBEditorGet},
+//        {"getText",           luaCBEditorGetText},
+//        {"setText",           luaCBEditorSetText},
+//        {"save",              luaCBEditorSave},
+//        {"load",              luaCBEditorLoad},
+//        {"render",            luaCBEditorRender},
+        {NULL, NULL}
+    };
+
+    luaL_register(g_pLuaState, "editor", lua_editorlib);
+
+    luaL_newmetatable(g_pLuaState, "LiveCode.editor");
 }

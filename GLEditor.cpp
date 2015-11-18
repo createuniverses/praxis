@@ -191,6 +191,12 @@ static string MakeAvailableBackupFilename(const string & sName)
 
 void GLEditor::SaveAs(const string & sFilename)
 {
+    if(FileExists(sFilename))
+    {
+        string sFilename2 = MakeAvailableBackupFilename(sFilename);
+        rename(sFilename.c_str(), sFilename2.c_str());
+    }
+
     std::ofstream file(sFilename.c_str());
 
     file << m_Text;
@@ -202,13 +208,6 @@ void GLEditor::SaveAs(const string & sFilename)
 
 void GLEditor::Save()
 {
-    if(FileExists(m_sName))
-    {
-        string sFilename = MakeAvailableBackupFilename(m_sName);
-
-        rename(m_sName.c_str(), sFilename.c_str());
-    }
-
     SaveAs(m_sName);
 }
 

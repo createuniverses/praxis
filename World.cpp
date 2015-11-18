@@ -82,6 +82,9 @@ World::World()
     m_bRenderEditor = true;
 
     m_bRenderFPS = true;
+    m_nFloorGridRed = 255;
+    m_nFloorGridGreen = 0;
+    m_nFloorGridBlue = 255;
 
     m_bRunning = true;
 
@@ -865,22 +868,29 @@ void World::OnKeyUpSpecial(unsigned char nKey, int nX, int nY)
 }
 #endif
 
-void World::NewEditor()
+void World::AddEditor(GLEditor *pNewBuffer)
 {
-    GLEditor * pNewBuffer = new GLEditor();
     if(m_buffers.size() <= 0)
         pNewBuffer->SetName("initial");
     else
         pNewBuffer->SetParentName(GetEditor()->GetName());
 
-    //pNewBuffer->SetText("-- scratch pad!!");
     m_buffers.push_back(pNewBuffer);
+
     m_nCurrentBuffer = m_buffers.size() - 1;
 
     glGetIntegerv(GL_VIEWPORT, viewport);
     int nViewportWidth = viewport[2];
     int nViewportHeight = viewport[3];
     pNewBuffer->Reshape(nViewportWidth, nViewportHeight);
+}
+
+void World::NewEditor()
+{
+    GLEditor * pNewBuffer = new GLEditor();
+    //pNewBuffer->SetText("-- scratch pad!!");
+
+    AddEditor(pNewBuffer);
 }
 
 void World::CloseEditor()
