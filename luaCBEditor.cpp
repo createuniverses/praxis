@@ -752,7 +752,18 @@ int luaCBEditorGet(lua_State * L)
     }
 }
 
-// GLEditor * t = *(GLEditor **)luaL_checkudata(L, 1, "LiveCode.editor");
+int luaCBEditorGetText(lua_State * L)
+{
+    GLEditor * pEditor = *(GLEditor **)luaL_checkudata(L, 1, "LiveCode.editor");
+    lua_pushstring(L, pEditor->GetAllText().c_str());
+    return 1;
+}
+
+int luaCBEdRenderBuffer(lua_State * L)
+{
+    g_pWorld->GetEditor()->RenderChars();
+    return 0;
+}
 
 void luaInitCallbacksEditor()
 {
@@ -874,13 +885,15 @@ void luaInitCallbacksEditor()
     lua_register(g_pLuaState, "edGetLuaBlock",          luaCBEdGetLuaBlock);
     lua_register(g_pLuaState, "edGetLuaBlockPosition",  luaCBEdGetLuaBlockPosition);
 
+    lua_register(g_pLuaState, "edRenderBuffer",         luaCBEdRenderBuffer);
+
     // page up/down
     // Cut Copy Paste
 
     const struct luaL_Reg lua_editorlib [] = {
         {"new",               luaCBEditorNew},
         {"getEditor",         luaCBEditorGet},
-//        {"getText",           luaCBEditorGetText},
+        {"getText",           luaCBEditorGetText},
 //        {"setText",           luaCBEditorSetText},
 //        {"save",              luaCBEditorSave},
 //        {"load",              luaCBEditorLoad},

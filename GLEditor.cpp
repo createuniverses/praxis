@@ -718,6 +718,21 @@ void GLEditor::RenderBuffer(bool bBackground)
 
     glMatrixMode(GL_MODELVIEW);
 
+    RenderChars();
+
+    glPopMatrix();
+    glPopMatrix();
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_DEPTH_TEST);
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+}
+
+void GLEditor::RenderChars()
+{
     unsigned int xcount=0;
     float xpos=0;
     float ypos=0;
@@ -813,16 +828,6 @@ void GLEditor::RenderBuffer(bool bBackground)
         DrawCursor();
         glColor4f(0.7,0.7,0.7,1);
     }
-
-    glPopMatrix();
-    glPopMatrix();
-
-    glEnable(GL_LIGHTING);
-    glEnable(GL_DEPTH_TEST);
-
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
 }
 
 void GLEditor::MoveViewUp()

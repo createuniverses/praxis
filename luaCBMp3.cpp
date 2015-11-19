@@ -94,7 +94,8 @@ int luaCBIsMp3Playing(lua_State * L)
         lua_pushboolean(L, bIsPlaying);
     }
 #else
-    lua_pushboolean(L, false);
+    // Changed from false to true so prods don't quit immediately for Linux build
+    lua_pushboolean(L, true);
 #endif
     return 1;
 }

@@ -198,6 +198,7 @@ public:
 
     void RenderBuffer(bool bBackground);
     void RenderTexture();
+    void RenderChars();
 };
 
 #endif
