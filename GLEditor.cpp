@@ -733,6 +733,8 @@ void GLEditor::RenderBuffer(bool bBackground)
 
 void GLEditor::RenderChars()
 {
+    glPushMatrix();
+
     unsigned int xcount=0;
     float xpos=0;
     float ypos=0;
@@ -828,6 +830,8 @@ void GLEditor::RenderChars()
         DrawCursor();
         glColor4f(0.7,0.7,0.7,1);
     }
+
+    glPopMatrix();
 }
 
 void GLEditor::MoveViewUp()

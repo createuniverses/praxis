@@ -214,6 +214,21 @@ int luaCBEditorVisible(lua_State * L)
     return 1;
 }
 
+int luaCBSetKeyRepeat(lua_State * L)
+{
+    int n = lua_gettop(L);
+    if(n!=1) luaL_error(L, "1 argument expected.");
+
+    int nOption = lua_toboolean(L, 1);
+
+    if(nOption)
+        glutSetKeyRepeat(GLUT_KEY_REPEAT_ON);
+    else
+        glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF);
+
+    return 0;
+}
+
 int luaCBNextEditor(lua_State * L)
 {
     g_pWorld->NextEditor();
@@ -305,6 +320,7 @@ void luaInitCallbacksWorld()
     lua_register(g_pLuaState, "showEditor",            luaCBShowEditor);
     lua_register(g_pLuaState, "hideEditor",            luaCBHideEditor);
     lua_register(g_pLuaState, "editorVisible",         luaCBEditorVisible);
+    lua_register(g_pLuaState, "setKeyRepeat",          luaCBSetKeyRepeat);
 
     lua_register(g_pLuaState, "nextEditor",            luaCBNextEditor);
     lua_register(g_pLuaState, "previousEditor",        luaCBPreviousEditor);
