@@ -1,16 +1,38 @@
 camwidget = WidgetLib.newSimple()
 
 Widgets = {}
-Widgets[1] = camwidget
+Widgets[1] = spirowidget
+
+Widgets[2] = camwidget
+Widgets[2] = airplane
+
+print2(#Widgets)
+2
+
+1
+edSetRenderMode(0)
+
+airplane.followcam = false
+
 
 
 do camwidget.render = function (o)
   glPushMatrix()
-  --glTranslate(0,5,0)
-  local s = 0.001
+  glColor(255,255,255,255)
+  glPushMatrix()
+  local s = 0.0008
   glScale(s, s, s)
-  --glRotate(90,1,0,0)
   edRenderBuffer()
+  glPopMatrix()
+  glColor(255,0,0,50)
+  glBeginQuads()
+    local q2 = 80
+    local q1 = 100
+    glVertex(0,0,0)
+    glVertex(q1,0,0)
+    glVertex(q1,-q2,0)
+    glVertex(0, -q2,0)
+  glEnd()
   glPopMatrix()
   
 end end
@@ -23,11 +45,14 @@ do camwidget.update = function (o)
   local up = vec3d(transform.up(o.lspace))
   --transform.translate(o.lspace, 0,-50,0)
   transform.translate(o.lspace, Vector3D.getArgs(fwd * 50))
-  transform.translate(o.lspace, Vector3D.getArgs(side * -50))
-  transform.translate(o.lspace, Vector3D.getArgs(up * 30))
+  transform.translate(o.lspace,
+    Vector3D.getArgs(side * -60))
+  transform.translate(o.lspace,
+    Vector3D.getArgs(up * 40))
 end end
 
 continue()
+edSetRenderMode(1)
 
 clearError()
 
@@ -179,3 +204,5 @@ do
   closeBuffer()
   switchToBuffer(name)
 end
+
+
