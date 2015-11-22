@@ -10,7 +10,7 @@ do
   local pts1 = {}
   local pts2 = {}
 
-  for a = 0,360,step do
+  for a = 0,180,step do
     table.insert(pts1, vec3d(
         r * math.sin(deg2rad(a)),
         0,
@@ -127,6 +127,7 @@ do
    for i=1,10,1 do
     local a = 
     glTranslate(0,4,0)
+    glRotate(dome.t*0.3, 0,1,0)
     --glScale(math.sin(a),1,math.sin(a))
     glScale(0.9, 1, 0.8)
     glRotate(20 * math.sin(deg2rad(dome.t)),1,0,0)
@@ -137,6 +138,7 @@ do
   dome.t = dome.t + 5
  end
 end
+
 
 
 

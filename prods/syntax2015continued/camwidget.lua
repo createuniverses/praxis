@@ -69,6 +69,7 @@ do camwidget.update = function (o)
   transform.translate(o.lspace,
     Vector3D.getArgs(up * 40))
 end end
+showError()
 
 continue()
 edSetRenderMode(1)
@@ -236,6 +237,7 @@ do
   closeBuffer()
   switchToBuffer(name)
 end
+
 
 
 

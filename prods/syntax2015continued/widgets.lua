@@ -110,13 +110,33 @@ function WidgetLib.renderAll()
   end
 end
 
+function WidgetLib.renderWidget(v)
+      glPushMatrix()
+      glApplyTransform(v.lspace)
+      v["render"](v)
+      -- render bounding box as an option
+      glPopMatrix()
+end
+
 function WidgetLib.callAll(fnname)
   for k,v in pairs(Widgets) do
     v[fnname](v)
   end
 end
 
-function WidgetLib.callAllInRange(fnname)
+function WidgetLib.callAllInRange(...)
+  local args = {...}
+  if #args == 1 then
+    --print("old " .. args[1])
+    WidgetLib.callAllInRangeMain(Widgets, args[1])
+  elseif #args == 2 then
+    WidgetLib.callAllInRangeMain(args[1], args[2])
+  else
+    error("callAllInRange needs 1 or 2 args")
+  end
+end
+
+function WidgetLib.callAllInRangeMain(Widgets, fnname)
   local x,y,z = getMouseCursorPos()
   for k,v in pairs(Widgets) do
     if v.rangecheck == nil then
@@ -136,9 +156,11 @@ function WidgetLib.callAllInRange(fnname)
   end
 end
 
+
 -- eg.
 -- WidgetLib.callAll("update")
 -- WidgetLib.callAll("render")
 -- WidgetLib.callAllInRange("lmbdown")
+
 
 

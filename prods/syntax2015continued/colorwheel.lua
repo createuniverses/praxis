@@ -1,10 +1,13 @@
 
+do
 colorwheelwidget = colorwheelwidget or WidgetLib.newSimple()
 colorwheelwidget.width = 256
 colorwheelwidget.depth = 256
 colorwheelwidget.minx = -256
 colorwheelwidget.minz = -256
-transform.scale(colorwheelwidget.lspace, 0.1, 1, 0.1)
+--transform.scale(colorwheelwidget.lspace, 0.1, 1, 0.1)
+--transform.scale(colorwheelwidget.lspace, 100, 1, 100)
+end
 
 function makePositionSaver(widgetname)
   local s = [[transform.setTranslation(]]..widgetname..[[.lspace, ]]
@@ -26,6 +29,8 @@ glColor = colorGL
 
 do
  colorwheelwidget.render = function (o)
+   glPushMatrix()
+   glScale(0.1, 1, 0.1)
    glColor(200,100,100,255)
    glBeginTriangles()
     local step = 10
@@ -67,8 +72,20 @@ do
     glColor(255,255,255,255)
     
    end
+   glPopMatrix()
+   WidgetLib.renderWidget(redslider)
+   WidgetLib.renderWidget(greenslider)
+   WidgetLib.renderWidget(blueslider)
+   --redslider:render()
+   --greenslider:render()
+   --blueslider:render()
+ end
+ colorwheelwidget.renderGlobal = function (o)
  end
 end
+
+continue()
+clearError()
 
 function math.atan2p(x,y)
   local a = math.atan2(x,y)
@@ -99,8 +116,6 @@ do
   end
  end
 end
-
-
 
 function angleToColor(a,r,s)
  local red = 255
@@ -187,8 +202,18 @@ redslider = redslider or Slider.new(vec3d(0,0,-50), 0, 255)
 greenslider = greenslider or Slider.new(vec3d(0,0,-50), 0, 255)
 blueslider = blueslider or Slider.new(vec3d(0,0,-50), 0, 255)
 
+continue()
+
+Widgets[6] = nil
+
+6
+print2(#Widgets)
+3
+airplane.followcam = false
+
 redslider.render = Slider.render
 
+do
 redslider.depth = 100
 redslider.width = 10
 greenslider.depth = 100
@@ -203,6 +228,11 @@ blueslider.width = 10
 transform.setTranslation(blueslider.lspace, 290,-1,27)
 transform.setTranslation(greenslider.lspace, 270,-1,26)
 transform.setTranslation(redslider.lspace, 252,-1,27)
+
+transform.setTranslation(redslider.lspace, 20,0,0)
+transform.setTranslation(greenslider.lspace, 40,0,0)
+transform.setTranslation(blueslider.lspace, 60,0,0)
+end
 
 
 --transform.setTranslation(colorwheelwidget.lspace, getMouseCursorPos())
@@ -243,23 +273,6 @@ function sortComponents(red,green,blue)
   return cols
 end
 
---print2(inspect(sortComponents(1000, 34, 244)))
-
-disableStdMouseCam()
-clearError()
-clearTrace()
-
-function makeCamPosSaver()
-  local x,y,z = getCamPos()
-  x = math.floor(x)
-  y = math.floor(y)
-  z = math.floor(z)
-  local s = "setCamPos("..x..","..y..","..z..")"
-  print2(s)
-end
---makeCamPosSaver()
-setCamPos(247,73,72)
-lookDown()
 
 
 

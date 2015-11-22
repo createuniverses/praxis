@@ -36,4 +36,5 @@ end
 
 showTrace()
 print("codelogger logging")
-clearTrace()
+--clearTrace()
+
