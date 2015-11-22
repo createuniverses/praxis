@@ -34,11 +34,6 @@ end
 
 --print2(codelog[#codelog])
 
-do
-  --closeBuffer()
-  switchToBuffer("keymap.lua")
-end
-
-do
-  closeBuffer()
-end
+showTrace()
+print("codelogger logging")
+clearTrace()

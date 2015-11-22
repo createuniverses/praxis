@@ -56,3 +56,4 @@ function Slider.click(slider,x,y,z)
   slider.pos = linearInterpolate(0, slider.depth, slider.min, slider.max, z)
 end
 
+

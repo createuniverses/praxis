@@ -1,4 +1,6 @@
-dome = dome or WidgetLib.newSimple()
+--dome = dome or WidgetLib.newSimple()
+
+dome = dome or {}
 
 dome.model = {}
 
@@ -35,17 +37,56 @@ do
 end
 
 do
+ dome.color1 = 
+ {
+   r = 110,
+   g = 0,
+   b = 200,
+   a = 255
+ }
+
+ dome.color2 =
+ {
+   r = dome.color1.r,
+   g = dome.color1.g,
+   b = dome.color1.b,
+   a = dome.color1.a
+ }
+
+ dome.t2 = 20
+
+ dome.color1.r,
+ dome.color1.g,
+ dome.color1.b = angleToColor(dome.t2,150,1)
+ function glColor2(c)
+  colorGL(c.r, c.g, c.b, c.a)
+ end
+ 
+ function dome.update(o)
+   dome.t2 = (dome.t2 + 5) % 360
+   dome.t3 = (dome.t2 + 180) % 360
+ dome.color1.r,
+ dome.color1.g,
+ dome.color1.b = angleToColor(dome.t2,0,1)
+ dome.color2.r,
+ dome.color2.g,
+ dome.color2.b = angleToColor(dome.t3,0,1)
+ end
+end
+
+
+do
  function dome.renderModel(m)
   for i = 1,#m,1 do
     local q = m[i]
     glBeginQuads()
-     colorGL(250,20,205,55)
+     glColor2(dome.color1)
      vectorGL(Vector3D.getArgs(q[1]))
-     colorGL(100,50,200,155)
+     glColor2(dome.color2)
      vectorGL(Vector3D.getArgs(q[2]))
-     colorGL(100,50,200,155)
+     glColor2(dome.color2)
      vectorGL(Vector3D.getArgs(q[3]))
-     colorGL(40,30,220,155)
+     glColor2(dome.color1)
      vectorGL(Vector3D.getArgs(q[4]))
     glEnd()
   end
@@ -81,13 +122,14 @@ do
   glPushMatrix()
   glTranslate(0,0,-50)
   o.renderModel(o.model)
+  glRotate(dome.t*1.5, 0,1,0)
   glPushMatrix()
    for i=1,10,1 do
     local a = 
     glTranslate(0,4,0)
     --glScale(math.sin(a),1,math.sin(a))
-    glScale(0.99, 1, 0.9)
-    --glRotate(10 * math.sin(deg2rad(dome.t)),1,0,0)
+    glScale(0.9, 1, 0.8)
+    glRotate(20 * math.sin(deg2rad(dome.t)),1,0,0)
     o.renderModel(o.model)
    end
   glPopMatrix()
@@ -95,6 +137,7 @@ do
   dome.t = dome.t + 5
  end
 end
+
 
 
 

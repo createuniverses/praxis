@@ -22,7 +22,7 @@ function WidgetLib.new(lspace, width, height, depth)
   return w
 end
 
-function WidgetLib.newSimple()
+function WidgetLib.newSimple(...)
   local w = {}
   w.lspace = transform.new()
   w.width = 10
@@ -37,7 +37,18 @@ function WidgetLib.newSimple()
   w.rmbup = function (o,x,y,z) end
   w.mousemove = function (o,x,y,z) end
   table.insert(Widgets, w)
+  
+  local extras = {...}
+  if extras[1] ~= nil then
+    w.name = extras[1]
+  end
+  
   return w
+end
+
+
+function WidgetLib.getWidget(n)
+
 end
 
 function WidgetLib.addExisting(w)
@@ -129,4 +140,5 @@ end
 -- WidgetLib.callAll("update")
 -- WidgetLib.callAll("render")
 -- WidgetLib.callAllInRange("lmbdown")
+
 
