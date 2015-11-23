@@ -34,6 +34,18 @@ end
 
 --print2(codelog[#codelog])
 
+function makeCodeLogBuffer()
+  parentBufferName = getBufferName()
+  local sText = ""
+  for i=1,#codelog,1 do
+    sText = sText .. "Entry " .. i .. "\n"
+    sText = sText .. codelog[i] .. "\n\n"
+  end
+  newBuffer("codelog.txt")
+  setBufferText(sText)
+  edSetPosition(#sText - 1)
+end
+
 showTrace()
 print("codelogger logging")
 --clearTrace()

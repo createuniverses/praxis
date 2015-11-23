@@ -8,3 +8,8 @@ function WidgetGroupLib.new(name)
   -- etc  
   return w
 end
+
+function WidgetGroupLib.render(w)
+  -- render each of the items in Widgets
+  -- after first applying our transform.
+end
