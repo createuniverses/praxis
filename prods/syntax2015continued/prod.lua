@@ -6,6 +6,8 @@ dofile("util.lua")
 
 dofile("unpack2.lua")
 dofile("reflect.lua")
+dofile("colorwheel.lua")
+
 dofile("geometry.lua")
 dofile("drawing.lua")
 dofile("queue.lua")
@@ -29,6 +31,9 @@ dofile("skythings.lua")
 dofile("greets.lua")
 
 dofile("tweaks.lua")
+
+dofile("dome.lua")
+dofile("camwidget.lua")
 
 function OnMouseMove(dx,dy,x,y)
   WidgetLib.callAllInRange("mousemove")

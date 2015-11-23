@@ -9,6 +9,20 @@ function airplane.allstoppilot(o)
   controls.thrust = 0
 end
 
+function f11Pressed()
+  if mainEditorVisible() then
+    hideEditor()
+    setKeyRepeat(true)
+  else
+    showEditor()
+  end  
+end
+
+mainEditorVisible = editorVisible
+
+function editorVisible() return true end
+
+
 airplane.followcam = true
 showdiscs = false
 showarms = false

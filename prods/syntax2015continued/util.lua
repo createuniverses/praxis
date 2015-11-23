@@ -66,5 +66,10 @@ end
 
 --makePositionSaver("colorwheelwidget")
 
+function wrap(n,b)
+  local v = ((n-1) % b) + 1
+  return v
+end
+
 glColor = colorGL
 
