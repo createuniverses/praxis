@@ -6,7 +6,7 @@ function Slider.new(pos, minpos, maxpos)
   local lspace = transform.new()
   transform.setTranslation(lspace, pos.x, pos.y, pos.z)
   transform.lookAt(lspace, pos.x, pos.y, pos.z + 100)
-  local slider = WidgetLib.new(lspace, 20,10,100)
+  local slider = WidgetLib2.new("slider", lspace, 20,10,100)
   slider.render = Slider.render
   slider.mousemove = Slider.mousemove
   slider.lmbdown = Slider.click
@@ -55,6 +55,8 @@ end
 function Slider.click(slider,x,y,z)
   slider.pos = linearInterpolate(0, slider.depth, slider.min, slider.max, z)
 end
+
+
 
 
 

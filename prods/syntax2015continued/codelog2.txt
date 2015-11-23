@@ -1,0 +1,1195 @@
+Entry 1
+loadBuffer("widgetgroup.lua")
+
+Entry 2
+loadBuffer("widgets.lua")
+
+Entry 3
+loadBuffer("widgets2.lua")
+
+Entry 4
+print2(getFunction(WidgetLib2.renderWidget))
+
+Entry 5
+loadBuffer("colorwheelwidget.lua")
+
+Entry 6
+do
+colorwheelwidget = colorwheelwidget or WidgetLib2.newSimple("colorwheel")
+colorwheelwidget.width = 256
+colorwheelwidget.depth = 256
+colorwheelwidget.minx = -256
+colorwheelwidget.minz = -256
+--transform.scale(colorwheelwidget.lspace, 0.1, 1, 0.1)
+--transform.scale(colorwheelwidget.lspace, 100, 1, 100)
+
+colorwheelgrp = colorwheelgrp or WidgetGroupLib.new("colorwheelgrp")
+colorwheelgrp.Widgets[1] = colorwheelwidget
+end
+
+Entry 7
+do
+ colorwheelwidget.render = function (o)
+   glPushMatrix()
+   glScale(0.1, 1, 0.1)
+   glColor(200,100,100,255)
+   glBeginTriangles()
+    local step = 10
+    for a = 0,360-step,step do
+     local r = 256
+     local x1 = math.sin(deg2rad(a)) * r
+     local y1 = math.cos(deg2rad(a)) * r
+     local x2 = math.sin(deg2rad(a+step)) * r
+     local y2 = math.cos(deg2rad(a+step)) * r
+     glColor(255,255,255,255)
+     glVertex(0,0,0)
+     local red,green,blue = angleToColor(a,0,1)
+     glColor(red, green, blue)
+     glVertex(x1,0,y1)
+     glColor(red, green, blue)
+     glVertex(x2,0,y2)
+    end
+   glEnd()
+   
+   glColor(redslider.pos, greenslider.pos, blueslider.pos, 255)
+   glPushMatrix()
+   glTranslate(0,0,-400)
+   glBeginQuads()
+     glVertex(0,0,0)
+     glVertex(100,0,0)
+     glVertex(100,0,100)
+     glVertex(0,0,100)
+   glEnd()
+   glPopMatrix()
+   
+   do
+    local a,r,s = colourToAngle(redslider.pos, greenslider.pos, blueslider.pos)
+    local x = math.sin(deg2rad(a)) * (256-r)
+    local z = math.cos(deg2rad(a)) * (256-r)
+    glColor(0,0,0,255)
+    local h = 0.5
+    drawLine(x-25, h, z, x+25, h, z)
+    drawLine(x, h, z-25, x, h, z+25)
+    glColor(255,255,255,255)
+    
+   end
+   glPopMatrix()
+   WidgetLib.renderWidget(redslider)
+   WidgetLib.renderWidget(greenslider)
+   WidgetLib.renderWidget(blueslider)
+   --redslider:render()
+   --greenslider:render()
+   --blueslider:render()
+ end
+ colorwheelwidget.renderGlobal = function (o)
+ end
+end
+
+Entry 8
+print2(#Widgets)
+
+Entry 9
+Widgets[4] = colorwheelgrp
+
+Entry 10
+print2(getErrorText())
+
+Entry 11
+clearError()
+
+Entry 12
+redslider = redslider or Slider.new(vec3d(0,0,-50), 0, 255)
+
+Entry 13
+greenslider = greenslider or Slider.new(vec3d(0,0,-50), 0, 255)
+
+Entry 14
+blueslider = blueslider or Slider.new(vec3d(0,0,-50), 0, 255)
+
+Entry 15
+do
+redslider.depth = 100
+redslider.width = 10
+greenslider.depth = 100
+greenslider.width = 10
+blueslider.depth = 100
+blueslider.width = 10
+
+--makePositionSaver("redslider")
+--makePositionSaver("blueslider")
+--makePositionSaver("greenslider")
+
+transform.setTranslation(blueslider.lspace, 290,-1,27)
+transform.setTranslation(greenslider.lspace, 270,-1,26)
+transform.setTranslation(redslider.lspace, 252,-1,27)
+
+transform.setTranslation(redslider.lspace, 20,0,0)
+transform.setTranslation(greenslider.lspace, 40,0,0)
+transform.setTranslation(blueslider.lspace, 60,0,0)
+end
+
+Entry 16
+continue()
+
+Entry 17
+print2(getErrorText())
+
+Entry 18
+clearError()
+
+Entry 19
+dofile("widgetgroup.lua")
+
+Entry 20
+continue()
+
+Entry 21
+print2(getErrorText())
+
+Entry 22
+clearError()
+
+Entry 23
+Widgets[4] = {}
+
+Entry 24
+continue()
+
+Entry 25
+print2(getErrorText())
+
+Entry 26
+print2(#Widgets)
+
+Entry 27
+Widgets = {}
+
+Entry 28
+Widgets[1] = arch
+
+Entry 29
+Widgets[2] = spirowidget
+
+Entry 30
+Widgets[3] = airplane
+
+Entry 31
+continue()
+
+Entry 32
+clearError()
+
+Entry 33
+Widgets[1] = archwidget
+
+Entry 34
+Widgets[1] = camwidget
+
+Entry 35
+print2(#Widgets)
+
+Entry 36
+Widgets[4] = colorwheelgrp
+
+Entry 37
+print2(getErrorText())
+
+Entry 38
+clearError()
+
+Entry 39
+loadBuffer("slider.lua")
+
+Entry 40
+do
+ colorwheelwidget.render = function (o)
+   glPushMatrix()
+   glScale(0.1, 1, 0.1)
+   glColor(200,100,100,255)
+   glBeginTriangles()
+    local step = 10
+    for a = 0,360-step,step do
+     local r = 256
+     local x1 = math.sin(deg2rad(a)) * r
+     local y1 = math.cos(deg2rad(a)) * r
+     local x2 = math.sin(deg2rad(a+step)) * r
+     local y2 = math.cos(deg2rad(a+step)) * r
+     glColor(255,255,255,255)
+     glVertex(0,0,0)
+     local red,green,blue = angleToColor(a,0,1)
+     glColor(red, green, blue)
+     glVertex(x1,0,y1)
+     glColor(red, green, blue)
+     glVertex(x2,0,y2)
+    end
+   glEnd()
+   
+   glColor(redslider.pos, greenslider.pos, blueslider.pos, 255)
+   glPushMatrix()
+   glTranslate(0,0,-400)
+   glBeginQuads()
+     glVertex(0,0,0)
+     glVertex(100,0,0)
+     glVertex(100,0,100)
+     glVertex(0,0,100)
+   glEnd()
+   glPopMatrix()
+   
+   do
+    local a,r,s = colourToAngle(redslider.pos, greenslider.pos, blueslider.pos)
+    local x = math.sin(deg2rad(a)) * (256-r)
+    local z = math.cos(deg2rad(a)) * (256-r)
+    glColor(0,0,0,255)
+    local h = 0.5
+    drawLine(x-25, h, z, x+25, h, z)
+    drawLine(x, h, z-25, x, h, z+25)
+    glColor(255,255,255,255)
+    
+   end
+   glPopMatrix()
+   --WidgetLib.renderWidget(redslider)
+   --WidgetLib.renderWidget(greenslider)
+   --WidgetLib.renderWidget(blueslider)
+   --redslider:render()
+   --greenslider:render()
+   --blueslider:render()
+ end
+ colorwheelwidget.renderGlobal = function (o)
+ end
+end
+
+Entry 41
+continue()
+
+Entry 42
+print2(#Widgets)
+
+Entry 43
+closeBuffer()
+
+Entry 44
+closeBuffer()
+
+Entry 45
+loadBuffer("camwidget.lua")
+
+Entry 46
+  closeBuffer()
+
+Entry 47
+  closeBuffer()
+
+Entry 48
+
+
+Entry 49
+
+
+Entry 50
+
+
+Entry 51
+
+
+Entry 52
+
+
+Entry 53
+do colorwheelgrp.update = function (o)
+  dome.update(o)
+  transform.copy(o.lspace, transform.camera())
+  --transform.rotate(
+  local fwd = vec3d(transform.forward(o.lspace))
+  local side = vec3d(transform.side(o.lspace))
+  local up = vec3d(transform.up(o.lspace))
+  --transform.translate(o.lspace, 0,-50,0)
+  transform.translate(o.lspace, Vector3D.getArgs(fwd * 50))
+  transform.translate(o.lspace,
+    Vector3D.getArgs(side * -60))
+  transform.translate(o.lspace,
+    Vector3D.getArgs(up * 40))
+end end
+
+Entry 54
+do colorwheelgrp.update = function (o)
+  --dome.update(o)
+  transform.copy(o.lspace, transform.camera())
+  --transform.rotate(
+  local fwd = vec3d(transform.forward(o.lspace))
+  local side = vec3d(transform.side(o.lspace))
+  local up = vec3d(transform.up(o.lspace))
+  --transform.translate(o.lspace, 0,-50,0)
+  transform.translate(o.lspace, Vector3D.getArgs(fwd * 50))
+  transform.translate(o.lspace,
+    Vector3D.getArgs(side * -60))
+  transform.translate(o.lspace,
+    Vector3D.getArgs(up * 40))
+end end
+
+Entry 55
+Widgets[4] = {}
+
+Entry 56
+Widgets[4] = nil
+
+Entry 57
+print2(#Widgets)
+
+Entry 58
+clearError()
+
+Entry 59
+continue()
+
+Entry 60
+Widgets[3] = nil
+
+Entry 61
+Widgets = {}
+
+Entry 62
+Widgets[1] = spirowidget
+
+Entry 63
+Widgets[2] = colorwheelgrp
+
+Entry 64
+print2(#colorwheelgrp.Widgets)
+
+Entry 65
+colorwheelgrp.Widgets = {}
+
+Entry 66
+colorwheelgrp.Widgets[1] = colorwheelwidget
+
+Entry 67
+do
+ colorwheelwidget.render = function (o)
+   glPushMatrix()
+   glScale(0.1, 1, 0.2)
+   glColor(200,100,100,255)
+   glBeginTriangles()
+    local step = 10
+    for a = 0,360-step,step do
+     local r = 256
+     local x1 = math.sin(deg2rad(a)) * r
+     local y1 = math.cos(deg2rad(a)) * r
+     local x2 = math.sin(deg2rad(a+step)) * r
+     local y2 = math.cos(deg2rad(a+step)) * r
+     glColor(255,255,255,255)
+     glVertex(0,0,0)
+     local red,green,blue = angleToColor(a,0,1)
+     glColor(red, green, blue)
+     glVertex(x1,0,y1)
+     glColor(red, green, blue)
+     glVertex(x2,0,y2)
+    end
+   glEnd()
+   
+   glColor(redslider.pos, greenslider.pos, blueslider.pos, 255)
+   glPushMatrix()
+   glTranslate(0,0,-400)
+   glBeginQuads()
+     glVertex(0,0,0)
+     glVertex(100,0,0)
+     glVertex(100,0,100)
+     glVertex(0,0,100)
+   glEnd()
+   glPopMatrix()
+   
+   do
+    local a,r,s = colourToAngle(redslider.pos, greenslider.pos, blueslider.pos)
+    local x = math.sin(deg2rad(a)) * (256-r)
+    local z = math.cos(deg2rad(a)) * (256-r)
+    glColor(0,0,0,255)
+    local h = 0.5
+    drawLine(x-25, h, z, x+25, h, z)
+    drawLine(x, h, z-25, x, h, z+25)
+    glColor(255,255,255,255)
+    
+   end
+   glPopMatrix()
+   --WidgetLib.renderWidget(redslider)
+   --WidgetLib.renderWidget(greenslider)
+   --WidgetLib.renderWidget(blueslider)
+   --redslider:render()
+   --greenslider:render()
+   --blueslider:render()
+ end
+ colorwheelwidget.renderGlobal = function (o)
+ end
+end
+
+Entry 68
+do
+ colorwheelwidget.render = function (o)
+   glPushMatrix()
+   glScale(0.1, 1, 0.1)
+   glColor(200,100,100,255)
+   glBeginTriangles()
+    local step = 10
+    for a = 0,360-step,step do
+     local r = 256
+     local x1 = math.sin(deg2rad(a)) * r
+     local y1 = math.cos(deg2rad(a)) * r
+     local x2 = math.sin(deg2rad(a+step)) * r
+     local y2 = math.cos(deg2rad(a+step)) * r
+     glColor(255,255,255,255)
+     glVertex(0,0,0)
+     local red,green,blue = angleToColor(a,0,1)
+     glColor(red, green, blue)
+     glVertex(x1,0,y1)
+     glColor(red, green, blue)
+     glVertex(x2,0,y2)
+    end
+   glEnd()
+   
+   glColor(redslider.pos, greenslider.pos, blueslider.pos, 255)
+   glPushMatrix()
+   glTranslate(0,0,-400)
+   glBeginQuads()
+     glVertex(0,0,0)
+     glVertex(100,0,0)
+     glVertex(100,0,100)
+     glVertex(0,0,100)
+   glEnd()
+   glPopMatrix()
+   
+   do
+    local a,r,s = colourToAngle(redslider.pos, greenslider.pos, blueslider.pos)
+    local x = math.sin(deg2rad(a)) * (256-r)
+    local z = math.cos(deg2rad(a)) * (256-r)
+    glColor(0,0,0,255)
+    local h = 0.5
+    drawLine(x-25, h, z, x+25, h, z)
+    drawLine(x, h, z-25, x, h, z+25)
+    glColor(255,255,255,255)
+    
+   end
+   glPopMatrix()
+   --WidgetLib.renderWidget(redslider)
+   --WidgetLib.renderWidget(greenslider)
+   --WidgetLib.renderWidget(blueslider)
+   --redslider:render()
+   --greenslider:render()
+   --blueslider:render()
+ end
+ colorwheelwidget.renderGlobal = function (o)
+ end
+end
+
+Entry 69
+do
+ colorwheelwidget.render = function (o)
+   glPushMatrix()
+   --glScale(0.1, 1, 0.1)
+   glColor(200,100,100,255)
+   glBeginTriangles()
+    local step = 10
+    for a = 0,360-step,step do
+     local r = 256
+     local x1 = math.sin(deg2rad(a)) * r
+     local y1 = math.cos(deg2rad(a)) * r
+     local x2 = math.sin(deg2rad(a+step)) * r
+     local y2 = math.cos(deg2rad(a+step)) * r
+     glColor(255,255,255,255)
+     glVertex(0,0,0)
+     local red,green,blue = angleToColor(a,0,1)
+     glColor(red, green, blue)
+     glVertex(x1,0,y1)
+     glColor(red, green, blue)
+     glVertex(x2,0,y2)
+    end
+   glEnd()
+   
+   glColor(redslider.pos, greenslider.pos, blueslider.pos, 255)
+   glPushMatrix()
+   glTranslate(0,0,-400)
+   glBeginQuads()
+     glVertex(0,0,0)
+     glVertex(100,0,0)
+     glVertex(100,0,100)
+     glVertex(0,0,100)
+   glEnd()
+   glPopMatrix()
+   
+   do
+    local a,r,s = colourToAngle(redslider.pos, greenslider.pos, blueslider.pos)
+    local x = math.sin(deg2rad(a)) * (256-r)
+    local z = math.cos(deg2rad(a)) * (256-r)
+    glColor(0,0,0,255)
+    local h = 0.5
+    drawLine(x-25, h, z, x+25, h, z)
+    drawLine(x, h, z-25, x, h, z+25)
+    glColor(255,255,255,255)
+    
+   end
+   glPopMatrix()
+   --WidgetLib.renderWidget(redslider)
+   --WidgetLib.renderWidget(greenslider)
+   --WidgetLib.renderWidget(blueslider)
+   --redslider:render()
+   --greenslider:render()
+   --blueslider:render()
+ end
+ colorwheelwidget.renderGlobal = function (o)
+ end
+end
+
+Entry 70
+do colorwheelgrp.update = function (o)
+end end
+
+Entry 71
+
+
+Entry 72
+do colorwheelgrp.update = function (o)
+  --dome.update(o)
+  transform.copy(o.lspace, transform.camera())
+  --transform.rotate(
+  local fwd = vec3d(transform.forward(o.lspace))
+  local side = vec3d(transform.side(o.lspace))
+  local up = vec3d(transform.up(o.lspace))
+  --transform.translate(o.lspace, 0,-50,0)
+  transform.translate(o.lspace, Vector3D.getArgs(fwd * 50))
+  transform.translate(o.lspace,
+    Vector3D.getArgs(side * -60))
+  transform.translate(o.lspace,
+    Vector3D.getArgs(up * 40))
+end end
+
+Entry 73
+do colorwheelgrp.update = function (o)
+  --dome.update(o)
+  transform.copy(o.lspace, transform.camera())
+  local fwd = vec3d(transform.forward(o.lspace))
+  local side = vec3d(transform.side(o.lspace))
+  local up = vec3d(transform.up(o.lspace))
+  --transform.translate(o.lspace, 0,-50,0)
+
+  transform.translate(o.lspace,
+    Vector3D.getArgs(fwd * 0))
+  transform.translate(o.lspace,
+    Vector3D.getArgs(side * -60))
+  transform.translate(o.lspace,
+    Vector3D.getArgs(up * 40))
+end end
+
+Entry 74
+do colorwheelgrp.update = function (o)
+  --dome.update(o)
+  transform.copy(o.lspace, transform.camera())
+  local fwd = vec3d(transform.forward(o.lspace))
+  local side = vec3d(transform.side(o.lspace))
+  local up = vec3d(transform.up(o.lspace))
+  --transform.translate(o.lspace, 0,-50,0)
+
+  transform.translate(o.lspace,
+    Vector3D.getArgs(fwd * 100))
+  transform.translate(o.lspace,
+    Vector3D.getArgs(side * -60))
+  transform.translate(o.lspace,
+    Vector3D.getArgs(up * 40))
+end end
+
+Entry 75
+do colorwheelgrp.update = function (o)
+  --dome.update(o)
+  transform.copy(o.lspace, transform.camera())
+  local fwd = vec3d(transform.forward(o.lspace))
+  local side = vec3d(transform.side(o.lspace))
+  local up = vec3d(transform.up(o.lspace))
+  --transform.translate(o.lspace, 0,-50,0)
+
+  transform.translate(o.lspace,
+    Vector3D.getArgs(fwd * 50))
+  transform.translate(o.lspace,
+    Vector3D.getArgs(side * -60))
+  transform.translate(o.lspace,
+    Vector3D.getArgs(up * 40))
+end end
+
+Entry 76
+transform.setTranslation(colorwheelwidget.lspace, 0,0,0)
+
+Entry 77
+colorwheelwidget.lspace = transform.new()
+
+Entry 78
+function WidgetGroupLib.render(w)
+  print("wot")
+  -- render each of the items in Widgets
+  -- after first applying our transform.
+  glPushMatrix()
+  glApplyTransform(w.lspace)
+  for k,v in pairs(w.Widgets) do
+    WidgetGroupLib.renderWidget(v)
+  end
+  glPopMatrix()
+
+  for k,v in pairs(w.Widgets) do
+    if v["renderGlobal"] ~= nil then
+      v["renderGlobal"](v)
+    end
+  end
+end
+
+Entry 79
+function WidgetGroupLib.render(w)
+  --print("wot")
+  -- render each of the items in Widgets
+  -- after first applying our transform.
+  glPushMatrix()
+  glApplyTransform(w.lspace)
+  for k,v in pairs(w.Widgets) do
+    WidgetGroupLib.renderWidget(v)
+  end
+  glPopMatrix()
+
+  for k,v in pairs(w.Widgets) do
+    if v["renderGlobal"] ~= nil then
+      v["renderGlobal"](v)
+    end
+  end
+end
+
+Entry 80
+function WidgetGroupLib.renderWidget(v)
+  if v.lspace ~= nil then
+    glPushMatrix()
+    glApplyTransform(v.lspace)
+    v["render"](v)
+    -- render bounding box as an option
+    glPopMatrix()
+  else
+    v["render"](v)
+  end
+end
+
+Entry 81
+function WidgetGroupLib.renderWidget(v)
+  if v.lspace ~= nil then
+    print("yi")
+    glPushMatrix()
+    glApplyTransform(v.lspace)
+    v["render"](v)
+    -- render bounding box as an option
+    glPopMatrix()
+  else
+    v["render"](v)
+  end
+end
+
+Entry 82
+function WidgetGroupLib.renderWidget(v)
+  if v.lspace ~= nil then
+    --print("yi")
+    glPushMatrix()
+    glApplyTransform(v.lspace)
+    v["render"](v)
+    -- render bounding box as an option
+    glPopMatrix()
+  else
+    v["render"](v)
+  end
+end
+
+Entry 83
+do colorwheelgrp.update = function (o)
+end end
+
+Entry 84
+colorwheelgrp.lspace = transform.new()
+
+Entry 85
+do colorwheelgrp.update = function (o)
+  --dome.update(o)
+  transform.copy(o.lspace, transform.camera())
+  local fwd = vec3d(transform.forward(o.lspace))
+  local side = vec3d(transform.side(o.lspace))
+  local up = vec3d(transform.up(o.lspace))
+  
+  transform.translate(o.lspace, 0,-50,0)
+
+  --transform.translate(o.lspace,
+  --  Vector3D.getArgs(fwd * 50))
+  --transform.translate(o.lspace,
+  --  Vector3D.getArgs(side * -60))
+  --transform.translate(o.lspace,
+  --  Vector3D.getArgs(up * 40))
+end end
+
+Entry 86
+do colorwheelgrp.update = function (o)
+  --dome.update(o)
+  transform.copy(o.lspace, transform.camera())
+  local fwd = vec3d(transform.forward(o.lspace))
+  local side = vec3d(transform.side(o.lspace))
+  local up = vec3d(transform.up(o.lspace))
+  
+  transform.translate(o.lspace, 0,-150,0)
+
+  --transform.translate(o.lspace,
+  --  Vector3D.getArgs(fwd * 50))
+  --transform.translate(o.lspace,
+  --  Vector3D.getArgs(side * -60))
+  --transform.translate(o.lspace,
+  --  Vector3D.getArgs(up * 40))
+end end
+
+Entry 87
+do colorwheelgrp.update = function (o)
+  --dome.update(o)
+  transform.copy(o.lspace, transform.camera())
+  local fwd = vec3d(transform.forward(o.lspace))
+  local side = vec3d(transform.side(o.lspace))
+  local up = vec3d(transform.up(o.lspace))
+  
+  transform.translate(o.lspace, 0,0,0)
+
+  --transform.translate(o.lspace,
+  --  Vector3D.getArgs(fwd * 50))
+  --transform.translate(o.lspace,
+  --  Vector3D.getArgs(side * -60))
+  --transform.translate(o.lspace,
+  --  Vector3D.getArgs(up * 40))
+end end
+
+Entry 88
+do colorwheelgrp.update = function (o)
+end end
+
+Entry 89
+colorwheelgrp.lspace = transform.new()
+
+Entry 90
+transform.copy(colorwheelgrp.lspace, transform.camera())
+
+Entry 91
+transform.copy(colorwheelgrp.lspace, transform.camera())
+
+Entry 92
+colorwheelgrp.lspace = transform.new()
+
+Entry 93
+transform.copy(colorwheelgrp.lspace, transform.camera())
+
+Entry 94
+transform.copy(colorwheelgrp.lspace, transform.camera())
+
+Entry 95
+print2(getFunction(dome.update))
+
+Entry 96
+do colorwheelwidget.render = function (o)
+  --o.renderbuffer(o)
+  glPushMatrix()
+  glTranslate(60,-50,40)
+  dome.render(dome)
+  glPopMatrix()
+end end
+
+Entry 97
+colorwheelwidget.lspace = transform.new()
+
+Entry 98
+transform.copy(colorwheelgrp.lspace, transform.camera())
+
+Entry 99
+transform.copy(colorwheelgrp.lspace, transform.camera())
+
+Entry 100
+do colorwheelgrp.update = function (o)
+  --dome.update(o)
+  transform.copy(o.lspace, transform.camera())
+end end
+
+Entry 101
+do colorwheelgrp.render = function (o)
+  --o.renderbuffer(o)
+  glPushMatrix()
+  glTranslate(60,-50,40)
+  dome.render(dome)
+  glPopMatrix()
+end end
+
+Entry 102
+do colorwheelgrp.update = function (o)
+  --dome.update(o)
+  transform.copy(o.lspace, transform.camera())
+  local fwd = vec3d(transform.forward(o.lspace))
+  local side = vec3d(transform.side(o.lspace))
+  local up = vec3d(transform.up(o.lspace))
+  
+  transform.translate(o.lspace, 0,0,0)
+
+  --transform.translate(o.lspace,
+  --  Vector3D.getArgs(fwd * 50))
+  --transform.translate(o.lspace,
+  --  Vector3D.getArgs(side * -60))
+  --transform.translate(o.lspace,
+  --  Vector3D.getArgs(up * 40))
+end end
+
+Entry 103
+do colorwheelgrp.update = function (o)
+  --dome.update(o)
+  transform.copy(o.lspace, transform.camera())
+  local fwd = vec3d(transform.forward(o.lspace))
+  local side = vec3d(transform.side(o.lspace))
+  local up = vec3d(transform.up(o.lspace))
+  
+  transform.translate(o.lspace, 0,0,0)
+
+  transform.translate(o.lspace,
+    Vector3D.getArgs(fwd * 50))
+  transform.translate(o.lspace,
+    Vector3D.getArgs(side * -60))
+  transform.translate(o.lspace,
+    Vector3D.getArgs(up * 40))
+end end
+
+Entry 104
+colorwheelwidget.lspace = transform.new()
+
+Entry 105
+do colorwheelgrp.render = function (o)
+  --o.renderbuffer(o)
+  glPushMatrix()
+  glApplyTransform(colorwheelwidget.lspace)
+  glTranslate(60,-50,40)
+  dome.render(dome)
+  glPopMatrix()
+end end
+
+Entry 106
+do colorwheelgrp.render = function (o)
+  --o.renderbuffer(o)
+  glPushMatrix()
+  glApplyTransform(colorwheelwidget.lspace)
+  glTranslate(60,-50,40)
+  colorwheelwidget.render(colorwheelwidget)
+  dome.render(dome)
+  glPopMatrix()
+end end
+
+Entry 107
+do colorwheelgrp.render = function (o)
+  --o.renderbuffer(o)
+  glPushMatrix()
+  glApplyTransform(colorwheelwidget.lspace)
+  glTranslate(60,-50,40)
+  colorwheelwidget.render(colorwheelwidget)
+  --dome.render(dome)
+  glPopMatrix()
+end end
+
+Entry 108
+do colorwheelgrp.render = function (o)
+  --o.renderbuffer(o)
+  glPushMatrix()
+  glApplyTransform(colorwheelwidget.lspace)
+  glTranslate(60,-50,40)
+  colorwheelwidget.render(colorwheelwidget)
+  dome.render(dome)
+  glPopMatrix()
+end end
+
+Entry 109
+do
+ colorwheelwidget.render = function (o)
+   glPushMatrix()
+   --glScale(0.1, 1, 0.1)
+   glColor(200,100,100,255)
+   glBeginTriangles()
+    local step = 10
+    for a = 0,360-step,step do
+     local r = 256
+     local x1 = math.sin(deg2rad(a)) * r
+     local y1 = math.cos(deg2rad(a)) * r
+     local x2 = math.sin(deg2rad(a+step)) * r
+     local y2 = math.cos(deg2rad(a+step)) * r
+     glColor(255,255,255,255)
+     glVertex(0,0,0)
+     local red,green,blue = angleToColor(a,0,1)
+     glColor(red, green, blue)
+     glVertex(x1,0,y1)
+     glColor(red, green, blue)
+     glVertex(x2,0,y2)
+    end
+   glEnd()
+   
+   glColor(redslider.pos, greenslider.pos, blueslider.pos, 255)
+   glPushMatrix()
+   glTranslate(0,0,-400)
+   glBeginQuads()
+     glVertex(0,0,0)
+     glVertex(100,0,0)
+     glVertex(100,0,100)
+     glVertex(0,0,100)
+   glEnd()
+   glPopMatrix()
+   
+   do
+    local a,r,s = colourToAngle(redslider.pos, greenslider.pos, blueslider.pos)
+    local x = math.sin(deg2rad(a)) * (256-r)
+    local z = math.cos(deg2rad(a)) * (256-r)
+    glColor(0,0,0,255)
+    local h = 0.5
+    drawLine(x-25, h, z, x+25, h, z)
+    drawLine(x, h, z-25, x, h, z+25)
+    glColor(255,255,255,255)
+    
+   end
+   glPopMatrix()
+   --WidgetLib.renderWidget(redslider)
+   --WidgetLib.renderWidget(greenslider)
+   --WidgetLib.renderWidget(blueslider)
+   --redslider:render()
+   --greenslider:render()
+   --blueslider:render()
+ end
+ colorwheelwidget.renderGlobal = function (o)
+ end
+end
+
+Entry 110
+do
+ colorwheelwidget.render = function (o)
+   glPushMatrix()
+   glScale(0.1, 1, 0.1)
+   glColor(200,100,100,255)
+   glBeginTriangles()
+    local step = 10
+    for a = 0,360-step,step do
+     local r = 256
+     local x1 = math.sin(deg2rad(a)) * r
+     local y1 = math.cos(deg2rad(a)) * r
+     local x2 = math.sin(deg2rad(a+step)) * r
+     local y2 = math.cos(deg2rad(a+step)) * r
+     glColor(255,255,255,255)
+     glVertex(0,0,0)
+     local red,green,blue = angleToColor(a,0,1)
+     glColor(red, green, blue)
+     glVertex(x1,0,y1)
+     glColor(red, green, blue)
+     glVertex(x2,0,y2)
+    end
+   glEnd()
+   
+   glColor(redslider.pos, greenslider.pos, blueslider.pos, 255)
+   glPushMatrix()
+   glTranslate(0,0,-400)
+   glBeginQuads()
+     glVertex(0,0,0)
+     glVertex(100,0,0)
+     glVertex(100,0,100)
+     glVertex(0,0,100)
+   glEnd()
+   glPopMatrix()
+   
+   do
+    local a,r,s = colourToAngle(redslider.pos, greenslider.pos, blueslider.pos)
+    local x = math.sin(deg2rad(a)) * (256-r)
+    local z = math.cos(deg2rad(a)) * (256-r)
+    glColor(0,0,0,255)
+    local h = 0.5
+    drawLine(x-25, h, z, x+25, h, z)
+    drawLine(x, h, z-25, x, h, z+25)
+    glColor(255,255,255,255)
+    
+   end
+   glPopMatrix()
+   --WidgetLib.renderWidget(redslider)
+   --WidgetLib.renderWidget(greenslider)
+   --WidgetLib.renderWidget(blueslider)
+   --redslider:render()
+   --greenslider:render()
+   --blueslider:render()
+ end
+ colorwheelwidget.renderGlobal = function (o)
+ end
+end
+
+Entry 111
+do
+ colorwheelwidget.render = function (o)
+   glPushMatrix()
+   glScale(0.1, 1, 0.1)
+   glRotate(90, 0,1,0)
+   glColor(200,100,100,255)
+   glBeginTriangles()
+    local step = 10
+    for a = 0,360-step,step do
+     local r = 256
+     local x1 = math.sin(deg2rad(a)) * r
+     local y1 = math.cos(deg2rad(a)) * r
+     local x2 = math.sin(deg2rad(a+step)) * r
+     local y2 = math.cos(deg2rad(a+step)) * r
+     glColor(255,255,255,255)
+     glVertex(0,0,0)
+     local red,green,blue = angleToColor(a,0,1)
+     glColor(red, green, blue)
+     glVertex(x1,0,y1)
+     glColor(red, green, blue)
+     glVertex(x2,0,y2)
+    end
+   glEnd()
+   
+   glColor(redslider.pos, greenslider.pos, blueslider.pos, 255)
+   glPushMatrix()
+   glTranslate(0,0,-400)
+   glBeginQuads()
+     glVertex(0,0,0)
+     glVertex(100,0,0)
+     glVertex(100,0,100)
+     glVertex(0,0,100)
+   glEnd()
+   glPopMatrix()
+   
+   do
+    local a,r,s = colourToAngle(redslider.pos, greenslider.pos, blueslider.pos)
+    local x = math.sin(deg2rad(a)) * (256-r)
+    local z = math.cos(deg2rad(a)) * (256-r)
+    glColor(0,0,0,255)
+    local h = 0.5
+    drawLine(x-25, h, z, x+25, h, z)
+    drawLine(x, h, z-25, x, h, z+25)
+    glColor(255,255,255,255)
+    
+   end
+   glPopMatrix()
+   --WidgetLib.renderWidget(redslider)
+   --WidgetLib.renderWidget(greenslider)
+   --WidgetLib.renderWidget(blueslider)
+   --redslider:render()
+   --greenslider:render()
+   --blueslider:render()
+ end
+ colorwheelwidget.renderGlobal = function (o)
+ end
+end
+
+Entry 112
+do
+ colorwheelwidget.render = function (o)
+   glPushMatrix()
+   glScale(0.1, 1, 0.1)
+   glRotate(90, 1,0,0)
+   glColor(200,100,100,255)
+   glBeginTriangles()
+    local step = 10
+    for a = 0,360-step,step do
+     local r = 256
+     local x1 = math.sin(deg2rad(a)) * r
+     local y1 = math.cos(deg2rad(a)) * r
+     local x2 = math.sin(deg2rad(a+step)) * r
+     local y2 = math.cos(deg2rad(a+step)) * r
+     glColor(255,255,255,255)
+     glVertex(0,0,0)
+     local red,green,blue = angleToColor(a,0,1)
+     glColor(red, green, blue)
+     glVertex(x1,0,y1)
+     glColor(red, green, blue)
+     glVertex(x2,0,y2)
+    end
+   glEnd()
+   
+   glColor(redslider.pos, greenslider.pos, blueslider.pos, 255)
+   glPushMatrix()
+   glTranslate(0,0,-400)
+   glBeginQuads()
+     glVertex(0,0,0)
+     glVertex(100,0,0)
+     glVertex(100,0,100)
+     glVertex(0,0,100)
+   glEnd()
+   glPopMatrix()
+   
+   do
+    local a,r,s = colourToAngle(redslider.pos, greenslider.pos, blueslider.pos)
+    local x = math.sin(deg2rad(a)) * (256-r)
+    local z = math.cos(deg2rad(a)) * (256-r)
+    glColor(0,0,0,255)
+    local h = 0.5
+    drawLine(x-25, h, z, x+25, h, z)
+    drawLine(x, h, z-25, x, h, z+25)
+    glColor(255,255,255,255)
+    
+   end
+   glPopMatrix()
+   --WidgetLib.renderWidget(redslider)
+   --WidgetLib.renderWidget(greenslider)
+   --WidgetLib.renderWidget(blueslider)
+   --redslider:render()
+   --greenslider:render()
+   --blueslider:render()
+ end
+ colorwheelwidget.renderGlobal = function (o)
+ end
+end
+
+Entry 113
+do
+ colorwheelwidget.render = function (o)
+   glPushMatrix()
+   glRotate(90, 1,0,0)
+   glScale(0.1, 1, 0.1)
+   glColor(200,100,100,255)
+   glBeginTriangles()
+    local step = 10
+    for a = 0,360-step,step do
+     local r = 256
+     local x1 = math.sin(deg2rad(a)) * r
+     local y1 = math.cos(deg2rad(a)) * r
+     local x2 = math.sin(deg2rad(a+step)) * r
+     local y2 = math.cos(deg2rad(a+step)) * r
+     glColor(255,255,255,255)
+     glVertex(0,0,0)
+     local red,green,blue = angleToColor(a,0,1)
+     glColor(red, green, blue)
+     glVertex(x1,0,y1)
+     glColor(red, green, blue)
+     glVertex(x2,0,y2)
+    end
+   glEnd()
+   
+   glColor(redslider.pos, greenslider.pos, blueslider.pos, 255)
+   glPushMatrix()
+   glTranslate(0,0,-400)
+   glBeginQuads()
+     glVertex(0,0,0)
+     glVertex(100,0,0)
+     glVertex(100,0,100)
+     glVertex(0,0,100)
+   glEnd()
+   glPopMatrix()
+   
+   do
+    local a,r,s = colourToAngle(redslider.pos, greenslider.pos, blueslider.pos)
+    local x = math.sin(deg2rad(a)) * (256-r)
+    local z = math.cos(deg2rad(a)) * (256-r)
+    glColor(0,0,0,255)
+    local h = 0.5
+    drawLine(x-25, h, z, x+25, h, z)
+    drawLine(x, h, z-25, x, h, z+25)
+    glColor(255,255,255,255)
+    
+   end
+   glPopMatrix()
+   --WidgetLib.renderWidget(redslider)
+   --WidgetLib.renderWidget(greenslider)
+   --WidgetLib.renderWidget(blueslider)
+   --redslider:render()
+   --greenslider:render()
+   --blueslider:render()
+ end
+ colorwheelwidget.renderGlobal = function (o)
+ end
+end
+
+Entry 114
+loadBuffer("shiftenter.lua")
+
+setBufferName("codelog2.txt")

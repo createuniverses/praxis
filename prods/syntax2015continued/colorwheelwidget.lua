@@ -1,20 +1,31 @@
 
 do
-colorwheelwidget = colorwheelwidget or WidgetLib.newSimple()
+colorwheelwidget = colorwheelwidget or WidgetLib2.newSimple("colorwheel")
 colorwheelwidget.width = 256
 colorwheelwidget.depth = 256
 colorwheelwidget.minx = -256
 colorwheelwidget.minz = -256
---transform.scale(colorwheelwidget.lspace, 0.1, 1, 0.1)
---transform.scale(colorwheelwidget.lspace, 100, 1, 100)
+
+colorwheelgrp = colorwheelgrp or WidgetGroupLib.new("colorwheelgrp")
+colorwheelgrp.Widgets[1] = colorwheelwidget
 end
 
-transform.setTranslation(colorwheelwidget.lspace, 217,-1,44)
+continue()
+
+do
+colorwheelwidget.lspace = transform.new()
+transform.scale(colorwheelwidget.lspace, 0.1, 0.1, 1)
+end
+
+transform.setTranslation(colorwheelwidget.lspace, 0,0,0)
+
+colorwheelwidget.lspace = transform.new()
 
 do
  colorwheelwidget.render = function (o)
    glPushMatrix()
-   glScale(0.1, 1, 0.1)
+   glRotate(90, 1,0,0)
+   --glScale(0.1, 1, 0.1)
    glColor(200,100,100,255)
    glBeginTriangles()
     local step = 10
@@ -57,9 +68,9 @@ do
     
    end
    glPopMatrix()
-   WidgetLib.renderWidget(redslider)
-   WidgetLib.renderWidget(greenslider)
-   WidgetLib.renderWidget(blueslider)
+   --WidgetLib.renderWidget(redslider)
+   --WidgetLib.renderWidget(greenslider)
+   --WidgetLib.renderWidget(blueslider)
    --redslider:render()
    --greenslider:render()
    --blueslider:render()
@@ -68,8 +79,6 @@ do
  end
 end
 
-continue()
-clearError()
 
 function math.atan2p(x,y)
   local a = math.atan2(x,y)
@@ -101,37 +110,75 @@ do
  end
 end
 
-redslider = redslider or Slider.new(vec3d(0,0,-50), 0, 255)
-greenslider = greenslider or Slider.new(vec3d(0,0,-50), 0, 255)
-blueslider = blueslider or Slider.new(vec3d(0,0,-50), 0, 255)
 
 airplane.followcam = false
 
 redslider.render = Slider.render
 
 do
-redslider.depth = 100
-redslider.width = 10
-greenslider.depth = 100
-greenslider.width = 10
-blueslider.depth = 100
-blueslider.width = 10
-
---makePositionSaver("redslider")
---makePositionSaver("blueslider")
---makePositionSaver("greenslider")
-
-transform.setTranslation(blueslider.lspace, 290,-1,27)
-transform.setTranslation(greenslider.lspace, 270,-1,26)
-transform.setTranslation(redslider.lspace, 252,-1,27)
-
-transform.setTranslation(redslider.lspace, 20,0,0)
-transform.setTranslation(greenslider.lspace, 40,0,0)
-transform.setTranslation(blueslider.lspace, 60,0,0)
 end
+continue()
 
-
+-- setting position according to mouse
 --transform.setTranslation(colorwheelwidget.lspace, getMouseCursorPos())
 --transform.setTranslation(redslider.lspace, getMouseCursorPos())
 --transform.setTranslation(greenslider.lspace, getMouseCursorPos())
 --transform.setTranslation(blueslider.lspace, getMouseCursorPos())
+
+do colorwheelgrp.update = function (o)
+end end
+
+colorwheelgrp.lspace = transform.new()
+colorwheelwidget.lspace = transform.new()
+transform.copy(colorwheelgrp.lspace, transform.camera())
+
+colorwheelgrp.render = function (o) WidgetGroupLib.render(o) end
+
+
+do colorwheelgrp.render = function (o)
+  --o.renderbuffer(o)
+  glPushMatrix()
+  glApplyTransform(colorwheelwidget.lspace)
+  glTranslate(60,-50,40)
+  colorwheelwidget.render(colorwheelwidget)
+  dome.render(dome)
+  glPopMatrix()
+end end
+
+do colorwheelgrp.update = function (o)
+  --dome.update(o)
+  transform.copy(o.lspace, transform.camera())
+end end
+
+do colorwheelgrp.update = function (o)
+  --dome.update(o)
+  transform.copy(o.lspace, transform.camera())
+  local fwd = vec3d(transform.forward(o.lspace))
+  local side = vec3d(transform.side(o.lspace))
+  local up = vec3d(transform.up(o.lspace))
+  
+  transform.translate(o.lspace, 0,0,0)
+
+  transform.translate(o.lspace,
+    Vector3D.getArgs(fwd * 70))
+  transform.translate(o.lspace,
+    Vector3D.getArgs(side * 0))
+  transform.translate(o.lspace,
+    Vector3D.getArgs(up * 0))
+end end
+
+Widgets[4] = nil
+print2(#Widgets)
+3
+clearError()
+continue()
+Widgets = {}
+
+Widgets[1] = spirowidget
+Widgets[2] = colorwheelgrp
+
+print2(#colorwheelgrp.Widgets)
+1
+colorwheelgrp.Widgets = {}
+colorwheelgrp.Widgets[1] = colorwheelwidget
+
