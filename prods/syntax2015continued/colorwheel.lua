@@ -9,23 +9,7 @@ colorwheelwidget.minz = -256
 --transform.scale(colorwheelwidget.lspace, 100, 1, 100)
 end
 
-function makePositionSaver(widgetname)
-  local s = [[transform.setTranslation(]]..widgetname..[[.lspace, ]]
-  local w = loadstring("return " .. widgetname)
-  w = w()
-  local x,y,z = transform.getTranslation(w.lspace)
-  x = math.floor(x)
-  y = math.floor(y)
-  z = math.floor(z)
-  s = s..x..","..y..","..z..")"
-  print2(s)
-end
-
---makePositionSaver("colorwheelwidget")
-
 transform.setTranslation(colorwheelwidget.lspace, 217,-1,44)
-
-glColor = colorGL
 
 do
  colorwheelwidget.render = function (o)

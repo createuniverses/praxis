@@ -4,156 +4,44 @@ Widgets = {}
 
 WidgetLib = {}
 
+dofile("widgets2.lua")
+
 function WidgetLib.new(lspace, width, height, depth)
-  local w = {}
-  w.lspace = lspace
-  w.width = width
-  w.height = height
-  w.depth = depth
-  w.anchored = false  -- I forget the meaning of this
-  w.render = function (o) end
-  w.update = function (o) end
-  w.lmbdown = function (o,x,y,z) end
-  w.lmbup = function (o,x,y,z) end
-  w.rmbdown = function (o,x,y,z) end
-  w.rmbup = function (o,x,y,z) end
-  w.mousemove = function (o,x,y,z) end
+  local w = WidgetLib2.new("unnamed", lspace, width, height, depth)
   table.insert(Widgets, w)
   return w
 end
 
-function WidgetLib.newSimple(...)
-  local w = {}
-  w.lspace = transform.new()
-  w.width = 10
-  w.height = 10
-  w.depth = 10
-  w.anchored = false  -- I forget the meaning of this
-  w.render = function (o) end
-  w.update = function (o) end
-  w.lmbdown = function (o,x,y,z) end
-  w.lmbup = function (o,x,y,z) end
-  w.rmbdown = function (o,x,y,z) end
-  w.rmbup = function (o,x,y,z) end
-  w.mousemove = function (o,x,y,z) end
+function WidgetLib.newSimple()
+  local w = WidgetLib2.newSimple("unnamed")
   table.insert(Widgets, w)
-  
-  local extras = {...}
-  if extras[1] ~= nil then
-    w.name = extras[1]
-  end
-  
   return w
-end
-
-
-function WidgetLib.getWidget(n)
-
 end
 
 function WidgetLib.addExisting(w)
-  if w.lspace == nil then w.lspace = transform.new() end
-  if w.width  == nil then w.width = 10 end
-  if w.height == nil then w.height = 10 end
-  if w.depth == nil then w.depth = 10 end
-  if w.anchored == nil then w.anchored = false end
-  if w.render == nil then w.render = function (o) end end
-  if w.update == nil then w.update = function (o) end end
-  if w.lmbdown == nil then w.lmbdown = function (o,x,y,z) end end
-  if w.lmbup == nil then w.lmbup = function (o,x,y,z) end end
-  if w.rmbdown == nil then w.rmbdown = function (o,x,y,z) end end
-  if w.rmbup == nil then w.rmbup = function (o,x,y,z) end end
-  if w.mousemove == nil then w.mousemove = function (o,x,y,z) end end
-  if tableContains(Widgets, w) == false then
+  WidgetLib2.addExisting(w)
+  if table.contains(Widgets, w) == false then
     table.insert(Widgets, w)
   end
 end
 
 function WidgetLib.addRender(r)
-  local w = {}
-  w.lspace = transform.new()
-  w.width = 10
-  w.height = 10
-  w.depth = 10
-  w.anchored = false  -- I forget the meaning of this
-  w.render = r
-  w.update = function (o) end
-  w.lmbdown = function (o,x,y,z) end
-  w.lmbup = function (o,x,y,z) end
-  w.rmbdown = function (o,x,y,z) end
-  w.rmbup = function (o,x,y,z) end
-  w.mousemove = function (o,x,y,z) end
+  local w = WidgetLib2.addRender("unnamed", r)
   table.insert(Widgets, w)
   return w
 end
 
-function tableContains(t,item)
-  for i=1,#t,1 do
-    if t[i] == item then
-      return true
-    end
-  end
-  return false
-end
-
 function WidgetLib.renderAll()
-  for k,v in pairs(Widgets) do
-    if v.lspace ~= nil then
-      glPushMatrix()
-      glApplyTransform(v.lspace)
-      v["render"](v)
-      -- render bounding box as an option
-      glPopMatrix()
-    else
-      v["render"](v)
-    end
-  end
-end
-
-function WidgetLib.renderWidget(v)
-      glPushMatrix()
-      glApplyTransform(v.lspace)
-      v["render"](v)
-      -- render bounding box as an option
-      glPopMatrix()
+  WidgetLib2.renderAll(Widgets)
 end
 
 function WidgetLib.callAll(fnname)
-  for k,v in pairs(Widgets) do
-    v[fnname](v)
-  end
+  WidgetLib2.callAll(Widgets, fnname)
 end
 
-function WidgetLib.callAllInRange(...)
-  local args = {...}
-  if #args == 1 then
-    --print("old " .. args[1])
-    WidgetLib.callAllInRangeMain(Widgets, args[1])
-  elseif #args == 2 then
-    WidgetLib.callAllInRangeMain(args[1], args[2])
-  else
-    error("callAllInRange needs 1 or 2 args")
-  end
-end
-
-function WidgetLib.callAllInRangeMain(Widgets, fnname)
+function WidgetLib.callAllInRange(fnname)
   local x,y,z = getMouseCursorPos()
-  for k,v in pairs(Widgets) do
-    if v.rangecheck == nil then
-      local lx,ly,lz = transform.globalToLocal(v.lspace, x, y, z)
-      v.minx = v.minx or 0
-      v.minz = v.minz or 0
-      if lx > v.minx and lx < v.width and
-         ly > -v.height and ly < v.height and
-         lz > v.minz and lz < v.depth then
-        v[fnname](v,lx,ly,lz)
-      end
-    else
-      if v.rangecheck(v) then
-        v[fnname](v,lx,ly,lz)
-      end
-    end
-  end
+  WidgetLib2.callAllInRange(Widgets, fnname, x,y,z)
 end
 
 

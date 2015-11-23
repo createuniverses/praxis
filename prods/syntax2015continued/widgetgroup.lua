@@ -1,18 +1,10 @@
-setBufferName("widgetgroup.lua")
 
-WidgetGroup = {}
+WidgetGroupLib = {}
 
-function WidgetGroup.new()
-  -- make a new widget
-end
-
-
-
-
-
-
-
-do
-  closeBuffer()
-  switchToBuffer("colorwheel.lua")
+function WidgetGroupLib.new(name)
+  local w = WidgetLib2.newSimple(name)
+  w.Widgets = {}
+  w.render = WidgetGroupLib.render
+  -- etc  
+  return w
 end
