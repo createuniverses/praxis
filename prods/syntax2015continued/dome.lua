@@ -62,16 +62,29 @@ do
   colorGL(c.r, c.g, c.b, c.a)
  end
  
+ function mkCol(r,g,b)
+   local col = {}
+   col.r = r
+   col.g = g
+   col.b = b
+   col.a = 255
+   return col
+ end
+ 
  function dome.update(o)
    dome.t2 = (dome.t2 + 5) % 360
-   dome.t3 = (dome.t2 + 180) % 360
- dome.color1.r,
- dome.color1.g,
- dome.color1.b = angleToColor(dome.t2,0,1)
- dome.color2.r,
- dome.color2.g,
- dome.color2.b = angleToColor(dome.t3,0,1)
+   local t2 = dome.t2
+   local t3 = (dome.t2 + 120) % 360
+   local t4 = (dome.t2 + 120) % 360
+   local t5 = (dome.t2 + 160) % 360
+   local r = 50
+   dome.color1 = mkCol(angleToColor(t5,r,1))
+   dome.color2 = mkCol(angleToColor(t4,r,1))
+   dome.color3 = mkCol(angleToColor(t4,r,1))
+   dome.color4 = mkCol(angleToColor(t5,r,1))
  end
+ clearError()
+ continue()
 end
 
 
@@ -80,14 +93,25 @@ do
   for i = 1,#m,1 do
     local q = m[i]
     glBeginQuads()
+     if i%2 == 0 then
      glColor2(dome.color1)
      vectorGL(Vector3D.getArgs(q[1]))
      glColor2(dome.color2)
+     vectorGL(Vector3D.getArgs(q[2]))
+     glColor2(dome.color3)
+     vectorGL(Vector3D.getArgs(q[3]))
+     glColor2(dome.color4)
+     vectorGL(Vector3D.getArgs(q[4]))
+     else
+     glColor2(dome.color4)
+     vectorGL(Vector3D.getArgs(q[1]))
+     glColor2(dome.color3)
      vectorGL(Vector3D.getArgs(q[2]))
      glColor2(dome.color2)
      vectorGL(Vector3D.getArgs(q[3]))
      glColor2(dome.color1)
      vectorGL(Vector3D.getArgs(q[4]))
+     end
     glEnd()
   end
 
@@ -106,7 +130,8 @@ do
  dome.render = function (o)
   glPushMatrix()
   glTranslate(0,0,-50)
-  o.renderModel(o.model)
+  --glRotate(10 * math.sin(deg2rad(dome.t * 2)),1,0,0)
+  --o.renderModel(o.model)
   glPushMatrix()
    for i=1,10,1 do
     glTranslate(0,1*math.sin(deg2rad(dome.t)),0)
@@ -121,6 +146,7 @@ do
  dome.render = function (o)
   glPushMatrix()
   glTranslate(0,0,-50)
+  glRotate(dome.t *0.5,1,0,0)
   o.renderModel(o.model)
   glRotate(dome.t*1.5, 0,1,0)
   glPushMatrix()
@@ -138,9 +164,3 @@ do
   dome.t = dome.t + 5
  end
 end
-
-
-
-
-
-
