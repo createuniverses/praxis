@@ -3,6 +3,7 @@ WidgetLib2 = {}
 
 function WidgetLib2.new(name, lspace, width, height, depth)
   local w = {}
+  w.name = name
   w.lspace = lspace
   w.width = width
   w.height = height
@@ -19,6 +20,7 @@ end
 
 function WidgetLib2.newSimple(name)
   local w = {}
+  w.name = name
   w.lspace = transform.new()
   w.width = 10
   w.height = 10
@@ -108,3 +110,4 @@ function WidgetLib2.callAllInRange(Widgets, fnname, x,y,z)
     end
   end
 end
+

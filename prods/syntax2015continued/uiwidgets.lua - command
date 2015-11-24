@@ -1,0 +1,68 @@
+print2(getFunction(WidgetLib2.new))
+function WidgetLib2.new(name, lspace, width, height, depth)
+  local w = {}
+  w.lspace = lspace
+  w.width = width
+  w.height = height
+  w.depth = depth
+  w.render = function (o) end
+  w.update = function (o) end
+  w.lmbdown = function (o,x,y,z) end
+  w.lmbup = function (o,x,y,z) end
+  w.rmbdown = function (o,x,y,z) end
+  w.rmbup = function (o,x,y,z) end
+  w.mousemove = function (o,x,y,z) end
+  return w
+end
+
+print2(getFunction(Widgets[1].render))
+  w.render = function (o) WidgetGroupLib.render(o) end
+print2(getFunction(WidgetGroupLib.render))
+print(Widgets[1].name)
+
+function WidgetGroupLib.render(w)
+  print(w.name)
+  for k,v in pairs(w.Widgets) do
+    WidgetGroupLib.renderWidget(v)
+  end
+
+  for k,v in pairs(w.Widgets) do
+    if v["renderGlobal"] ~= nil then
+      v["renderGlobal"](v)
+    end
+  end
+end
+
+
+print2(#Widgets[1].Widgets)
+1
+print2(getFunction(Widgets[1].Widgets[1].render))
+function UiWidgetLib.renderButton(o)
+  print("test")
+  glBeginQuads()
+    if o.active then
+      colorGL(255,155,0,255)
+    else
+      colorGL(255,0,0,255)
+    end
+    vectorGL(0,       0, 0)
+    vectorGL(o.width, 0, 0)
+    vectorGL(o.width, 0, o.depth)
+    vectorGL(0,       0, o.depth)
+  endGL()
+end
+
+
+
+Widgets[3] = nil
+Widgets = {}
+enableStdMouseCam()
+
+
+
+
+
+do
+  closeBuffer()
+  switchToBuffer("uiwidgets.lua")
+end
