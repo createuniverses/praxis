@@ -31,30 +31,113 @@ transform.setTranslation(redslider.lspace, 20,0,0)
 transform.setTranslation(greenslider.lspace, 40,0,0)
 transform.setTranslation(blueslider.lspace, 60,0,0)
 end
-clearError()
 
-print2(getErrorText())
-[string "do..."]:13: bad argument #1 to 'setTranslation' (LiveCode.transform expected, got number)
-stack traceback:
-	[string "function onerror(s) endGL() glResetStencil(..."]:1: in function <[string "function onerror(s) endGL() glResetStencil(..."]:1>
-	[C]: in function 'setTranslation'
-	[string "do..."]:13: in main chunk
-	[C]: in function 'luaCall'
-	[string "    local sCode = edGetLuaBlock()..."]:9: in function 'action'
-	editor.lua:75: in function 'onKeyDown'
-	[string "onKeyDown(36)"]:1: in main chunk
+colorwheelgrp.Widgets = {}
 
+colorwheelgrp.Widgets[1] = redslider
+colorwheelgrp.Widgets[1] = colorwheelwidget
 
-clearError()
+continue()
 
+print2(getFunction(redslider.render))
 
+print2(redslider.depth)
 
-
-
-
-
-
-do
-  closeBuffer()
-  switchToBuffer("colorwheelwidget.lua")
+function redslider.render(slider)
+  glScale(0.1, .1, 0.1)
+  colorwheelwidget.render(colorwheelwidget)
 end
+
+print2(getFunction(colorwheelwidget.render))
+do
+ colorwheelwidget.render = function (o)
+   glPushMatrix()
+   glRotate(90, 1,0,0)
+   --glScale(0.1, 1, 0.1)
+   glColor(200,100,100,255)
+   glBeginTriangles()
+    local step = 10
+    for a = 0,360-step,step do
+     local r = 256
+     local x1 = math.sin(deg2rad(a)) * r
+     local y1 = math.cos(deg2rad(a)) * r
+     local x2 = math.sin(deg2rad(a+step)) * r
+     local y2 = math.cos(deg2rad(a+step)) * r
+     glColor(255,255,255,255)
+     glVertex(0,0,0)
+     local red,green,blue = angleToColor(a,0,1)
+     glColor(red, green, blue)
+     glVertex(x1,0,y1)
+     glColor(red, green, blue)
+     glVertex(x2,0,y2)
+    end
+   glEnd()
+   
+   glColor(redslider.pos, greenslider.pos, blueslider.pos, 255)
+   glPushMatrix()
+   glTranslate(0,0,-400)
+   glBeginQuads()
+     glVertex(0,0,0)
+     glVertex(100,0,0)
+     glVertex(100,0,100)
+     glVertex(0,0,100)
+   glEnd()
+   glPopMatrix()
+   
+   do
+    local a,r,s = colourToAngle(redslider.pos, greenslider.pos, blueslider.pos)
+    local x = math.sin(deg2rad(a)) * (256-r)
+    local z = math.cos(deg2rad(a)) * (256-r)
+    glColor(0,0,0,255)
+    local h = 0.5
+    drawLine(x-25, h, z, x+25, h, z)
+    drawLine(x, h, z-25, x, h, z+25)
+    glColor(255,255,255,255)
+    
+   end
+   glPopMatrix()
+   --WidgetLib.renderWidget(redslider)
+   --WidgetLib.renderWidget(greenslider)
+   --WidgetLib.renderWidget(blueslider)
+   --redslider:render()
+   --greenslider:render()
+   --blueslider:render()
+ end
+end
+
+
+function redslider.render(slider)
+   glPushMatrix()
+   glRotate(270, 1,0,0)
+  local rpos = linearInterpolate(slider.min, slider.max, 0, slider.depth, slider.pos)
+  local mid = slider.width * 0.5
+  beginQuadGL()
+    colorGL(255,155,0,255)
+    vectorGL(0,            0, 0)
+    vectorGL(slider.width, 0, 0)
+    vectorGL(slider.width, 0, slider.depth)
+    vectorGL(0,            0, slider.depth)
+    
+    local bs = math.min(slider.width, slider.depth)
+    bs = bs * 0.3
+    colorGL(50,50,50,255)
+    vectorGL(mid-bs, 1, rpos-bs)
+    vectorGL(mid+bs, 1, rpos-bs)
+    vectorGL(mid+bs, 1, rpos+bs)
+    vectorGL(mid-bs, 1, rpos+bs)
+  endGL()
+  
+  --colorGL(50,250,50,255)
+  --drawText3DStroked(
+  --  string.format("pos: %.2f,%.2f,%.2f", slider.mousePos.x, slider.mousePos.y, slider.mousePos.z),
+  --  slider.width,0,0)
+  glPopMatrix()
+end
+
+
+
+print2(#colorwheelgrp.Widgets)
+
+redslider.lspace = transform.new()
+transform.setTranslation(redslider.lspace, 0,0,0)
+
