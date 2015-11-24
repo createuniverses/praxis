@@ -117,3 +117,12 @@ function update()
     end
   end
 end
+
+dofile("widgetgroup.lua")
+dofile("colorwheelwidget.lua")
+table.insert(Widgets, colorwheelgrp)
+
+setBufferText([[
+Widgets[3] = nil
+Widgets[3] = camwidget
+]])

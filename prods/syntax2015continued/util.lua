@@ -64,8 +64,6 @@ function makePositionSaver(widgetname)
   print2(s)
 end
 
---makePositionSaver("colorwheelwidget")
-
 function wrap(n,b)
   local v = ((n-1) % b) + 1
   return v
@@ -73,3 +71,8 @@ end
 
 glColor = colorGL
 
+function math.atan2p(x,y)
+  local a = math.atan2(x,y)
+  if a<0 then a = a + math.pi*2 end
+  return a
+end

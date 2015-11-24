@@ -92,8 +92,8 @@ end
 
 function WidgetLib2.callAllInRange(Widgets, fnname, x,y,z)
   for k,v in pairs(Widgets) do
+    local lx,ly,lz = transform.globalToLocal(v.lspace, x, y, z)
     if v.rangecheck == nil then
-      local lx,ly,lz = transform.globalToLocal(v.lspace, x, y, z)
       v.minx = v.minx or 0
       v.minz = v.minz or 0
       if lx > v.minx and lx < v.width and
@@ -102,7 +102,7 @@ function WidgetLib2.callAllInRange(Widgets, fnname, x,y,z)
         v[fnname](v,lx,ly,lz)
       end
     else
-      if v.rangecheck(v) then
+      if v.rangecheck(v, lx, ly, lz) then
         v[fnname](v,lx,ly,lz)
       end
     end

@@ -1,139 +1,389 @@
 Entry 1
-print("test")
+Widgets[3] = nil
 
 Entry 2
-print2(codelog[1]))
+Widgets[3] = camwidget
 
 Entry 3
-print2(codelog[1])
+Widgets[3] = nil
 
 Entry 4
-print2(codelog[2])
+print2(getFunction(colorwheelwidget.mousemove))
 
 Entry 5
-print2(codelog[3])
+function colorwheelgrp.mousemove(o,x,y,z)
+  if getLMBDown() then
+   print2("mm with md")
+  end
+end
 
 Entry 6
-print2(codelog[#codelog])
+function colorwheelgrp.mousemove(o,x,y,z)
+  if getLMBDown() then
+   print("mm with md")
+  end
+end
 
 Entry 7
-print2(codelog[#codelog])
+function colorwheelgrp.mousemove(o,x,y,z)
+  if getLMBDown() then
+   print("mm with md")
+  else
+   print("mm only")
+  end
+end
 
 Entry 8
-do
- setKeyHandlerProgram(keymap, stdkeyids.enter,     2,
-  [[
-    local sCode = edGetLuaBlock()
-    if sCode == "" then
-      sCode = getEditorLineText()
-    end
-    luaCall(sCode)
-    table.insert(codelog, sCode)
-    print("Done.")
-  ]])
+function colorwheelgrp.mousemove(o,x,y,z)
+  if getLMBDown() then
+   print("mm with md")
+  else
+   print("mm only "..x..","..y..","..z)
+  end
 end
 
 Entry 9
-
+function colorwheelgrp.mousemove(o,x,y,z)
+  if getLMBDown() then
+   print("mm with md")
+  else
+   print("mm only "..
+    ..math.floor(x)..","
+    ..math.floor(y)..","
+    ..math.floor(z))
+  end
+end
 
 Entry 10
-print2(codelog[#codelog-1])
+function colorwheelgrp.mousemove(o,x,y,z)
+  if getLMBDown() then
+   print("mm with md")
+  else
+   print("mm only "
+    ..math.floor(x)..","
+    ..math.floor(y)..","
+    ..math.floor(z))
+  end
+end
 
 Entry 11
-do
-  closeBuffer()
+function colorwheelgrp.rangecheck(o)
+  return true
 end
 
 Entry 12
-  closeBuffer()
+print2(getErrorText())
 
 Entry 13
-closeBuffer()
+clearError()
 
 Entry 14
- closeBuffer()
+dofile("widgets2.lua")
 
 Entry 15
-loadBuffer("temp.lua")
-
-Entry 16
-closeBuffer()
-
-Entry 17
-loadBuffer("fnkeys.lua")
-
-Entry 18
-function f3Pressed()
- local name = getBufferName()
- newBuffer(getBufferName() .. " - command")
- local s = [[
-  local name = "]] .. name .. [["
-  closeBuffer()
-  switchToBuffer(name)
-  local text = getBufferText()
-  local pos = string.find(text, "", edGetPosition())
-  edSetPosition(pos-1)]]
- setBufferText(s)
- edSetPosition(131)
+function colorwheelgrp.rangecheck(o, x, y, z)
+  return true
 end
 
+Entry 16
+dofile("widgets2.lua")
+
+Entry 17
+function colorwheelgrp.rangecheck(o, x, y, z)
+  if z < 5 and z > -5 then
+    return true
+  else
+    return false
+  end
+end
+
+Entry 18
+Widgets[3] = camwidget
+
 Entry 19
-closeBuffer()
+Widgets[3] = nil
 
 Entry 20
-loadBuffer("keymap.lua")
+function colorwheelgrp.mousemove(o,x,y,z)
+  WidgetLib2.callAllInRange(o.Widgets, x,y,z)
+  if getLMBDown() then
+   print("mm with md")
+  else
+   print("mm only "
+    ..math.floor(x)..","
+    ..math.floor(y)..","
+    ..math.floor(z))
+  end
+end
 
 Entry 21
 print2(getErrorText())
 
 Entry 22
-  closeBuffer()
-
-Entry 23
-closeBuffer()
-
-Entry 24
-closeBuffer()
-
-Entry 25
-closeBuffer()
-
-Entry 26
-closeBuffer()
-
-Entry 27
-closeBuffer()
-
-Entry 28
-loadBuffer("dome.lua")
-
-Entry 29
-do
- playMp3()
- airplane.followcam = true
- airplane.pilot = airplane.takeoffpilot
-end
-
-Entry 30
 clearError()
 
-Entry 31
-hideTrace()
-
-Entry 32
-function makeCodeLogBuffer()
-  local sText = ""
-  for i=1,#codelog,1 do
-    sText = sText .. "Entry " .. i .. "\n"
-    sText = sText .. codelog[i] .. "\n\n"
+Entry 23
+function colorwheelgrp.mousemove(o,x,y,z)
+  WidgetLib2.callAllInRange(o.Widgets, "mousemove", x,y,z)
+  if getLMBDown() then
+   print("mm with md")
+  else
+   print("mm only "
+    ..math.floor(x)..","
+    ..math.floor(y)..","
+    ..math.floor(z))
   end
-  newBuffer("codelog.txt")
-  setBufferText(sText)
 end
 
+Entry 24
+dofile("colorwidget.lua")
+
+Entry 25
+dofile("colorwheelwidget.lua")
+
+Entry 26
+clearError()
+
+Entry 27
+transform.translate(colorwheelwidget.lspace,0,10,0)
+
+Entry 28
+transform.translate(colorwheelwidget.lspace,0,-10,0)
+
+Entry 29
+transform.translate(colorwheelwidget.lspace,0,0,10)
+
+Entry 30
+transform.translate(colorwheelwidget.lspace,0,0,-10)
+
+Entry 31
+transform.translate(colorwheelwidget.lspace,0,0,50)
+
+Entry 32
+transform.translate(colorwheelwidget.lspace,0,0,-50)
+
 Entry 33
-showTrace()
+transform.translate(colorwheelwidget.lspace,0,0,-50)
 
 Entry 34
-clearTrace()
+transform.translate(colorwheelwidget.lspace,0,0,-50)
+
+Entry 35
+transform.translate(colorwheelwidget.lspace,0,0,50)
+
+Entry 36
+transform.translate(colorwheelwidget.lspace,0,0,-10)
+
+Entry 37
+transform.translate(colorwheelwidget.lspace,0,0,10)
+
+Entry 38
+dofile("colorwheelwidget.lua")
+
+Entry 39
+transform.translate(colorwheelwidget.lspace,0,0,10)
+
+Entry 40
+transform.translate(colorwheelwidget.lspace,0,0,-10)
+
+Entry 41
+transform.translate(colorwheelwidget.lspace,0,0,-10)
+
+Entry 42
+transform.translate(colorwheelwidget.lspace,0,0,-10)
+
+Entry 43
+transform.translate(colorwheelwidget.lspace,0,0,-10)
+
+Entry 44
+transform.translate(colorwheelwidget.lspace,0,0,-10)
+
+Entry 45
+transform.translate(colorwheelwidget.lspace,0,0,-10)
+
+Entry 46
+transform.translate(colorwheelwidget.lspace,0,0,-10)
+
+Entry 47
+transform.translate(colorwheelwidget.lspace,0,0,10)
+
+Entry 48
+transform.translate(colorwheelwidget.lspace,0,0,10)
+
+Entry 49
+transform.translate(colorwheelwidget.lspace,0,0,10)
+
+Entry 50
+transform.translate(colorwheelwidget.lspace,0,0,10)
+
+Entry 51
+transform.translate(colorwheelwidget.lspace,0,0,10)
+
+Entry 52
+transform.translate(colorwheelwidget.lspace,0,0,10)
+
+Entry 53
+transform.translate(colorwheelwidget.lspace,0,0,10)
+
+Entry 54
+transform.translate(colorwheelwidget.lspace,0,0,-10)
+
+Entry 55
+print2(getFunction(colorwheelwidget.mousemove))
+
+Entry 56
+function colorwheelwidget.mousemove(o,x,y,z)
+  print("snek")
+  if getLMBDown() then
+   local r = 256 - math.sqrt(x*x + z*z)
+   local a = rad2deg(math.atan2p(x,z))
+   local r,g,b = angleToColor(a,r,1)
+   --print(r..","..g..","..b)
+   redslider.pos = r
+   greenslider.pos = g
+   blueslider.pos = b
+  end
+end
+
+Entry 57
+function colorwheelwidget.mousemove(o,x,y,z)
+   print("snek "
+    ..math.floor(x)..","
+    ..math.floor(y)..","
+    ..math.floor(z))
+  if getLMBDown() then
+   local r = 256 - math.sqrt(x*x + z*z)
+   local a = rad2deg(math.atan2p(x,z))
+   local r,g,b = angleToColor(a,r,1)
+   --print(r..","..g..","..b)
+   redslider.pos = r
+   greenslider.pos = g
+   blueslider.pos = b
+  end
+end
+
+Entry 58
+function colorwheelgrp.mousemove(o,x,y,z)
+  WidgetLib2.callAllInRange(o.Widgets, "mousemove", x,y,z)
+  if getLMBDown() then
+   print("mm with md")
+  else
+--   print("mm only "
+--    ..math.floor(x)..","
+--    ..math.floor(y)..","
+--    ..math.floor(z))
+  end
+end
+
+Entry 59
+dofile("colorwheelwidget.lua")
+
+Entry 60
+dofile("colorwheelwidget.lua")
+
+Entry 61
+dofile("colorwheelwidget.lua")
+
+Entry 62
+dofile("colorwheelwidget.lua")
+
+Entry 63
+dofile("colorwheelwidget.lua")
+
+Entry 64
+dofile("colorwheelwidget.lua")
+
+Entry 65
+function colorwheelwidget.mousemove(o,x,y,z)
+   print("snek "
+    ..math.floor(x)..","
+    ..math.floor(y)..","
+    ..math.floor(z))
+  if getLMBDown() then
+   local r = 256 - math.sqrt(x*x + z*z)
+   local a = rad2deg(math.atan2p(x,z))
+   local r,g,b = angleToColor(a,r,1)
+   --print(r..","..g..","..b)
+   redslider.pos = r
+   greenslider.pos = g
+   blueslider.pos = b
+  end
+end
+
+Entry 66
+function colorwheelwidget.mousemove(o,x,y,z)
+ if getLMBDown() then
+   print("snek1 "
+    ..math.floor(x)..","
+    ..math.floor(y)..","
+    ..math.floor(z))
+
+   local r = 256 - math.sqrt(x*x + z*z)
+   local a = rad2deg(math.atan2p(x,z))
+   local r,g,b = angleToColor(a,r,1)
+   --print(r..","..g..","..b)
+   redslider.pos = r
+   greenslider.pos = g
+   blueslider.pos = b
+ else
+  print("snek2 "
+    ..math.floor(x)..","
+    ..math.floor(y)..","
+    ..math.floor(z))
+ end
+end
+
+Entry 67
+disableStdMouseCam()
+
+Entry 68
+function colorwheelwidget.mousemove(o,x,y,z)
+ if getLMBDown() then
+--   print("snek1 "
+--    ..math.floor(x)..","
+--    ..math.floor(y)..","
+--    ..math.floor(z))
+
+   local r = 256 - math.sqrt(x*x + z*z)
+   local a = rad2deg(math.atan2p(x,z))
+   local r,g,b = angleToColor(a,r,1)
+   --print(r..","..g..","..b)
+   redslider.pos = r
+   greenslider.pos = g
+   blueslider.pos = b
+ else
+--  print("snek2 "
+--    ..math.floor(x)..","
+--    ..math.floor(y)..","
+--    ..math.floor(z))
+ end
+end
+
+Entry 69
+function colorwheelgrp.mousemove(o,x,y,z)
+  WidgetLib2.callAllInRange(o.Widgets, "mousemove", x,y,z)
+  if getLMBDown() then
+--   print("mm with md")
+  else
+--   print("mm only "
+--    ..math.floor(x)..","
+--    ..math.floor(y)..","
+--    ..math.floor(z))
+  end
+end
+
+Entry 70
+dofile("colorwheelwidget.lua")
+
+Entry 71
+dofile("colorwheelwidget.lua")
+
+Entry 72
+dofile("colorwheelwidget.lua")
+
+Entry 73
+dofile("colorwheelwidget.lua")
+
+Entry 74
+Widgets[3] = camwidget
 

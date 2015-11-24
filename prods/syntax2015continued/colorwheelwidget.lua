@@ -1,30 +1,29 @@
 
+dofile("cwsliders.lua")
+
 do
-colorwheelwidget = colorwheelwidget or WidgetLib2.newSimple("colorwheel")
+colorwheelwidget = WidgetLib2.newSimple("colorwheel")
 colorwheelwidget.width = 256
 colorwheelwidget.depth = 256
 colorwheelwidget.minx = -256
 colorwheelwidget.minz = -256
 
+colorwheelwidget.lspace = transform.new()
+transform.scale(colorwheelwidget.lspace, 0.1, 1, 0.1)
+transform.rotate(colorwheelwidget.lspace, deg2rad(-90), 1,0,0)
+
 colorwheelgrp = colorwheelgrp or WidgetGroupLib.new("colorwheelgrp")
 colorwheelgrp.Widgets[1] = colorwheelwidget
+
+colorwheelgrp.render = function (o) WidgetGroupLib.render(o) end
+
+showCWWithSliders()
 end
-
-continue()
-
-do
-colorwheelwidget.lspace = transform.new()
-transform.scale(colorwheelwidget.lspace, 0.1, 0.1, 1)
-end
-
-transform.setTranslation(colorwheelwidget.lspace, 0,0,0)
-
-colorwheelwidget.lspace = transform.new()
 
 do
  colorwheelwidget.render = function (o)
    glPushMatrix()
-   glRotate(90, 1,0,0)
+   --glRotate(90, 1,0,0)
    --glScale(0.1, 1, 0.1)
    glColor(200,100,100,255)
    glBeginTriangles()
@@ -40,7 +39,8 @@ do
      local red,green,blue = angleToColor(a,0,1)
      glColor(red, green, blue)
      glVertex(x1,0,y1)
-     glColor(red, green, blue)
+     local red2,green2,blue2 = angleToColor(a+step,0,1)
+     glColor(red2, green2, blue2)
      glVertex(x2,0,y2)
     end
    glEnd()
@@ -68,22 +68,10 @@ do
     
    end
    glPopMatrix()
-   --WidgetLib.renderWidget(redslider)
-   --WidgetLib.renderWidget(greenslider)
-   --WidgetLib.renderWidget(blueslider)
-   --redslider:render()
-   --greenslider:render()
-   --blueslider:render()
  end
+ 
  colorwheelwidget.renderGlobal = function (o)
  end
-end
-
-
-function math.atan2p(x,y)
-  local a = math.atan2(x,y)
-  if a<0 then a = a + math.pi*2 end
-  return a
 end
 
 do
@@ -110,48 +98,34 @@ do
  end
 end
 
-
-airplane.followcam = false
-
-redslider.render = Slider.render
-
-do
+function colorwheelgrp.rangecheck(o, x, y, z)
+  if z < 5 and z > -5 then
+    return true
+  else
+    return false
+  end
 end
-continue()
 
--- setting position according to mouse
---transform.setTranslation(colorwheelwidget.lspace, getMouseCursorPos())
---transform.setTranslation(redslider.lspace, getMouseCursorPos())
---transform.setTranslation(greenslider.lspace, getMouseCursorPos())
---transform.setTranslation(blueslider.lspace, getMouseCursorPos())
+function colorwheelgrp.mousemove(o,x,y,z)
+  WidgetLib2.callAllInRange(o.Widgets, "mousemove", x,y,z)
+  if getLMBDown() then
+--   print("mm with md")
+  else
+--   print("mm only "
+--    ..math.floor(x)..","
+--    ..math.floor(y)..","
+--    ..math.floor(z))
+  end
+end
 
-do colorwheelgrp.update = function (o)
-end end
+function colorwheelgrp.lmbdown(o,x,y,z)
+  WidgetLib2.callAllInRange(o.Widgets, "lmbdown", x,y,z)
+end
 
-colorwheelgrp.lspace = transform.new()
-colorwheelwidget.lspace = transform.new()
-transform.copy(colorwheelgrp.lspace, transform.camera())
+disableStdMouseCam()
 
-colorwheelgrp.render = function (o) WidgetGroupLib.render(o) end
-
-
-do colorwheelgrp.render = function (o)
-  --o.renderbuffer(o)
-  glPushMatrix()
-  glApplyTransform(colorwheelwidget.lspace)
-  glTranslate(60,-50,40)
-  colorwheelwidget.render(colorwheelwidget)
-  dome.render(dome)
-  glPopMatrix()
-end end
 
 do colorwheelgrp.update = function (o)
-  --dome.update(o)
-  transform.copy(o.lspace, transform.camera())
-end end
-
-do colorwheelgrp.update = function (o)
-  --dome.update(o)
   transform.copy(o.lspace, transform.camera())
   local fwd = vec3d(transform.forward(o.lspace))
   local side = vec3d(transform.side(o.lspace))
@@ -166,19 +140,3 @@ do colorwheelgrp.update = function (o)
   transform.translate(o.lspace,
     Vector3D.getArgs(up * 0))
 end end
-
-Widgets[4] = nil
-print2(#Widgets)
-3
-clearError()
-continue()
-Widgets = {}
-
-Widgets[1] = spirowidget
-Widgets[2] = colorwheelgrp
-
-print2(#colorwheelgrp.Widgets)
-1
-colorwheelgrp.Widgets = {}
-colorwheelgrp.Widgets[1] = colorwheelwidget
-

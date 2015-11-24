@@ -1,0 +1,59 @@
+Widgets[3] = nil
+Widgets[3] = camwidget
+
+print2(getFunction(colorwheelwidget.mousemove))
+function colorwheelgrp.mousemove(o,x,y,z)
+  WidgetLib2.callAllInRange(o.Widgets, "mousemove", x,y,z)
+  if getLMBDown() then
+--   print("mm with md")
+  else
+--   print("mm only "
+--    ..math.floor(x)..","
+--    ..math.floor(y)..","
+--    ..math.floor(z))
+  end
+end
+
+print2(getFunction(colorwheelwidget.mousemove))
+
+disableStdMouseCam()
+
+function colorwheelwidget.mousemove(o,x,y,z)
+ if getLMBDown() then
+--   print("snek1 "
+--    ..math.floor(x)..","
+--    ..math.floor(y)..","
+--    ..math.floor(z))
+
+   local r = 256 - math.sqrt(x*x + z*z)
+   local a = rad2deg(math.atan2p(x,z))
+   local r,g,b = angleToColor(a,r,1)
+   --print(r..","..g..","..b)
+   redslider.pos = r
+   greenslider.pos = g
+   blueslider.pos = b
+ else
+--  print("snek2 "
+--    ..math.floor(x)..","
+--    ..math.floor(y)..","
+--    ..math.floor(z))
+ end
+end
+
+
+dofile("colorwheelwidget.lua")
+clearError()
+transform.translate(colorwheelwidget.lspace,0,0,-10)
+
+function colorwheelgrp.rangecheck(o, x, y, z)
+  if z < 5 and z > -5 then
+    return true
+  else
+    return false
+  end
+end
+
+clearError()
+dofile("widgets2.lua")
+
+print2(getErrorText())
