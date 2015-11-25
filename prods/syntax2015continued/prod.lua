@@ -80,6 +80,8 @@ function render()
       glutWireSphere(thing.r + 1)
     glPopMatrix()
   end
+  
+  trace2()
 end
 
 function update()
@@ -125,4 +127,8 @@ table.insert(Widgets, colorwheelgrp)
 setBufferText([[
 Widgets[3] = nil
 Widgets[3] = camwidget
+Widgets = {}
 ]])
+
+dofile("trace2.lua")
+

@@ -927,6 +927,9 @@ void luaInitCallbacksOpenGL()
     lua_register(g_pLuaState, "glutSolidSphere",        luaCBGlutSolidSphere);
     lua_register(g_pLuaState, "glutSolidCube",          luaCBGlutSolidCube);
 
+    lua_register(g_pLuaState, "glutStrokeString",       luaCBGlutStrokeString);
+    lua_register(g_pLuaState, "glutBitmapString",       luaCBGlutBitmapString);
+
     lua_register(g_pLuaState, "drawText",               luaCBDrawText2D);
     lua_register(g_pLuaState, "drawText2D",             luaCBDrawText2D);
     lua_register(g_pLuaState, "drawText3D",             luaCBDrawText3D);

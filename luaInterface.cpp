@@ -100,8 +100,8 @@ bool luaCall(std::string sCmd)
 
     if (error)
     {
-        sError += lua_tostring(g_pLuaState, -1);
-        sError += "\n";
+        // Newest error appears at the top
+        sError = std::string(lua_tostring(g_pLuaState, -1)) + std::string("\n") + sError;
 
         lua_pop(g_pLuaState, 1);
     }

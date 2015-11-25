@@ -457,18 +457,46 @@ int luaCBGetBufferBB(lua_State * L)
     return 4;
 }
 
+int luaCBSelectBeginLines(lua_State * L)
+{
+    int n = lua_gettop(L);
+    if(n!=2) luaL_error(L, "2 arguments expected.");
+
+    std::string sText = luaL_checkstring(L, 1);
+    int nNumLines = luaL_checknumber(L, 2);
+
+    //std::string sOutput = World::SelectBeginLines(sText, nNumLines);
+    std::string sOutput = GLEditor::ReadLinesFromString(sText, 1, nNumLines);
+
+    lua_pushstring(L, sOutput.c_str());
+    return 1;
+}
+
+int luaCBSelectEndLines(lua_State * L)
+{
+    int n = lua_gettop(L);
+    if(n!=2) luaL_error(L, "2 arguments expected.");
+
+    std::string sText = luaL_checkstring(L, 1);
+    int nNumLines = luaL_checknumber(L, 2);
+
+    std::string sOutput = World::SelectEndLines(sText, nNumLines);
+
+    lua_pushstring(L, sOutput.c_str());
+    return 1;
+}
+
 int luaCBSelectLines(lua_State * L)
 {
     int n = lua_gettop(L);
     if(n!=3) luaL_error(L, "3 arguments expected.");
 
     std::string sText = luaL_checkstring(L, 1);
-    //int nNumLines = luaL_checknumber(L, 2);
     int nFirstLine = luaL_checknumber(L, 2);
     int nLastLine  = luaL_checknumber(L, 3);
-    //std::string sOutput = World::SelectBeginLines(sText, nNumLines);
-    //std::string sOutput = World::SelectEndLines(sText, nNumLines);
+
     std::string sOutput = GLEditor::ReadLinesFromString(sText, nFirstLine, nLastLine);
+
     lua_pushstring(L, sOutput.c_str());
     return 1;
 }
@@ -866,6 +894,8 @@ void luaInitCallbacksEditor()
     lua_register(g_pLuaState, "getLineNumber",         luaCBGetEditorLine);
 
     lua_register(g_pLuaState, "selectLines",           luaCBSelectLines);
+    lua_register(g_pLuaState, "selectBeginLines",      luaCBSelectBeginLines);
+    lua_register(g_pLuaState, "selectEndLines",        luaCBSelectEndLines);
     lua_register(g_pLuaState, "readFile",              luaCBReadFileToString);
 
     lua_register(g_pLuaState, "edNativeControlOn",     luaCBTurnOnNativeEditorControl);
