@@ -27,30 +27,17 @@ uimainwidget.update(uimainwidget)
 
 uimainwidget.mousemove = WidgetGroupLib.mousemove
 uimainwidget.lmbdown = WidgetGroupLib.lmbdown
+
+uimainwidget.rangecheck = WidgetGroupLib.rangecheck_flat
 end
 
 do
 Widgets = {}
 Widgets[1] = spirowidget
 Widgets[2] = airplane
---Widgets[3] = colorwheelgrp
+--Widgets[3] = camwidget
 Widgets[4] = uimainwidget
 end
-
-for k,v in pairs(Widgets) do
-  print2(k)
-end
-1
-2
-3
-4
-
-colorwheel
-spiro
-airplane
-uimain
-
-
 
 function addButton(x,y,action)
   local w = WidgetLib2.newSimple("button")
@@ -66,22 +53,25 @@ function addButton(x,y,action)
   return w
 end
 
-do
-uimainwidget.Widgets = {}
-addButton(0,10,function(b) end)
-addButton(0,30,function(b) end)
-table.insert(uimainwidget.Widgets, colorwheelwidget)
-end
-
---uimainwidget.Widgets[1] = redslider
-
-
-uimainwidget.rangecheck = WidgetGroupLib.rangecheck_flat
-enableStdMouseCam()
-disableStdMouseCam()
-
-
 function addSlider(x,y,min,max,action)
 end
 
+do
+uimainwidget.Widgets = {}
+addButton(0,10,function(b) end)
+addButton(0,32,function(b) end)
+table.insert(uimainwidget.Widgets, colorwheelgrp)
+--table.insert(uimainwidget.Widgets, redslider)
+
+colorwheelgrp.update = function (o) end
+colorwheelgrp.lspace = transform.new()
+table.insert(uimainwidget.Widgets, colorwheelgrp)
+
+table.insert(uimainwidget.Widgets, dome)
+transform.setTranslation(dome.lspace, 0,0,20)
+dome.update(dome)
+end
+
+enableStdMouseCam()
+disableStdMouseCam()
 

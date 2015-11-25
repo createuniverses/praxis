@@ -1,6 +1,5 @@
---dome = dome or WidgetLib.newSimple()
-
-dome = dome or {}
+dome = WidgetLib2.newSimple("dome")
+--dome = dome or {}
 
 dome.model = {}
 
@@ -71,6 +70,14 @@ do
    return col
  end
  
+ do
+   local r = 50
+   dome.color1 = mkCol(angleToColor( 0,r,1))
+   dome.color2 = mkCol(angleToColor(10,r,1))
+   dome.color3 = mkCol(angleToColor(20,r,1))
+   dome.color4 = mkCol(angleToColor(30,r,1))
+ end
+
  function dome.update(o)
    dome.t2 = (dome.t2 + 5) % 360
    local t2 = dome.t2
@@ -164,3 +171,4 @@ do
   dome.t = dome.t + 5
  end
 end
+

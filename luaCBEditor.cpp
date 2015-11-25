@@ -284,6 +284,12 @@ int luaCBGetEditorLineText(lua_State * L)
 
 int luaCBGotoEditorLine(lua_State * L)
 {
+    int n = lua_gettop(L);
+    if(n!=1)
+        luaL_error(L, "1 argument required");
+    int nLineNum = luaL_checknumber(L, 1);
+    int nLinePos = g_pWorld->GetEditor()->GetLinePosition(nLineNum);
+    g_pWorld->GetEditor()->m_Position = nLinePos;
     return 0;
 }
 

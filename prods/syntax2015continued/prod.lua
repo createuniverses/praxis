@@ -122,7 +122,8 @@ end
 
 dofile("widgetgroup.lua")
 dofile("colorwheelwidget.lua")
-table.insert(Widgets, colorwheelgrp)
+--table.insert(Widgets, colorwheelgrp)
+dofile("uiwidgets.lua")
 
 setBufferText([[
 Widgets[3] = nil
