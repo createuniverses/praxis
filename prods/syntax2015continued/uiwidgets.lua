@@ -27,10 +27,30 @@ uimainwidget.update(uimainwidget)
 
 uimainwidget.mousemove = WidgetGroupLib.mousemove
 uimainwidget.lmbdown = WidgetGroupLib.lmbdown
-
-Widgets = {}
-Widgets[1] = uimainwidget
 end
+
+do
+Widgets = {}
+Widgets[1] = spirowidget
+Widgets[2] = airplane
+--Widgets[3] = colorwheelgrp
+Widgets[4] = uimainwidget
+end
+
+for k,v in pairs(Widgets) do
+  print2(k)
+end
+1
+2
+3
+4
+
+colorwheel
+spiro
+airplane
+uimain
+
+
 
 function addButton(x,y,action)
   local w = WidgetLib2.newSimple("button")
@@ -38,7 +58,7 @@ function addButton(x,y,action)
   w.render = UiWidgetLib.renderButton
   w.lmbdown = function (o,x,y,z)
     if o.active then o.active = false else o.active = true end end
-  uimainwidget.Widgets[1] = w
+  table.insert(uimainwidget.Widgets,w)
   w.width = 20
   w.depth = 20
   transform.setTranslation(w.lspace, x,y,0)
@@ -46,9 +66,12 @@ function addButton(x,y,action)
   return w
 end
 
-
-button = addButton(0,10,function(b) end)
-
+do
+uimainwidget.Widgets = {}
+addButton(0,10,function(b) end)
+addButton(0,30,function(b) end)
+table.insert(uimainwidget.Widgets, colorwheelwidget)
+end
 
 --uimainwidget.Widgets[1] = redslider
 
@@ -60,4 +83,5 @@ disableStdMouseCam()
 
 function addSlider(x,y,min,max,action)
 end
+
 
