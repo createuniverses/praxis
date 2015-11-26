@@ -122,14 +122,20 @@ end
 
 dofile("widgetgroup.lua")
 dofile("colorwheelwidget.lua")
---table.insert(Widgets, colorwheelgrp)
+
 dofile("uiwidgets.lua")
+
+do
+Widgets = {}
+Widgets[1] = spirowidget
+Widgets[2] = airplane
+Widgets[3] = uimainwidget
+end
 
 setBufferText([[
 Widgets[3] = nil
-Widgets[3] = camwidget
+Widgets[3] = uimainwidget
 Widgets = {}
 ]])
 
 dofile("trace2.lua")
-

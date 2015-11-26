@@ -1271,7 +1271,8 @@ static s7_scheme *hidden_sc = NULL;
   #define _TLst(P) check_ref(P, T_PAIR,              __func__, __LINE__, NULL, NULL)
   #define _TCat(P) check_ref(P, T_CATCH,             __func__, __LINE__, NULL, NULL)
   #define _TDyn(P) check_ref(P, T_DYNAMIC_WIND,      __func__, __LINE__, NULL, NULL)
-  #define _TSlt(P) check_ref2(P, T_SLOT, T_PAIR,     __func__, __LINE__, NULL, NULL)
+  #define _TSlt(P) check_ref(P, T_SLOT,              __func__, __LINE__, NULL, NULL)
+  #define _TSlp(P) check_ref2(P, T_SLOT, T_PAIR,     __func__, __LINE__, NULL, NULL)
   #define _TSyn(P) check_ref(P, T_SYNTAX,            __func__, __LINE__, NULL, NULL)
   #define _TMac(P) check_ref(P, T_C_MACRO,           __func__, __LINE__, NULL, NULL)
   #define _TLet(P) check_ref(P, T_LET,               __func__, __LINE__, NULL, NULL)
@@ -1334,6 +1335,7 @@ static s7_scheme *hidden_sc = NULL;
   #define _TClo(P)                    P
   #define _TFnc(P)                    P
   #define _TSlt(P)                    P
+  #define _TSlp(P)                    P
   #define _TSym(P)                    P
   #define _TLet(P)                    P
   #define _TLid(P)                    P
@@ -1592,9 +1594,9 @@ bool s7_is_stepper(s7_pointer p)      {return(is_stepper(p));}
 /* marks a slot that holds a do-loop's step variable (if int, can be numerator=current, denominator=end) */
 
 #define T_SAFE_STEPPER                (1 << (TYPE_BITS + 19))
-#define is_safe_stepper(p)            ((typeflag(_TSlt(p)) & T_SAFE_STEPPER) != 0)
-#define set_safe_stepper(p)           typeflag(_TSlt(p)) |= T_SAFE_STEPPER
-#define is_unsafe_stepper(p)          ((typeflag(_TSlt(p)) & (T_STEPPER | T_SAFE_STEPPER)) == T_STEPPER)
+#define is_safe_stepper(p)            ((typeflag(_TSlp(p)) & T_SAFE_STEPPER) != 0)
+#define set_safe_stepper(p)           typeflag(_TSlp(p)) |= T_SAFE_STEPPER
+#define is_unsafe_stepper(p)          ((typeflag(_TSlp(p)) & (T_STEPPER | T_SAFE_STEPPER)) == T_STEPPER)
 /* an experiment */
 
 #define T_PRINT_NAME                  T_SAFE_STEPPER
@@ -43302,7 +43304,8 @@ static bool integer_equal(s7_scheme *sc, s7_pointer x, s7_pointer y, shared_info
 	 (fabs(imag_part(y)) <= sc->morally_equal_float_epsilon));
 }
 
-static bool ratio_equal(s7_scheme *sc, s7_pointer x, s7_pointer y, shared_info *ci, bool morally)
+/* apparently ratio_equal is predefined in g++ -- name collision on mac */
+static bool fraction_equal(s7_scheme *sc, s7_pointer x, s7_pointer y, shared_info *ci, bool morally)
 {
 #if WITH_GMP
   if (is_big_number(y))
@@ -43478,7 +43481,7 @@ static void init_equals(void)
   equals[T_INT_VECTOR] =   vector_equal;
   equals[T_FLOAT_VECTOR] = vector_equal;
   equals[T_INTEGER] =      integer_equal;
-  equals[T_RATIO] =        ratio_equal;
+  equals[T_RATIO] =        fraction_equal;
   equals[T_REAL] =         real_equal;
   equals[T_COMPLEX] =      complex_equal;
   equals[T_BIG_INTEGER] =  bignum_equal;
@@ -55690,10 +55693,10 @@ static void unsafe_closure_star(s7_scheme *sc)
       val = car(z);
       args = cdr(z);
       
+      set_type(z, T_SLOT);
       slot_set_symbol(z, sym);
       symbol_set_local(sym, id, z);
       slot_set_value(z, val);
-      set_type(z, T_SLOT);
       next_slot(z) = let_slots(e);
       let_set_slots(e, z);
       z = args;
@@ -58509,9 +58512,9 @@ static int do_init_ex(s7_scheme *sc)
       val = car(y);
       args = cdr(y);
       
+      set_type(y, T_SLOT);
       slot_set_symbol(y, sym);
       slot_set_value(y, val);
-      set_type(y, T_SLOT);
       next_slot(y) = let_slots(sc->envir);
       let_set_slots(sc->envir, y);
       symbol_set_local(sym, let_id(sc->envir), y);
@@ -59787,10 +59790,10 @@ static void apply_lambda(s7_scheme *sc)                              /* --------
       sym = car(x);
       val = car(z);
       args = cdr(z);
+      set_type(z, T_SLOT);
       slot_set_symbol(z, sym);
       symbol_set_local(sym, id, z);
       slot_set_value(z, val);
-      set_type(z, T_SLOT);
       next_slot(z) = let_slots(e);
       let_set_slots(e, z);
       z = args;
@@ -65974,9 +65977,9 @@ static s7_pointer eval(s7_scheme *sc, opcode_t first_op)
 		      val = car(y);
 		      args = cdr(y);
 		      
+		      set_type(y, T_SLOT);
 		      slot_set_symbol(y, sym);
 		      slot_set_value(y, val);
-		      set_type(y, T_SLOT);
 		      next_slot(y) = let_slots(sc->envir);
 		      let_set_slots(sc->envir, y);
 		      symbol_set_local(sym, let_id(sc->envir), y);
@@ -66002,10 +66005,10 @@ static s7_pointer eval(s7_scheme *sc, opcode_t first_op)
 		      val = car(y);
 		      args = cdr(y);
 		      
+		      set_type(y, T_SLOT);
 		      slot_set_symbol(y, sym);
 		      symbol_set_local(sym, id, y);
 		      slot_set_value(y, val);
-		      set_type(y, T_SLOT);
 		      next_slot(y) = let_slots(e);
 		      let_set_slots(e, y);
 		      
@@ -73852,7 +73855,7 @@ int main(int argc, char **argv)
  * the old mus-audio-* code needs to use play or something, especially bess* -- what about soundio
  * snd namespaces from <mark> etc mark: (inlet :type 'mark :name "" :home <channel> :sample 0 :sync #f) with name/sync/sample settable
  * doc c_object_rf stuff? or how cload ties things into rf/sig 
- * libutf8proc.scm doc/examples?
+ * libutf8proc.scm doc/examples? cload gtk/sndlib
  * remove the #t=all sounds business! = (map f (sounds)) 
  * gf cases (rf/if also): substring [inlet list vector float-vector int-vector] hash-table(*) sublet string format vector-append string-append append
  * clm make-* sig should include the actual gen: oscil->(float? oscil? real?), also make->actual not #t in a circle 
@@ -73871,11 +73874,14 @@ int main(int argc, char **argv)
  *   also arg num is incorrect -- always off by 1?
  *   append in string case uses string_append, not g_string_append!
  *
- * ow! in stuff or stacktrace from owlet should correlate stack entries with lets, showing calls/code as much as possible
- * _type checks on eval locals
- *
  * lint: simple type->bool outside if et al?? [if car sig boolean? simplify]
  *       closure sig from body (and side-effects), expand args in code for internal lint?
  *       if closure depends only on arg (no free var, no funcs other than built-ins) and has no side-effects, and gets constant arg, eval?
+ *       define* lambda* key-opt-key ordering and recognition -- split out arity/type/side-effect/self-contained (are globals in the var list?)
+ *       can we match cc/exit args to the caller? error-args to the catcher?
+ *       :rest with default
+ *       macros that cause definitions are ignored (this also affects variable usage stats) and cload'ed identifiers are missed
+ *       variable not used can be confused (prepend-spaces and display-let in stuff.scm)
+ *       catch func arg checks (thunk, any args)
  */
  

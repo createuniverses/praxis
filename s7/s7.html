@@ -4888,9 +4888,11 @@ where you are in the file.
        (list (lambda (hook) 
                (format #t "loading ~S...~%" (hook 'name)))))
 
-(begin 
-  (load "lint.scm") 
-  (set! (hook-functions *load-hook*) (list (lambda (hook) (lint (hook 'name))))))
+(set! (hook-functions *load-hook*) 
+      (cons (lambda (hook) 
+              (format *stderr* "~A~%" 
+                (system (string-append "./snd lint.scm -e '(begin (lint \"" (hook 'name) "\") (exit))'") #t)))
+            (hook-functions *load-hook*)))
 </pre>
 
 <p>Here's a *load-hook* function that adds the loaded file's directory
@@ -5654,7 +5656,6 @@ and c-pointer? returns #t if passed one.  <code>(define NULL (c-pointer 0))</cod
 c-object? returns the object's type tag if passed such an object (otherwise #f of course).  This tag is also the position
 of the object's type in the (*s7* 'c-types) list. 
 (*s7* 'c-types) returns a list of the types created by s7_new_type_x and friends.
-The built-in random-state is one such type.
 </p>
 
 

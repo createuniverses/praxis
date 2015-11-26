@@ -24,6 +24,9 @@ function WidgetGroupLib.render(w)
   end
 end
 
+function WidgetGroupLib.update(w)
+  WidgetLib2.callAll(w.Widgets, "update")
+end
 
 function WidgetGroupLib.renderWidget(v)
   if v.lspace ~= nil then
@@ -38,12 +41,11 @@ end
 
 function WidgetGroupLib.update_cam(o)
   transform.copy(o.lspace, transform.camera())
+  
   local fwd = vec3d(transform.forward(o.lspace))
   local side = vec3d(transform.side(o.lspace))
   local up = vec3d(transform.up(o.lspace))
   
-  transform.translate(o.lspace, 0,0,0)
-
   transform.translate(o.lspace,
     Vector3D.getArgs(fwd * 70))
   transform.translate(o.lspace,
