@@ -27405,7 +27405,7 @@ static s7_pointer open_input_string(s7_scheme *sc, const char *input_string, int
   port_position(x) = 0;
   port_filename_length(x) = 0;
   port_filename(x) = NULL;
-  port_file_number(x) = -1;
+  port_file_number(x) = 0; /* unsigned int */
   port_line_number(x) = 0;
   port_needs_free(x) = false;
   port_gc_loc(x) = -1;
@@ -73878,10 +73878,25 @@ int main(int argc, char **argv)
  *       closure sig from body (and side-effects), expand args in code for internal lint?
  *       if closure depends only on arg (no free var, no funcs other than built-ins) and has no side-effects, and gets constant arg, eval?
  *       define* lambda* key-opt-key ordering and recognition -- split out arity/type/side-effect/self-contained (are globals in the var list?)
+ *         first step done, now make-var -> sublet/inlet, handle the todo's in lint.scm, t330 lambda case
+ *         also are defines in begin exported?  also when etc.
+ *         for class let: arity, procedure?, macro?, object->string, for var: sig and side decisions, macro tests
  *       can we match cc/exit args to the caller? error-args to the catcher?
  *       :rest with default
  *       macros that cause definitions are ignored (this also affects variable usage stats) and cload'ed identifiers are missed
  *       variable not used can be confused (prepend-spaces and display-let in stuff.scm)
  *       catch func arg checks (thunk, any args)
+ *       code that can be make-list|string or vector|string etc
+ *       morally-equal? for vector equality
+ *       do we catch (not (when...))? it's not necessarily a mistake.
+ *       letrec -> let (as in index.scm) [if none of letrec vars (including current) occurs in any of the bindings, use let]
+ *         can letrec* -> let* if there are no forward refs? ->letrec if no cross dependencies?
+ *         can the reverse be recognized (i.e. no occurrence of name in outer env, use in let before decl)?
+ *       kw passed to define? non-hygienic macro problem (these should be obvious from the calling args and current env)
+ *
+ * static s7_int abs_if_i(s7_scheme *sc, s7_pointer **p){s7_if_t f; s7_int x; f = (s7_if_t)(**p); (*p)++; x = f(sc, p); return(abs(x));}
+ *   in libc_s7.c -- this should use llabs or cast the argument, or do abs by hand.
+ * (define (f f) (define* (f (f f)) f) (f)) (f 0): error: lambda* defaults: f is unbound??
+ * (define* (f2 a :rest b) (list a b)), (f2 1 :a 1) is not an error? at least in lint point out that here :a does not set a
+ * (define (f1 f1) f1) is also ok?
  */
- 
