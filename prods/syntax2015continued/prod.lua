@@ -60,9 +60,7 @@ end
 function render()
   WidgetLib.renderAll()
 
-  if stage == 0 then
-    renderGreets2()
-  end
+  --renderGreets2()
 
   glColor(150 + math.random(100),110,20)
 
@@ -87,27 +85,6 @@ end
 function update()
   WidgetLib.callAll("update")
 
-  if stage == 4 then
-    airplane.followcam = false
-    airplane.pilot = airplane.allstoppilot
-  elseif stage == 3 then
-    airplane.followcam = true
-    showdiscs = false
-    showarms = false
-  elseif stage == 2 then
-    airplane.followcam = false
-    showdiscs = true
-    showarms = true
-  elseif stage == 1 then
-    airplane.pilot = airplane.normalpilot
-    showdiscs = false
-    showarms = false
-  else
-    airplane.pilot = airplane.takeoffpilot
-    showdiscs = false
-    showarms = false
-  end
-  
   for i=1,#skythings,1 do
     local thing = skythings[i]
     local planepos = vec3d(transform.getTranslation(airplane.lspace))
@@ -139,3 +116,14 @@ Widgets = {}
 ]])
 
 dofile("trace2.lua")
+
+airplane.pilot = airplane.normalpilot
+showdiscs = false
+showarms = false
+
+--airplane.followcam = false
+--airplane.pilot = airplane.allstoppilot
+--airplane.pilot = function (o) end
+--editorVisible = mainEditorVisible
+
+airplane.turnhead = true

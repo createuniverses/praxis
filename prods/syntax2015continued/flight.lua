@@ -193,11 +193,15 @@ do
       transform.translate(transform.camera(), offset.x, offset.y, offset.z)
       --lookAt(Vector3D.getArgs(o.target))
 
+      if airplane.turnhead then
+
       transform.rotate(transform.camera(),
         o.camerapitch,side.x, side.y, side.z)
 
       transform.rotate(transform.camera(),
         o.camerayaw,up.x, up.y, up.z)
+      
+      end
       
       local camspace =
         vec3d(transform.globalToLocal(
@@ -320,6 +324,7 @@ do
    end
   end
 end
+
 
 
 
