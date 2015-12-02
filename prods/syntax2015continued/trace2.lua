@@ -13,9 +13,9 @@ function trace2()
   glPopMatrix()
 
   glPushMatrix()
-   glTranslate(-2.0,-0.5,1.1)
+   glTranslate(-1.3,-0.5,1.1)
    local s = 0.015
-   glScale(s*0.7,s,s)
+   glScale(s*0.3,s*0.8,s)
    glRotate(-90, 1,0,0)
    drawText3DStroked(
     selectBeginLines(getErrorText(),5), 0,0,0)
@@ -26,3 +26,7 @@ end
 
 hideTrace()
 hideError()
+
+--clearError()
+
+--error("blah")

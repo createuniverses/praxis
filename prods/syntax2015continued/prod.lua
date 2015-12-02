@@ -35,6 +35,8 @@ dofile("tweaks.lua")
 dofile("dome.lua")
 dofile("camwidget.lua")
 
+dofile("streamer.lua")
+
 function OnMouseMove(dx,dy,x,y)
   WidgetLib.callAllInRange("mousemove")
 end
@@ -110,20 +112,44 @@ Widgets[3] = uimainwidget
 end
 
 setBufferText([[
-Widgets[3] = nil
-Widgets[3] = uimainwidget
-Widgets = {}
+do
+uimainwidget.Widgets = {}
+local w = uimainwidget.Widgets
+w[1] = addButton(0,10,function(b) end)
+w[2] = addButton(5,32,function(b) end)
+--w[3] = redslider
+w[3] = colorwheelgrp
+w[4] = dome
+end
 ]])
 
 dofile("trace2.lua")
 
-airplane.pilot = airplane.normalpilot
-showdiscs = false
-showarms = false
+showdiscs = true
+showarms = true
+airplane.followcam = true
 
---airplane.followcam = false
 --airplane.pilot = airplane.allstoppilot
---airplane.pilot = function (o) end
---editorVisible = mainEditorVisible
 
-airplane.turnhead = true
+function switchToManualPilot()
+  airplane.pilot = function (o) end
+  editorVisible = mainEditorVisible
+  airplane.turnhead = false
+  initPlaneControls()
+end
+
+function switchToAutoPilot()
+  editorVisible = function () return true end
+  airplane.pilot = airplane.normalpilot
+end
+
+switchToAutoPilot()
+--switchToManualPilot()
+
+enableStdMouseCam()
+
+clearError()
+
+
+
+

@@ -66,3 +66,7 @@ end
 
 enableStdMouseCam()
 disableStdMouseCam()
+
+do
+uimainwidget.Widgets = {}
+end

@@ -3,9 +3,9 @@ airplane = airplane or WidgetLib.newSimple()
 
 transform.setTranslation(airplane.lspace, 150,250,150)
 
-do
-controls =
-{
+function initPlaneControls()
+ controls =
+ {
   pitchup = false,
   pitchdown = false,
   bankleft = false,
@@ -16,8 +16,10 @@ controls =
   bank = 0,
   yaw = 0,
   thrust = 0
-}
+ }
 end
+
+initPlaneControls()
 
 if platform() == "windows" then
   stdkeyids["w"] = 87
@@ -324,6 +326,7 @@ do
    end
   end
 end
+
 
 
 
