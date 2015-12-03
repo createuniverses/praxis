@@ -4,10 +4,12 @@ Widgets["tiles"] = tiles
 transform.setTranslation(tiles.lspace, 0,10,0)
 airplane.followcam = true
 
+do
 tiles.map = {}
-tiles.step = 20
+tiles.step = 25
 tiles.xm = 500
 tiles.ym = 500
+end
 
 function airplane.getpos()
   local v = vec3d(transform.getTranslation(airplane.lspace))
@@ -44,25 +46,28 @@ end end
 do tiles.render = function (o)
   local t = 0
   local step = o.step
-  local xm = 500
-  local ym = 500
+  local xm = o.xm
+  local ym = o.ym
   glBeginQuads()
   for x=-xm,xm,step do
     for y=-ym,ym,step do
-       --if t == 0 then
-       if o.getcol(x,y) == 1 then
-         glColor(0,0,0,255)
-         glColor(255-y,255 - x,255,255)
-       vectorGL(x,0,y)
-       vectorGL(x+step,0,y)
-       vectorGL(x+step,0,y+step)
-       vectorGL(x,0,y+step)
-       else
-         glColor(255,255,255,255)
-       end
+      --if t == 0 then
+      if o.getcol(x,y) == 1 then
+        glColor(0,0,0,255)
+        --glColor(255-y,255 - x,255,255)
+      else
+        glColor(255,255,255,255)
+        glColor(0,0,0,255)
+        glColor(255-y,255 - x,255,255)
+      end
+      vectorGL(x,0,y)
+      vectorGL(x+step,0,y)
+      vectorGL(x+step,0,y+step)
+      vectorGL(x,0,y+step)
       t = (t+1) % 2
     end
   end
   glEnd()
 end end
+
 

@@ -51,6 +51,8 @@ void SingleWorld_SetInitialWindowDimensions(int nTop, int nLeft, int nWidth, int
 	g_nSingleWorldLeft = nLeft;
 }
 
+bool InitOpenGLExtensions();
+
 void RunSingleWorldConfiguration(
 	World * pYourWorld,
 	char * sName,
@@ -61,6 +63,7 @@ void RunSingleWorldConfiguration(
 	glutInit( &argc, argv );
     glutInitWindowSize(g_nSingleWorldWidth,g_nSingleWorldHeight);
     glutInitWindowPosition(g_nSingleWorldLeft,g_nSingleWorldTop);
+    //glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitDisplayMode(GLUT_RGBA | GLUT_ALPHA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_STENCIL);
 
     g_nMainWindowID = glutCreateWindow( sName );
@@ -111,6 +114,7 @@ void RunSingleWorldConfiguration(
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     //glutFullScreen();
+    InitOpenGLExtensions();
 
     pYourWorld->Init();
 

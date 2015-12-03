@@ -112,7 +112,8 @@ extern "C" {
 /*
  * Always include OpenGL and GLU headers
  */
-#include <GL/gl.h>
+/*#include <GL/gl.h>*/
+#include <GL/glew.h>
 #include <GL/glu.h>
 
 /*

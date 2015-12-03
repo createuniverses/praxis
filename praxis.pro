@@ -9,6 +9,8 @@ INCLUDEPATH += ./lua-5.1.4/src/
 INCLUDEPATH += ./Voxel/
 INCLUDEPATH += ./Neural/
 
+INCLUDEPATH += ./glew/include/
+
 win32 {
     DEFINES += __PRAXIS_WINDOWS__
     DEFINES += __WINDOWS_MM__
@@ -280,7 +282,8 @@ SOURCES += main.cpp \
     luaCBWorld.cpp \
     luaCBLang.cpp \
     luaCBJoystick.cpp \
-    luaCBSystem.cpp
+    luaCBSystem.cpp \
+    glew/source/glew.c
 
 unix {
 SOURCES += \
@@ -495,7 +498,10 @@ HEADERS += \
     pforth/pfdicdat_arm.h \
     pforth/pfinnrfp.h \
     pforth/pforth.h \
-    luaCB.h
+    luaCB.h \
+    glew/include/GL/glew.h \
+    glew/include/GL/glxew.h \
+    glew/include/GL/wglew.h
 
 unix {
 HEADERS += \

@@ -857,6 +857,65 @@ int luaCBDrawArraysTest(lua_State * L)
     return 0;
 }
 
+
+bool InitOpenGLExtensions(void)
+{
+   GLenum err = glewInit();
+
+   if (GLEW_OK != err)
+   {
+      cout << "InitOpenGLExtensions error:" << glewGetErrorString(err) << endl;
+      return false;
+   }
+
+   cout << "OpenGL Vendor: " << (char*) glGetString(GL_VENDOR) << "\n";
+   cout << "OpenGL Renderer: " << (char*) glGetString(GL_RENDERER) << "\n";
+   cout << "OpenGL Version: " << (char*) glGetString(GL_VERSION) << "\n\n";
+   //cout << "OpenGL Extensions:\n" << (char*) glGetString(GL_EXTENSIONS) << "\n\n";
+
+   return true;
+}
+
+int luaCBGLUseProgram(lua_State * L)
+{
+    GLuint program = luaL_checknumber(L, 1);
+    glUseProgram(program);
+    return 0;
+}
+
+char * g_vertex_shader_source = 0;
+char * g_fragment_shader_source = 0;
+
+int luaCBGLCreateProgram(lua_State * L)
+{
+    const char * vertex_shader_source   = luaL_checkstring(L, 1);
+    const char * fragment_shader_source = luaL_checkstring(L, 2);
+
+    GLuint vertex_shader;
+    GLuint fragment_shader;
+    GLuint program;
+
+    // Create and compile vertex shader
+    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertex_shader, 1, &vertex_shader_source, NULL);
+    glCompileShader(vertex_shader);
+    // Create and compile fragment shader
+    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragment_shader, 1, &fragment_shader_source, NULL);
+    glCompileShader(fragment_shader);
+    // Create program, attach shaders to it, and link it
+    program = glCreateProgram();
+    glAttachShader(program, vertex_shader);
+    glAttachShader(program, fragment_shader);
+    glLinkProgram(program);
+    // Delete the shaders as the program has them now
+    glDeleteShader(vertex_shader);
+    glDeleteShader(fragment_shader);
+
+    lua_pushnumber(L, program);
+    return 1;
+}
+
 void luaInitCallbacksOpenGL()
 {
     lua_register(g_pLuaState, "drawLine",              luaCBDrawLine);
@@ -936,4 +995,6 @@ void luaInitCallbacksOpenGL()
     lua_register(g_pLuaState, "drawText3DStroked",      luaCBDrawText3DStroked);
 
     lua_register(g_pLuaState, "glDATest",               luaCBDrawArraysTest);
+    lua_register(g_pLuaState, "glCreateProgram",        luaCBGLCreateProgram);
+    lua_register(g_pLuaState, "glUseProgram",           luaCBGLUseProgram);
 }

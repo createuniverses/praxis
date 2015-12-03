@@ -207,6 +207,7 @@ void lispClose()
     // nuthin?
 }
 
+#if 0
 extern "C"
 {
 
@@ -219,3 +220,4 @@ double round(double number)
 }
 
 }
+#endif
