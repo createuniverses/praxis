@@ -899,6 +899,21 @@ int luaCBGLCreateProgram(lua_State * L)
     vertex_shader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex_shader, 1, &vertex_shader_source, NULL);
     glCompileShader(vertex_shader);
+    {
+        int success = 0;
+        glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
+        if (!success)
+        {
+            const int MAX_INFO_LOG_SIZE = 2048;
+            GLchar infoLog[MAX_INFO_LOG_SIZE];
+            glGetShaderInfoLog(vertex_shader, MAX_INFO_LOG_SIZE, NULL, infoLog);
+            lua_pushnumber(L, -1);
+            lua_pushstring(L, infoLog);
+            return 2;
+//            fprintf(stderr, “Error in vertex shader compilation!\n”);
+//            fprintf(stderr, “Info log: %s\n”, infoLog);
+        }
+    }
     // Create and compile fragment shader
     fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment_shader, 1, &fragment_shader_source, NULL);
@@ -913,7 +928,8 @@ int luaCBGLCreateProgram(lua_State * L)
     glDeleteShader(fragment_shader);
 
     lua_pushnumber(L, program);
-    return 1;
+    lua_pushnumber(L, 0);
+    return 2;
 }
 
 void luaInitCallbacksOpenGL()
