@@ -907,22 +907,61 @@ int luaCBGLCreateProgram(lua_State * L)
             const int MAX_INFO_LOG_SIZE = 2048;
             GLchar infoLog[MAX_INFO_LOG_SIZE];
             glGetShaderInfoLog(vertex_shader, MAX_INFO_LOG_SIZE, NULL, infoLog);
+            std::string sError = std::string("Error in vertex shader compilation\n") +
+                                 std::string(infoLog);
             lua_pushnumber(L, -1);
-            lua_pushstring(L, infoLog);
+            lua_pushstring(L, sError.c_str());
+            glDeleteShader(vertex_shader);
             return 2;
-//            fprintf(stderr, “Error in vertex shader compilation!\n”);
-//            fprintf(stderr, “Info log: %s\n”, infoLog);
         }
     }
+
     // Create and compile fragment shader
     fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment_shader, 1, &fragment_shader_source, NULL);
     glCompileShader(fragment_shader);
+    {
+        int success = 0;
+        glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
+        if (!success)
+        {
+            const int MAX_INFO_LOG_SIZE = 2048;
+            GLchar infoLog[MAX_INFO_LOG_SIZE];
+            glGetShaderInfoLog(fragment_shader, MAX_INFO_LOG_SIZE, NULL, infoLog);
+            std::string sError = std::string("Error in fragment shader compilation\n") +
+                                 std::string(infoLog);
+            lua_pushnumber(L, -1);
+            lua_pushstring(L, sError.c_str());
+            glDeleteShader(vertex_shader);
+            glDeleteShader(fragment_shader);
+            return 2;
+        }
+    }
+
     // Create program, attach shaders to it, and link it
     program = glCreateProgram();
     glAttachShader(program, vertex_shader);
     glAttachShader(program, fragment_shader);
     glLinkProgram(program);
+    {
+        int success = 0;
+        glGetProgramiv(program, GL_LINK_STATUS, &success);
+        if (!success)
+        {
+            const int MAX_INFO_LOG_SIZE = 2048;
+            GLchar infoLog[MAX_INFO_LOG_SIZE];
+            glGetProgramInfoLog(program, MAX_INFO_LOG_SIZE, NULL, infoLog);
+            std::string sError = std::string("Error in program linkage\n") +
+                                 std::string(infoLog);
+            lua_pushnumber(L, -1);
+            lua_pushstring(L, sError.c_str());
+            glDeleteShader(vertex_shader);
+            glDeleteShader(fragment_shader);
+            glDeleteProgram(program);
+            return 2;
+        }
+    }
+
     // Delete the shaders as the program has them now
     glDeleteShader(vertex_shader);
     glDeleteShader(fragment_shader);
