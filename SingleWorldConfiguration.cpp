@@ -51,7 +51,23 @@ void SingleWorld_SetInitialWindowDimensions(int nTop, int nLeft, int nWidth, int
 	g_nSingleWorldLeft = nLeft;
 }
 
-bool InitOpenGLExtensions();
+bool InitOpenGLExtensions(void)
+{
+   GLenum err = glewInit();
+
+   if (GLEW_OK != err)
+   {
+      cout << "InitOpenGLExtensions error:" << glewGetErrorString(err) << endl;
+      return false;
+   }
+
+   cout << "OpenGL Vendor: " << (char*) glGetString(GL_VENDOR) << "\n";
+   cout << "OpenGL Renderer: " << (char*) glGetString(GL_RENDERER) << "\n";
+   cout << "OpenGL Version: " << (char*) glGetString(GL_VERSION) << "\n\n";
+   //cout << "OpenGL Extensions:\n" << (char*) glGetString(GL_EXTENSIONS) << "\n\n";
+
+   return true;
+}
 
 void RunSingleWorldConfiguration(
 	World * pYourWorld,
@@ -114,6 +130,7 @@ void RunSingleWorldConfiguration(
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     //glutFullScreen();
+
     InitOpenGLExtensions();
 
     pYourWorld->Init();

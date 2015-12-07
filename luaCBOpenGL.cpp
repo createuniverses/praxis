@@ -857,34 +857,12 @@ int luaCBDrawArraysTest(lua_State * L)
     return 0;
 }
 
-
-bool InitOpenGLExtensions(void)
-{
-   GLenum err = glewInit();
-
-   if (GLEW_OK != err)
-   {
-      cout << "InitOpenGLExtensions error:" << glewGetErrorString(err) << endl;
-      return false;
-   }
-
-   cout << "OpenGL Vendor: " << (char*) glGetString(GL_VENDOR) << "\n";
-   cout << "OpenGL Renderer: " << (char*) glGetString(GL_RENDERER) << "\n";
-   cout << "OpenGL Version: " << (char*) glGetString(GL_VERSION) << "\n\n";
-   //cout << "OpenGL Extensions:\n" << (char*) glGetString(GL_EXTENSIONS) << "\n\n";
-
-   return true;
-}
-
 int luaCBGLUseProgram(lua_State * L)
 {
     GLuint program = luaL_checknumber(L, 1);
     glUseProgram(program);
     return 0;
 }
-
-char * g_vertex_shader_source = 0;
-char * g_fragment_shader_source = 0;
 
 int luaCBGLCreateProgram(lua_State * L)
 {
