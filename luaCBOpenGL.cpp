@@ -5,6 +5,12 @@
 
 #include "luaCB.h"
 
+#include <glm/vec3.hpp> // glm::vec3
+#include <glm/vec4.hpp> // glm::vec4
+#include <glm/mat4x4.hpp> // glm::mat4
+#include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
+
+
 int luaCBDrawLine(lua_State *L)
 {
     int n = lua_gettop(L);
@@ -979,6 +985,7 @@ void luaInitCallbacksOpenGL()
     lua_register(g_pLuaState, "getColorGL",            luaCBGetColorGL);
     lua_register(g_pLuaState, "lightGL",               luaCBSetLightPosGL);
     lua_register(g_pLuaState, "normalGL",              luaCBNormalGL);
+
     lua_register(g_pLuaState, "enableLighting",        luaCBEnableLighting);
     lua_register(g_pLuaState, "disableLighting",       luaCBDisableLighting);
     lua_register(g_pLuaState, "enableTexturing",       luaCBEnableTexturing);
@@ -1026,6 +1033,12 @@ void luaInitCallbacksOpenGL()
     lua_register(g_pLuaState, "drawText2D",             luaCBDrawText2D);
     lua_register(g_pLuaState, "drawText3D",             luaCBDrawText3D);
     lua_register(g_pLuaState, "drawText3DStroked",      luaCBDrawText3DStroked);
+
+//    lua_register(g_pLuaState, "glCreateArray",          luaCBGLCreateArray);
+//    lua_register(g_pLuaState, "glWriteToArray",         luaCBGLWriteToBuffer);
+//    lua_register(g_pLuaState, "glDrawArray",            luaCBDrawArray);
+
+//    lua_register(g_pLuaState, "glUniform",              luaCBGLUniform);
 
     lua_register(g_pLuaState, "glDATest",               luaCBDrawArraysTest);
     lua_register(g_pLuaState, "glCreateProgram",        luaCBGLCreateProgram);
