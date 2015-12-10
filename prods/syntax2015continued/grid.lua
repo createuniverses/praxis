@@ -14,15 +14,61 @@ function dcirc(r,p)
 end
 
 
+gt = 0
+
+-- 2d, flat
 do
  grid.render = function (o)
+   gt = gt + 1
+   
+   local r = 20
+   
+   glColor(255,255,0,255)
+   dcirc(r, 6)
+   
+   glColor(255,100,0,255)
+
    for i=0,5,1 do
      glPushMatrix()
-       glTranslate(i*40,i*40,0)
-       dcirc(20, 6)
+       --local v = rvec3d(r*2,deg2rad(60))
+       --v = v * i
+       glRotate(60*i, 0,0,1)
+       glTranslate(0,r,0)
+       glTranslate(r*math.sin(deg2rad(60)),r*math.cos(deg2rad(60)),0)
+       dcirc(r, 6)
      glPopMatrix()
    end
 end end
+
+do
+ grid.render = function (o)
+   gt = gt + 1
+   
+   local r = 20
+   
+   glColor(255,255,0,255)
+   dcirc(r, 6)
+   
+   glColor(255,100,0,255)
+
+   local ra = 120
+
+   for i=0,0,1 do
+     glPushMatrix()
+       --glRotate(gt*3, 0,1,0)
+       glRotate(gt*3, r*math.sin(deg2rad(ra)),r*math.cos(deg2rad(ra)),0)
+       glRotate(60, 0,0,1)
+       --glRotate(gt*3, 0,0,1)
+       --glRotate(gt*3, 1,0,0)
+       --glRotate(gt*3, 1,1,0)
+       --glTranslate(0,r,0)
+       glTranslate(r*math.sin(deg2rad(60)),r*math.cos(deg2rad(60)),0)
+       --glRotate(gt*5, 0,0,1)
+       dcirc(r, 6)
+     glPopMatrix()
+   end
+end end
+
 clearError()
 
 do
@@ -30,3 +76,4 @@ uimainwidget.Widgets = {}
 local w = uimainwidget.Widgets
 w["grid"] = grid
 end
+
