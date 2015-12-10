@@ -1,6 +1,10 @@
 
 WidgetLib2 = {}
 
+-- what happens if I simply get rid of this, and just
+-- use newSimple as the main new?
+-- what uses this old new?
+
 function WidgetLib2.new(name, lspace, width, height, depth)
   local w = {}
   w.name = name
@@ -18,7 +22,8 @@ function WidgetLib2.new(name, lspace, width, height, depth)
   return w
 end
 
-function WidgetLib2.newSimple(name)
+-- was newSimple
+function WidgetLib2.new(name)
   local w = {}
   w.name = name
   w.lspace = transform.new()
@@ -34,6 +39,9 @@ function WidgetLib2.newSimple(name)
   w.mousemove = function (o,x,y,z) end
   return w
 end
+
+-- still need newSimple tho
+WidgetLib2.newSimple = WidgetLib2.new
 
 function WidgetLib.addExisting(w)
   if w.lspace == nil then w.lspace = transform.new() end
@@ -110,4 +118,6 @@ function WidgetLib2.callAllInRange(Widgets, fnname, x,y,z)
     end
   end
 end
+
+
 

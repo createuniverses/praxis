@@ -11,6 +11,8 @@
 
 extern s7_scheme * g_pLisp;
 
+static int s7_type_tag_transform = 0;
+
 static s7_pointer s7cbDrawLine(s7_scheme *sc, s7_pointer args)
 {
     float x1 = s7_number_to_real(sc, s7_list_ref(sc, args, 0));
@@ -30,7 +32,15 @@ static s7_pointer s7cbDrawLine(s7_scheme *sc, s7_pointer args)
     return(s7_make_integer(sc, 0));
 }
 
+static s7_pointer s7cbNewTransform(s7_scheme * sc, s7_pointer args)
+{
+
+    return s7_make_object(sc, s7_type_tag_transform, (void *)0);
+}
+
 void lispInitCallbacks()
 {
+    s7_type_tag_transform = s7_new_type("transform", NULL, NULL, NULL, NULL, NULL, NULL);
+
     s7_define_function(g_pLisp, "draw-line", s7cbDrawLine, 6, 0, false, "");
 }
