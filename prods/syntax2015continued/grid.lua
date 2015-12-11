@@ -53,16 +53,82 @@ do
 
    local ra = 120
 
-   for i=0,0,1 do
+   for i=0,5,1 do
+     glPushMatrix()
+       glRotate(60*i, 0,0,1)
+       glRotate(gt*3, 0,0,1)
+       glRotate(gt*3, 1,0,0)
+       --glRotate(gt*3, 1,1,0)
+
+       glTranslate(r*math.sin(deg2rad(60)),r+r*math.cos(deg2rad(60)),0)
+       --glTranslate(r*math.sin(deg2rad(60*i)),r+r*math.cos(deg2rad(60*i)),0)
+       dcirc(r, 6)
+     glPopMatrix()
+   end
+end end
+
+do
+ grid.render = function (o)
+   gt = gt + 1
+   
+   local r = 20
+   
+   glColor(255,255,0,255)
+   dcirc(r, 6)
+   
+   glColor(255,100,0,255)
+
+   local ra = 120
+
+   --for i=0,0,1 do
+   do
+     local i = 1
      glPushMatrix()
        --glRotate(gt*3, 0,1,0)
-       glRotate(gt*3, r*math.sin(deg2rad(ra)),r*math.cos(deg2rad(ra)),0)
-       glRotate(60, 0,0,1)
+       --glRotate(gt*3, r*math.sin(deg2rad(ra)),r*math.cos(deg2rad(ra)),0)
+       --glRotate(60, 0,0,1)
        --glRotate(gt*3, 0,0,1)
        --glRotate(gt*3, 1,0,0)
        --glRotate(gt*3, 1,1,0)
        --glTranslate(0,r,0)
+
+       --glRotate(gt * 5, 0,1,0)
        glTranslate(r*math.sin(deg2rad(60)),r*math.cos(deg2rad(60)),0)
+       glRotate(gt*3, r*math.sin(deg2rad(ra)),r*math.cos(deg2rad(ra)),0)
+       --glRotate(gt*3, 0,1,0)
+       glTranslate(0,r,0)
+       --glTranslate(r*math.sin(deg2rad(gt*5)),r*math.cos(deg2rad(gt*5)),0)
+
+       --glTranslate(r*math.sin(deg2rad(60)),r+r*math.cos(deg2rad(60)),0)
+       --glRotate(gt*5, 0,0,1)
+       dcirc(r, 6)
+     glPopMatrix()
+   end
+end end
+
+do
+ grid.render = function (o)
+   gt = gt + 1
+   
+   local r = 20
+   
+   glColor(255,255,0,255)
+   dcirc(r, 6)
+   
+   glColor(255,100,0,255)
+
+   local ra = 120
+
+   for i=0,5,1 do
+     glPushMatrix()
+       glRotate(60*i, 0,0,1)
+       glTranslate(r*math.sin(deg2rad(60)),r*math.cos(deg2rad(60)),0)
+       glRotate(gt*3, r*math.sin(deg2rad(ra)),r*math.cos(deg2rad(ra)),0)
+       --glRotate(gt*3, 0,1,0)
+       glTranslate(0,r,0)
+       --glTranslate(r*math.sin(deg2rad(gt*5)),r*math.cos(deg2rad(gt*5)),0)
+
+       --glTranslate(r*math.sin(deg2rad(60)),r+r*math.cos(deg2rad(60)),0)
        --glRotate(gt*5, 0,0,1)
        dcirc(r, 6)
      glPopMatrix()
@@ -76,4 +142,5 @@ uimainwidget.Widgets = {}
 local w = uimainwidget.Widgets
 w["grid"] = grid
 end
+
 
