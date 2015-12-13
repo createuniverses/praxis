@@ -47,5 +47,8 @@ function f8Pressed()
   dofile("syntax2015.lua")
 end
 
-
+function f1Pressed()
+  luaCall(getBufferText())
+  setClearColor(255,0,0)
+end
 

@@ -99,6 +99,26 @@ function update()
   end
 end
 
+function update()
+  WidgetLib.callAll("update")
+
+  for i=1,#skythings,1 do
+    local thing = skythings[i]
+    local planepos = vec3d(transform.getTranslation(airplane.lspace))
+    local tween = thing.p - planepos
+    local dist = Vector3D.magnitude(tween)
+    tween = Vector3D.normalize(tween)
+    if dist < (30 + thing.r) then
+      thing.p = planepos + (tween * (30+thing.r))
+    end
+  end
+
+  local r,g,b = getClearColor()
+  r = r - 10
+  if r < 0 then r = 0 end
+  setClearColor(r,g,b)
+end
+
 dofile("widgetgroup.lua")
 dofile("colorwheelwidget.lua")
 
@@ -149,6 +169,7 @@ switchToAutoPilot()
 enableStdMouseCam()
 
 clearError()
+
 
 
 

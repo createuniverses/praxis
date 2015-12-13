@@ -17,8 +17,7 @@ end
 gt = 0
 
 -- 2d, flat
-do
- grid.render = function (o)
+function grid.render1(o)
    gt = gt + 1
    
    local r = 20
@@ -38,10 +37,9 @@ do
        dcirc(r, 6)
      glPopMatrix()
    end
-end end
+end
 
-do
- grid.render = function (o)
+function grid.render2(o)
    gt = gt + 1
    
    local r = 20
@@ -65,10 +63,9 @@ do
        dcirc(r, 6)
      glPopMatrix()
    end
-end end
+end
 
-do
- grid.render = function (o)
+function grid.render3(o)
    gt = gt + 1
    
    local r = 20
@@ -104,10 +101,74 @@ do
        dcirc(r, 6)
      glPopMatrix()
    end
-end end
+end
+
+gt = 0
 
 do
- grid.render = function (o)
+ grid.xforms = {}
+
+ for i=0,5,1 do
+  local xform = transform.new()
+  grid.xforms[i] = xform
+ end
+end
+
+function transform.rotateLocal(xf, a, vx,vy,vz)
+  local v = vec3d(vx,vy,vz)
+  local v2 = vec3d(transform.transformVector(xf, v:getArgs()))
+  transform.rotate(xf, a, v2:getArgs())
+end
+
+function transform.translateLocal(xf, vx,vy,vz)
+  local v = vec3d(vx,vy,vz)
+  local v2 = vec3d(transform.transformVector(xf, v:getArgs()))
+  transform.translate(xf, v2:getArgs())
+end
+
+clearError()
+continue()
+
+function grid.updatetrans()
+ for i=0,5,1 do
+  local r = 20
+  local ra = 120
+  local xform = grid.xforms[i]
+  transform.copy(xform, transform.identity())
+  --xform = transform.identity()
+  --grid.xforms[i] = xform
+
+  --glRotate(60*i, 0,0,1)
+  --glTranslate(r*math.sin(deg2rad(60)),r*math.cos(deg2rad(60)),0)
+  --glRotate(gt*3, r*math.sin(deg2rad(ra)),r*math.cos(deg2rad(ra)),0)
+  --glTranslate(0,r,0)
+
+
+  transform.rotateLocal(xform, deg2rad(60*i), 0, 0, 1)
+  transform.translateLocal(xform,
+    r*math.sin(deg2rad(60)),
+    r*math.cos(deg2rad(60)),
+    0)
+
+  transform.rotateLocal(xform,
+    deg2rad(gt*3),
+    math.sin(deg2rad(ra)),
+    math.cos(deg2rad(ra)),
+    0)
+
+  transform.translateLocal(xform, 0,r,0)
+ end
+end
+
+edSetTopMargin(0.5)
+
+function grid.render4(o)
+  grid.updatetrans()
+
+  glPushMatrix()
+  glTranslate(0,40,0)
+  --glRotate(gt * 2, 1,0,0)
+  
    gt = gt + 1
    
    local r = 20
@@ -121,19 +182,21 @@ do
 
    for i=0,5,1 do
      glPushMatrix()
-       glRotate(60*i, 0,0,1)
-       glTranslate(r*math.sin(deg2rad(60)),r*math.cos(deg2rad(60)),0)
-       glRotate(gt*3, r*math.sin(deg2rad(ra)),r*math.cos(deg2rad(ra)),0)
-       --glRotate(gt*3, 0,1,0)
-       glTranslate(0,r,0)
-       --glTranslate(r*math.sin(deg2rad(gt*5)),r*math.cos(deg2rad(gt*5)),0)
+       glApplyTransform(grid.xforms[i])
+       --glRotate(60*i, 0,0,1)
+       --glTranslate(r*math.sin(deg2rad(60)),r*math.cos(deg2rad(60)),0)
+       --glRotate(gt*3, r*math.sin(deg2rad(ra)),r*math.cos(deg2rad(ra)),0)
+       --glTranslate(0,r,0)
 
-       --glTranslate(r*math.sin(deg2rad(60)),r+r*math.cos(deg2rad(60)),0)
-       --glRotate(gt*5, 0,0,1)
        dcirc(r, 6)
      glPopMatrix()
    end
-end end
+  glPopMatrix()
+end
+
+function grid.render(o)
+  grid.render4(o)
+end
 
 clearError()
 
@@ -142,5 +205,11 @@ uimainwidget.Widgets = {}
 local w = uimainwidget.Widgets
 w["grid"] = grid
 end
+
+
+
+
+
+
 
 
