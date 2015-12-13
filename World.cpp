@@ -86,6 +86,10 @@ World::World()
     m_nFloorGridGreen = 0;
     m_nFloorGridBlue = 255;
 
+    m_nClearColorRed   = 0;
+    m_nClearColorGreen = 0;
+    m_nClearColorBlue  = 0;
+
     m_bRunning = true;
 
     // MIDI
@@ -250,6 +254,17 @@ static void qt_restore_gl_state()
 int g_nLastFrameTime = 0;
 float g_fFPS = 0.0f;
 
+static float Int2FloatCol(int c)
+{
+  float n = (float)c / 255.0f;
+  if(n < 0.0f)
+    n = 0.0f;
+  if(n > 1.0f)
+    n = 1.0f;
+  return n;
+}
+
+
 void World::Render()
 {
     UseMainWindowContext();
@@ -268,7 +283,10 @@ void World::Render()
     //glEnable(GL_POLYGON_OFFSET_FILL);
     //glPolygonOffset (1., 1.);
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(Int2FloatCol(m_nClearColorRed),
+                 Int2FloatCol(m_nClearColorGreen),
+                 Int2FloatCol(m_nClearColorBlue),
+                 1.0f);
     //glClearColor(0.0f, (float)(rand()%1000) * 0.001f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -281,7 +299,10 @@ void World::Render()
     if(m_bUpdatePickPosition && !m_bDoubleClick)
         RefreshFloorPickPosition();
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(Int2FloatCol(m_nClearColorRed),
+                 Int2FloatCol(m_nClearColorGreen),
+                 Int2FloatCol(m_nClearColorBlue),
+                 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // turned off the lighting code for now

@@ -286,6 +286,30 @@ int luaCBContinue(lua_State * L)
     return 0;
 }
 
+int luaCBSetClearColor(lua_State * L)
+{
+    g_pWorld->m_nClearColorRed   = luaL_checknumber(L, 1);
+    g_pWorld->m_nClearColorGreen = luaL_checknumber(L, 2);
+    g_pWorld->m_nClearColorBlue  = luaL_checknumber(L, 3);
+
+    if(g_pWorld->m_nClearColorRed < 0)   g_pWorld->m_nClearColorRed = 0;
+    if(g_pWorld->m_nClearColorRed > 255) g_pWorld->m_nClearColorRed = 255;
+    if(g_pWorld->m_nClearColorGreen < 0)   g_pWorld->m_nClearColorGreen = 0;
+    if(g_pWorld->m_nClearColorGreen > 255) g_pWorld->m_nClearColorGreen = 255;
+    if(g_pWorld->m_nClearColorBlue < 0)   g_pWorld->m_nClearColorBlue = 0;
+    if(g_pWorld->m_nClearColorBlue > 255) g_pWorld->m_nClearColorBlue = 255;
+
+    return 0;
+}
+
+int luaCBGetClearColor(lua_State * L)
+{
+    lua_pushnumber(L, g_pWorld->m_nClearColorRed);
+    lua_pushnumber(L, g_pWorld->m_nClearColorGreen);
+    lua_pushnumber(L, g_pWorld->m_nClearColorBlue);
+    return 3;
+}
+
 void luaInitCallbacksWorld()
 {
     lua_register(g_pLuaState, "getMaxFramerate",       luaCBGetMaxFramerate);
@@ -334,4 +358,7 @@ void luaInitCallbacksWorld()
 
     lua_register(g_pLuaState, "pause",                 luaCBPause);
     lua_register(g_pLuaState, "continue",              luaCBContinue);
+
+    lua_register(g_pLuaState, "setClearColor",         luaCBSetClearColor);
+    lua_register(g_pLuaState, "getClearColor",         luaCBGetClearColor);
 }

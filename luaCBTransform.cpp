@@ -320,6 +320,42 @@ int luaCBTransformGlobalToLocal(lua_State * L)
     return 3;
 }
 
+int luaCBTransformTransformVector(lua_State * L)
+{
+    int n = lua_gettop(L);
+    if(n!=4) luaL_error(L, "4 arguments expected.");
+
+    mlTransform * t = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
+
+    mlVector3D v1(luaL_checknumber(L, 2), luaL_checknumber(L, 3), luaL_checknumber(L, 4));
+
+    mlVector3D v2 = t->TransformVector(v1);
+
+    lua_pushnumber(L, v2.x);
+    lua_pushnumber(L, v2.y);
+    lua_pushnumber(L, v2.z);
+
+    return 3;
+}
+
+int luaCBTransformTransformVectorInverse(lua_State * L)
+{
+    int n = lua_gettop(L);
+    if(n!=4) luaL_error(L, "4 arguments expected.");
+
+    mlTransform * t = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
+
+    mlVector3D v1(luaL_checknumber(L, 2), luaL_checknumber(L, 3), luaL_checknumber(L, 4));
+
+    mlVector3D v2 = t->TransformVectorInverse(v1);
+
+    lua_pushnumber(L, v2.x);
+    lua_pushnumber(L, v2.y);
+    lua_pushnumber(L, v2.z);
+
+    return 3;
+}
+
 int luaCBTransformCopyFrom(lua_State * L)
 {
     int n = lua_gettop(L);
@@ -349,28 +385,32 @@ int luaCBTransformTransform(lua_State * L)
 void luaInitCallbacksTransformLib()
 {
     const struct luaL_Reg lua_transformlib [] = {
-        {"new",               luaCBTransformNew},
-        {"identity",          luaCBTransformIdentity},
-        {"camera",            luaCBTransformCamera},
-        {"cameraBase",        luaCBTransformCameraBase},
-        {"getTranslation",    luaCBTransformGetTranslation},
-        {"setTranslation",    luaCBTransformSetTranslation},
-        {"applyTranslation",  luaCBTransformApplyTranslation},
-        {"getScale",          luaCBTransformGetScale},
-        {"setScale",          luaCBTransformSetScale},
-        {"applyScale",        luaCBTransformApplyScale},
-        {"forward",           luaCBTransformForward},
-        {"up",                luaCBTransformUp},
-        {"side",              luaCBTransformSide},
-        {"lookAt",            luaCBTransformLookAt},
-        {"transform",         luaCBTransformTransform},
-        {"translate",         luaCBTransformApplyTranslation},
-        {"scale",             luaCBTransformApplyScale},
-        {"rotate",            luaCBTransformRotate},
-        {"localToGlobal",     luaCBTransformLocalToGlobal},
-        {"globalToLocal",     luaCBTransformGlobalToLocal},
-        {"copy",              luaCBTransformCopyFrom},
-        {"normalise",         luaCBTransformNormalise},
+        {"new",                    luaCBTransformNew},
+        {"identity",               luaCBTransformIdentity},
+        {"camera",                 luaCBTransformCamera},
+        {"cameraBase",             luaCBTransformCameraBase},
+        {"getTranslation",         luaCBTransformGetTranslation},
+        {"setTranslation",         luaCBTransformSetTranslation},
+        {"applyTranslation",       luaCBTransformApplyTranslation},
+        {"getScale",               luaCBTransformGetScale},
+        {"setScale",               luaCBTransformSetScale},
+        {"applyScale",             luaCBTransformApplyScale},
+        {"forward",                luaCBTransformForward},
+        {"up",                     luaCBTransformUp},
+        {"side",                   luaCBTransformSide},
+        {"lookAt",                 luaCBTransformLookAt},
+        {"transform",              luaCBTransformTransform},
+        {"translate",              luaCBTransformApplyTranslation},
+        {"scale",                  luaCBTransformApplyScale},
+        {"rotate",                 luaCBTransformRotate},
+        {"localToGlobal",          luaCBTransformLocalToGlobal},
+        {"globalToLocal",          luaCBTransformGlobalToLocal},
+        {"transformPoint",         luaCBTransformLocalToGlobal},
+        {"transformPointInverse",  luaCBTransformGlobalToLocal},
+        {"transformVector",        luaCBTransformTransformVector},
+        {"transformVectorInverse", luaCBTransformTransformVectorInverse},
+        {"copy",                   luaCBTransformCopyFrom},
+        {"normalise",              luaCBTransformNormalise},
         {NULL, NULL}
     };
 

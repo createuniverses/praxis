@@ -135,6 +135,14 @@ public:
     bool RightMouseDown() { return m_bRightMouseDown; }
     bool RightMouseWentDown() { return m_bRightMouseWentDown; }
 
+    int m_nClearColorRed;
+    int m_nClearColorGreen;
+    int m_nClearColorBlue;
+
+    int m_nFloorGridRed;
+    int m_nFloorGridGreen;
+    int m_nFloorGridBlue;
+
 private:
 
     // OpenGL state
@@ -165,10 +173,6 @@ private:
     float      m_fMousePickDepth;
     mlVector3D m_vMouseFloorPickPosition;
     float      m_fMouseFloorPickDepth;
-
-    int m_nFloorGridRed;
-    int m_nFloorGridGreen;
-    int m_nFloorGridBlue;
 
     bool m_bDoubleClick;
 
