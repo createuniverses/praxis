@@ -1,16 +1,29 @@
 
 grid = WidgetLib2.newSimple()
 
-function dcirc(r,p)
-  local s = 360/p
-  local p1 = vec3d(r * math.sin(0),
-                   r * math.cos(0), 0)
-  for a=s,360,s do
-    local p2 = vec3d(r * math.sin(deg2rad(a)),
-                     r * math.cos(deg2rad(a)), 0)
+function dcircpts(r,p)
+end
+
+function plotloop(l)
+  local p1 = l[1]
+  for i=2,#l,1 do
+    local p2 = l[i]
     drawLine(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z)
     p1 = p2
   end
+end
+
+grid.hexagon = dcirc(20, 6)
+
+function dcirc(r,p)
+  local l = {}
+  local s = 360/p
+  for a=0,360,s do
+    local p = vec3d(r * math.sin(deg2rad(a)),
+                    r * math.cos(deg2rad(a)), 0)
+    table.insert(l, p)
+  end
+  return l
 end
 
 
@@ -167,14 +180,15 @@ function grid.render4(o)
 
   glPushMatrix()
   glTranslate(0,40,0)
-  --glRotate(gt * 2, 1,0,0)
+  glRotate(gt * 2, 1,0,0)
   
    gt = gt + 1
    
    local r = 20
    
    glColor(255,255,0,255)
-   dcirc(r, 6)
+   plotloop(grid.hexagon)
+   --dcirc(r, 6)
    
    glColor(255,100,0,255)
 
@@ -188,7 +202,8 @@ function grid.render4(o)
        --glRotate(gt*3, r*math.sin(deg2rad(ra)),r*math.cos(deg2rad(ra)),0)
        --glTranslate(0,r,0)
 
-       dcirc(r, 6)
+       plotloop(grid.hexagon)
+       --dcirc(r, 6)
      glPopMatrix()
    end
   glPopMatrix()
@@ -205,6 +220,7 @@ uimainwidget.Widgets = {}
 local w = uimainwidget.Widgets
 w["grid"] = grid
 end
+
 
 
 
