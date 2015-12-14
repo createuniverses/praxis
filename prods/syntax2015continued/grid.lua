@@ -13,8 +13,6 @@ function plotloop(l)
   end
 end
 
-grid.hexagon = dcirc(20, 6)
-
 function dcirc(r,p)
   local l = {}
   local s = 360/p
@@ -26,6 +24,7 @@ function dcirc(r,p)
   return l
 end
 
+grid.hexagon = dcirc(20, 6)
 
 gt = 0
 
@@ -220,6 +219,7 @@ uimainwidget.Widgets = {}
 local w = uimainwidget.Widgets
 w["grid"] = grid
 end
+
 
 
 

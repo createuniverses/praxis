@@ -68,9 +68,17 @@ function render()
     glPopMatrix()
   end
   
+  glBeginQuads()
+    glVertex(-300,10,-300)
+    glVertex(-300,10, 300)
+    glVertex( 300,10, 300)
+    glVertex( 300,10,-300)
+  glEnd()
+  
   glUseProgram(0)
   
   trace2()
 end
+
 
 
