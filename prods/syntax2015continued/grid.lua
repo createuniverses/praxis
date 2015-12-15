@@ -141,6 +141,25 @@ end
 clearError()
 continue()
 
+grid.pa = 20
+
+function grid.getpdist()
+  local vg = grid.hexagon[2]
+  local v1 = vec3d(transform.transformPoint(
+    grid.xforms[1],
+    Vector3D.getArgs(vg)))
+  local v2 = vec3d(transform.transformPoint(
+    grid.xforms[2],
+    Vector3D.getArgs(vg)))
+  
+  local d = v2 - v1
+  return d:magnitude()
+end
+
+function grid.setpa(newpa)
+  grid.pa = newpa
+end
+
 function grid.updatetrans()
  for i=0,5,1 do
   local r = 20
@@ -163,7 +182,7 @@ function grid.updatetrans()
     0)
 
   transform.rotateLocal(xform,
-    deg2rad(gt*3),
+    deg2rad(grid.pa),
     math.sin(deg2rad(ra)),
     math.cos(deg2rad(ra)),
     0)
@@ -172,6 +191,9 @@ function grid.updatetrans()
  end
 end
 
+continue()
+clearError()
+
 edSetTopMargin(0.5)
 
 function grid.render4(o)
@@ -179,7 +201,7 @@ function grid.render4(o)
 
   glPushMatrix()
   glTranslate(0,40,0)
-  glRotate(gt * 2, 1,0,0)
+  --glRotate(gt * 2, 1,0,0)
   
    gt = gt + 1
    
@@ -219,6 +241,7 @@ uimainwidget.Widgets = {}
 local w = uimainwidget.Widgets
 w["grid"] = grid
 end
+
 
 
 
