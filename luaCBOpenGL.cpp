@@ -1039,6 +1039,7 @@ void luaInitCallbacksOpenGL()
 //    lua_register(g_pLuaState, "glDrawArray",            luaCBDrawArray);
 
 //    lua_register(g_pLuaState, "glUniform",              luaCBGLUniform);
+//    lua_register(g_pLuaState, "glGetUniformLocation",   luaCBGLGetUniformLocation);
 
     lua_register(g_pLuaState, "glDATest",               luaCBDrawArraysTest);
     lua_register(g_pLuaState, "glCreateProgram",        luaCBGLCreateProgram);
