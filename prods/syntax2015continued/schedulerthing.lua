@@ -8,24 +8,30 @@ function addEvent(time, fn)
     {time = schedule_time + (time * 30), fn = fn})
 end
 
-function runSchedule()
+function runScheduleSingle()
   if Queue.size(schedule) >= 1 then
     local event = Queue.popfirst(schedule)
     if schedule_time > event.time then
       --print("running event...")
       event.fn()
+      return true
     else
       Queue.pushfirst(schedule, event)
+      return false
     end
   end
-  
+end
+
+function runSchedule()
+  while runScheduleSingle() do end
   schedule_time = schedule_time + 1
 end
 
-do
-  addEvent(1, function () midiNoteOn(60) end)
-  addEvent(2, function () midiNoteOff(60) end)
-end
+--do
+--  midiStart()
+--  addEvent(1, function () midiNoteOn(60) end)
+--  addEvent(2, function () midiNoteOff(60) end)
+--end
 
 function update()
   WidgetLib.callAll("update")
@@ -50,3 +56,6 @@ function update()
 end
 
 --setBufferName("schedulerthing.lua")
+
+
+
