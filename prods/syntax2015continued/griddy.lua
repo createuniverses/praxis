@@ -45,15 +45,15 @@ end
 
 function rendergrid2() end
 
-for i=50,90,5 do
- setmygrid(i,0,20)
+for i=0,90,5 do
+ setmygrid(i,0,70)
 end
 
-do
+function applygridaveraging()
  local gg = getmygrid
  local s = 5
- for x=-100,100,s do
-   for y=-100,100,s do
+ for x=-50,50,s do
+   for y=-50,50,s do
      local h1 = gg(x,  y)
      local h2 = gg(x+s,y)
      local h3 = gg(x+s,y+s)
@@ -97,16 +97,6 @@ swapingrid(_gridbak)
 
 continue()
 print2(getErrorText())
-[string "function render()..."]:5: attempt to call global 'renderGears' (a nil value)
-stack traceback:
-	[string "function onerror(s) endGL() glResetStencil(..."]:1: in function 'renderGears'
-	[string "function render()..."]:5: in function 'render'
-	[string "render()"]:1: in main chunk
-[string "function render()..."]:5: attempt to call global 'renderGears' (a nil value)
-stack traceback:
-	[string "function onerror(s) endGL() glResetStencil(..."]:1: in function 'renderGears'
-	[string "function render()..."]:5: in function 'render'
-	[string "render()"]:1: in main chunk
 
 
 
@@ -116,4 +106,33 @@ stack traceback:
 do
   closeBuffer()
   switchToBuffer("synth.lua - command")
+end
+
+print2(getFunction(update))
+function update()
+  WidgetLib.callAll("update")
+
+  for i=1,#skythings,1 do
+    local thing = skythings[i]
+    local planepos = vec3d(transform.getTranslation(airplane.lspace))
+    local tween = thing.p - planepos
+    local dist = Vector3D.magnitude(tween)
+    tween = Vector3D.normalize(tween)
+    if dist < (30 + thing.r) then
+      thing.p = planepos + (tween * (30+thing.r))
+    end
+  end
+
+  local r,g,b = getClearColor()
+  r = r - 10
+  if r < 0 then r = 0 end
+  setClearColor(r,g,b)
+
+  SynthNode.updateSynthNode(sineConNode)
+  SynthNode.updateSynthNode(sineConNode2)
+  SynthNode.updateSynthNode(sineGenNode)
+  SynthNode.updateSynthNode(lpfEffNode)
+  SynthNode.updateSynthNode(sinkNode)
+
+ --applygridaveraging()
 end
