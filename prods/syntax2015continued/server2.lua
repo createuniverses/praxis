@@ -7,6 +7,7 @@ end
 terminalcommand = ""
 
 svrcoro = nil
+svrMultiline = false
 
 function svrRunPromptServer(sck)
   if svrcoro == nil then
@@ -22,44 +23,45 @@ function svrRunPromptServer(sck)
       else
         svrRunCode(sck,s)
       end
-      -- check if multiline here
-      svrSend("1> ", sck)
+      if svrMultiline then
+        svrSend(">> ", sck)
+      end
     end
   else
-    coroutine.resume(svrcoro)
-    if coroutine.status(svrcoro) ~= "suspended" then
+    --svrSend("Running...", sck)
+    local r,msg = coroutine.resume(svrcoro)
+    if r==false then
+      svrSend(msg.."\n", sck)
+      svrSend(debug.traceback(svrcoro).."\n", sck)
       svrcoro = nil
-      svrSend("2> ", sck)
+      svrSend("> ", sck)
+    elseif coroutine.status(svrcoro) ~= "suspended" then
+      svrcoro = nil
+      svrSend("> ", sck)
     end
   end
 end
 
 function svrRunLua(sck,s)
-  local context = {}
-  setmetatable(context, { __index = _G })
-  context.print = function(s)
-            if s~=nil then
-              svrSend(stripnewline(""..s).."\n", sck)
-            else
-              svrSend("nil\n", sck)
-            end
-            --coroutine.yield() -- 
-          end
   terminalcommand = terminalcommand .. s .. "\n"
   local c,e = loadstring(terminalcommand)
   if e == nil then
+    local context = {}
+    setmetatable(context, { __index = _G })
+    context.print = function(s)
+      if s~=nil then
+        svrSend(stripnewline(""..s).."\n", sck)
+      else
+        svrSend("nil\n", sck)
+      end
+      coroutine.yield()
+    end
     --print("running:\n" .. terminalcommand)
     --assert(c)()
     terminalcommand = ""
+    svrMultiline = false
     setfenv(c,context)
-    local corofn = function ()
-      local r,msg = pcall(c)
-      if r==false then
-        svrSend(msg.."\n", sck)
-      end
-    end
-    svrcoro = coroutine.create(corofn)
-    coroutine.resume(svrcoro)
+    svrcoro = coroutine.create(c)
   else
     local tail = string.sub(e, #e-6, #e)
     if tail ~= "'<eof>'" then
@@ -67,11 +69,12 @@ function svrRunLua(sck,s)
       terminalcommand = ""
       svrSend(e.."\n", sck)
       --print("\ntail was \""..tail.."\"\n")
+      svrMultiline = false
     else
+      svrMultiline = true
       --print("multiline continuing for:\n" .. terminalcommand)
     end
   end
-  --print = print_backup
 end
 
 svrRunCode = svrRunLua
