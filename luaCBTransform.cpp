@@ -418,6 +418,11 @@ void luaInitCallbacksTransformLib()
 
     luaL_newmetatable(g_pLuaState, "LiveCode.transform");
 
+    lua_pushstring(g_pLuaState, "__index");
+    lua_pushvalue(g_pLuaState, -3);           /* pushes transform */
+    lua_settable(g_pLuaState, -3);            /* metatable.__index = transform */
+
+
     // Lua 5.2:
     //    lua_newtable(g_pLuaState);
     //    luaL_setfuncs (g_pLuaState,lua_transformlib,0);
