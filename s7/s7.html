@@ -227,7 +227,7 @@ indented and on a sort of brownish background.
     <li><a href="#makelist">make-list</a>, <a href="#charposition">char-position</a>, <a href="#keywords">keywords</a>
     <li><a href="#symboltable">symbol-table</a>, <a href="#s7help">help</a>, <a href="#s7gc">gc</a>, <a href="#morallyequalp">morally-equal?</a>
     <li><a href="#expansion">define-expansion</a>, <a href="#s7env">*s7*</a>, <a href="#s7vsr5rs">r5rs</a>, <a href="#r7rs">r7rs</a>, 
-    <li><a href="#circle">circular lists</a>, <a href="#legolambda">legolambda</a>, etc...
+    <li><a href="#profiling">profiling</a>, <a href="#circle">circular lists</a>, <a href="#legolambda">legolambda</a>, etc...
     </ul>
 
   <li class="li_header"><a href="#FFIexamples">FFI examples</a>
@@ -257,7 +257,6 @@ indented and on a sort of brownish background.
 
   <li class="li_header"><a href="#s7examples">s7 examples</a>
   <ul>
-      <li><a href="#lint">lint.scm</a>
       <li><a href="#cload">cload.scm</a>
       <ul>
            <li><a href="#libc">libc</a>
@@ -265,6 +264,7 @@ indented and on a sort of brownish background.
            <li><a href="#libgdbm">libgdbm</a>
       </ul>
       <li><a href="#schemerepl">repl.scm</a>
+      <li><a href="#lint">lint.scm</a>
   </ul>
 </ul>
 
@@ -850,9 +850,9 @@ implement the standard old-time macros.
 &gt; (define-macro (<em class=def id="trace">trace</em> f)
     `(define ,f 
        (apply lambda 'args 
-         `((format #t "(~A ~{~A~^ ~}) -&gt; " ',',f args)
+         `((format () "(~A ~{~A~^ ~}) -&gt; " ',',f args)
            (let ((val (apply ,,f args))) 
-             (format #t "~A~%" val) 
+             (format () "~A~%" val) 
              val)))))
 <em class="gray">trace</em>
 &gt; (trace abs)
@@ -1260,9 +1260,22 @@ control over the environment at any point:
 
 &gt; (let ((a 1) (+ *)) (mac a))
 <em class="gray">13</em>
+
+(define-macro (mac1 . b)         ; originally `(let ((a 12)) (+ a ,@b ,@b))
+  `(with-let (inlet 'e (curlet)) ; this 'e will not collide with the calling env
+     (let ((a 12))               ;   nor will 'a (so no gensyms are needed etc)
+       (+ a (with-let e ,@b) (with-let e ,@b)))))
+
+&gt; (let ((a 1) (e 2)) (mac1 (display a) (+ a e)))
+<em class="gray">18</em>  ; (and it displays "11")
 </pre>
 
 <p>So s7 does not have syntax-rules because it is not needed.
+s7's lint.scm will warn you about any such problematic macro expansion, so I'd
+say just write macros as simply as possible, then let lint tell you
+that it's time to do the with-let shuffle. When that happens, wrap the macro body in
+a with-let that captures the current environment, and at each use of a macro argument
+wrap it in a with-let that re-establishes that environment. 
 </p>
 
 <div class="indented">
@@ -1910,10 +1923,10 @@ vector-dimensions returns a list of the dimensions.
 </pre>
 
 <p>make-vector also takes an optional fourth argument.  If it is #t, and the initial-value
-is either an integer or a real, make-vector produces a homogenous vector, a vector that
+is either an integer or a real, make-vector produces a homogeneous vector, a vector that
 can only hold elements of the same type as the initial value (either s7_int or s7_double
-internally).  Homogenous vectors are mostly useful in conjunction with C code.  These
-homogenous vector functions are currently built-in:
+internally).  Homogeneous vectors are mostly useful in conjunction with C code.  These
+homogeneous vector functions are currently built-in:
 </p>
 
 <pre class="indented">
@@ -2122,7 +2135,7 @@ Perhaps we could use different colors?  Or different size parentheses?
 #2D<em class="bigger">(</em><em class="big">(</em>(0) (0) ((0))<em class="big">)</em> <em class="big">(</em>(0) 0 ((0))<em class="big">)</em><em class="bigger">)</em>
 </pre>
 
-<p>A similar problem afflicts homogenous vectors.  We need some reasonable way to express
+<p>A similar problem afflicts homogeneous vectors.  We need some reasonable way to express
 such a vector even when it has more than one dimension.  My first thought was <code>#(...)#</code>,
 but that makes <code>(let ((b1 0)) (#(1 2)#b1))</code> ambiguous.
 </p>
@@ -2286,9 +2299,7 @@ an entry, <code>'(key . value)</code>, in whatever order the entries are encount
   (map values table))
 
 (define (merge-hash-tables . tables) ; probably faster: (define merge-hash-tables append)
-  (apply hash-table 
-    (apply append 
-      (map hash-table-&gt;alist tables))))
+  (apply hash-table (apply map values hash-tables)))
 </pre>
 
 <p>reverse of a hash-table returns a new table with the keys and values reversed.
@@ -2634,7 +2645,7 @@ such as abs, we need to put it back to its original form:
       (for-each                       ; see if any built-in functions were stepped on
        (lambda (sym)
 	 (unless (assoc (car sym) e)
-	   (format #t "~S clobbered ~A~%" file (car sym))
+	   (format () "~S clobbered ~A~%" file (car sym))
 	   (apply set! (car sym) (list (cdr (assoc (car sym) new-e))))))
        new-e))))
 
@@ -2673,6 +2684,7 @@ function if it exists.  A bare-bones example:
 <p>In CLOS, we'd declare a class and a method, and call make-instance,
 and then discover that it wouldn't work anyway.
 Here we have, in effect, an anonymous instance of an anonymous class.
+I think this is called a "prototype system"; javascript is apparently similar.
 A slightly more complex example:
 </p>
 
@@ -2939,7 +2951,7 @@ indexing syntax with the field or method name.  To evaluate a form in the contex
 <em class="gray">v3</em>
 &gt; (all-methods v3 'multiply)
 <em class="gray">(#&lt;lambda (obj num)&gt; #&lt;lambda (obj)&gt;)</em>
-&gt; (for-each (lambda (p) (format #t "~A~%" (procedure-source p))) (all-methods v3 'multiply))
+&gt; (for-each (lambda (p) (format () "~A~%" (procedure-source p))) (all-methods v3 'multiply))
 <em class="gray">(lambda (obj num) (* num ((class-2 'multiply) obj) (add obj)))</em>
 <em class="gray">(lambda (obj) (with-let obj (* a b c)))</em>
 </pre>
@@ -3613,7 +3625,7 @@ original.
 ~F        float to string, (format #f "~F" 100.1) -&gt; "100.100000",   (%f in C)
 ~G        float to string, (format #f "~G" 100.1) -&gt; "100.1",        (%g in C)
 ~T        insert spaces (padding)
-~N        get numeric argument from argument list (similar to V in CL)
+~N        get numeric argument from argument list (similar to ~V in CL)
 ~W        object-&gt;string with :readable (write readably; s7 is the intended reader)
 </pre>
 
@@ -3779,7 +3791,7 @@ a modern GUI leaves formatting decisions to a text or table widget.
 <p>A hook is a function created by make-hook, and called (normally from C) when something interesting happens.
 In GUI toolkits hooks are called callback-lists, in CL conditions,
 in other contexts watchpoints or signals.  s7 itself has several
-hooks: <a href="#errorhook">*error-hook*</a>, 
+hooks: <a href="#errorhook">*error-hook*</a>, <a href="#readerrorhook">*read-error-hook*</a>,
 <a href="#unboundvariablehook">*unbound-variable-hook*</a>, *missing-close-paren-hook*,
 and <a href="#loadhook">*load-hook*</a>.
 make-hook is:
@@ -3983,13 +3995,13 @@ the procedure-source first (using, for example, copy-tree in stuff.scm).
 		   (list (car source)
 			 (cadr source)
 			 (caddr source)
-			 `(format #t "    (let ~A (~{~A~^ ~}) ...)~%" ,(cadr source) (curlet)))
+			 `(format () "    (let ~A (~{~A~^ ~}) ...)~%" ,(cadr source) (curlet)))
 		   (cdddr source))
 		  ;; (let(*) vars . body) -&gt; (let vars print-vars . body)
 		  (append 
 		   (list (car source)
 			 (cadr source)
-			 `(format #t "    (~A (~{~A~^ ~}) ...)~%" ,(car source) (curlet)))
+			 `(format () "    (~A (~{~A~^ ~}) ...)~%" ,(car source) (curlet)))
 		   (cddr source)))
 	      (cons (proc-walk (car source))
 		    (proc-walk (cdr source))))
@@ -4002,15 +4014,15 @@ the procedure-source first (using, for example, copy-tree in stuff.scm).
 	       (let ((,result #&lt;undefined&gt;))
 		 (dynamic-wind
 		     (lambda ()       ; upon entry, show procedure name and args
-		       (format #t "(~A~{ ~A~})~%" 
+		       (format () "(~A~{ ~A~})~%" 
                                ',proc 
 			       (outlet (outlet (curlet)))))
 		     (lambda ()
 		       (set! ,result (,new-body ,@(cadr orig))))
 		     (lambda ()       ; at exit, show result
 		       (if (eq? ,result #&lt;undefined&gt;)
-			   (format #t "  ~A returns early~%" ',proc)
-			   (format #t "  ~A returns ~A~%" ',proc ,result))))))))
+			   (format () "  ~A returns early~%" ',proc)
+			   (format () "  ~A returns ~A~%" ',proc ,result))))))))
 
       `(define ,proc ,new-source))))
 
@@ -4037,7 +4049,7 @@ its bindings (this is borrowed from "nuntius" at reddit lisp):
     `(let ,(map (lambda (var/val)
 		  `(,(car var/val) 
 		    (let ((,temp-symbol ,(cadr var/val))) 
-		      (format #t ";~S: ~S -&gt; ~S~%" 
+		      (format () ";~S: ~S -&gt; ~S~%" 
 			      ',(car var/val) 
 			      ',(cadr var/val) 
 			      ,temp-symbol)
@@ -4049,7 +4061,7 @@ its bindings (this is borrowed from "nuntius" at reddit lisp):
 
 (define-macro (print-let bindings . body)
   `(let ,bindings 
-     (format #t "~{;~A~%~}" (curlet))
+     (format () "~{;~A~%~}" (curlet))
      ,@body))	      
 </pre>
 
@@ -4278,9 +4290,7 @@ the dumb "lambda".  Here are more useful examples:
 <pre class="indented">
 (openlet          ; a soft port for format that sends its output to *stderr* and returns the string
   (inlet 'format (lambda (port str . args)
- 	           (let ((result (apply format #f str args)))
-	             (display result *stderr*)
-	             result))))
+ 	           (display (apply format #f str args) *stderr*))))
 
 (define (open-output-log name)
   ;; return a soft output port that does not hold its output file open
@@ -4460,7 +4470,7 @@ map-with-exit would be
 	(catch 'wrong-type-arg
 	  (lambda () 
 	    (abs -1))
-	  (lambda args (format #t "got a bad arg~%") -1)))
+	  (lambda args (format () "got a bad arg~%") -1)))
       (lambda args 0)))
   (lambda args 123))
 </pre>
@@ -4481,7 +4491,7 @@ map-with-exit would be
     (caddr base)))
 
 ;;; the code above becomes:
-(catch-case ((wrong-type-arg   (lambda args (format #t "got a bad arg~%") -1))
+(catch-case ((wrong-type-arg   (lambda args (format () "got a bad arg~%") -1))
 	     (division-by-zero (lambda args 0))
 	     (else             (lambda args 123)))
   (abs -1))
@@ -4495,9 +4505,7 @@ Along the same lines:
   (catch #t
     func
     (lambda args
-      (if (test (car args))
-	  (apply err args)
-	  (apply throw args))))) ; if not caught, re-raise the error
+      (apply (if (test (car args)) err throw) args)))) ; if not caught, re-raise the error via throw
 
 (define (catch-member lst func err)
   (catch-if (lambda (tag) (member tag lst)) func err))
@@ -4544,7 +4552,12 @@ additional info about that error:
 <li>error-code: the code that s7 thinks triggered the error
 <li>error-line: the line number of that code
 <li>error-file: the file name of that code
+<li>error-history: previous evaluations leading to the error (a circular list)
 </ul>
+
+<p>The error-history field depends on the compiler flag WITH_HISTORY.  See ow! in
+stuff.scm for one way to display this data.  The *s7* field 'history-size sets the size of the buffer.
+</p>
 
 <blockquote>
 
@@ -4558,7 +4571,7 @@ To list all the local bindings from the error outward:
 <pre class="indented">
 (do ((e (outlet (owlet)) (outlet e))) 
     ((eq? e (rootlet))) 
-  (format #t "~{~A ~}~%" e))
+  (format () "~{~A ~}~%" e))
 </pre>
 
 <p>To see the current s7 stack, <code>(stacktrace)</code>.  You'll probably
@@ -4595,6 +4608,18 @@ Its arguments are named 'type and 'data.
               (apply format *stderr* (hook 'data)) 
               (newline *stderr*))))
 </pre>
+
+<p><em class=def id="readerrorhook">*read-error-hook*</em> provides two hooks into the reader.
+A major problem when reading code written for other Schemes is that each Scheme provides
+a plethora of idiosyncratic #-names (even special character names), and \ escapes in string
+constants.  *read-error-hook* provides a way to handle these weird cases.  If a #-name
+is encountered that s7 can't deal with, *read-error-hook* is called with two arguments,
+ #t and the string representing the constant.  If you set (hook 'result), that result is
+returned to the reader.  Otherwise a 'read-error is raised and you drop into the error handler.
+Similarly, if some bizaare \ use occurs, *read-error-hook* is called with two arguments,
+#f and the offending character.  If you return a character, it is passed to the reader;
+otherwise you get an error.  lint.scm has an example.
+</p>
 
 <p>
 There is a break macro defined in Snd (snd-xen.c)
@@ -4879,14 +4904,16 @@ that call the lambda body if one of the variables is set.
 <b><em class=def id="loadpath">*load-path*</em></b> is a list of directories to search when loading a file.
 <b><em class=def id="loadhook">*load-hook*</em></b> is a hook whose functions are called just before a file is loaded.  
 The hook function argument, named 'name, is the filename.
-While loading, the port-filename and port-line-number of the current-input-port can tell you
-where you are in the file.
+While loading, the <em class=def id="portfilename">port-filename</em> and 
+<em class=def id="portlinenumber">port-line-number</em> of the current-input-port can tell you
+where you are in the file.  This data is available after loading via <em class=def id="pairlinenumber">pair-line-number</em>
+and <em class=def id="pairfilename">pair-filename</em>.  port-line-number is settable (for fancy *#readers*).
 </p>
 
 <pre class="indented">
 (set! (hook-functions *load-hook*)
        (list (lambda (hook) 
-               (format #t "loading ~S...~%" (hook 'name)))))
+               (format () "loading ~S...~%" (hook 'name)))))
 
 (set! (hook-functions *load-hook*) 
       (cons (lambda (hook) 
@@ -5040,9 +5067,9 @@ I need to know where something unexpected happened.  So:
 (set! *#readers* 
       (cons (cons #\_ (lambda (str)
 			(if (string=? str "__line__")
-			    (port-line-number)
+			    (<a href="#portlinenumber">port-line-number</a>)
 			    (and (string=? str "__file__")
-			         (port-filename)))))
+			         (<a href="#portfilename">port-filename</a>)))))
             *#readers*))
 </pre>
 
@@ -5058,6 +5085,23 @@ I need to know where something unexpected happened.  So:
 &gt; '(1 2 #.(* 3 4) 5)
 <em class="gray">(1 2 12 5)</em>
 </pre>
+
+
+<p>And a reader that implements #[...]# for literal hash-tables:
+</p>
+
+<pre class="indented">
+&gt; (set! *#readers* 
+    (list (cons #\[ (lambda (str)
+		      (let ((h (make-hash-table)))
+		        (do ((c (read) (read)))
+		            ((eq? c ']#) h) ; ]# is a symbol from the reader's point of view
+		          (set! (h (car c)) (cdr c))))))))
+<em class="gray">((#\[ . #&lt;lambda (str)&gt;))</em>
+&gt; #[(a . 1) (b . #[(c . 3)]#)]#
+<em class="gray">(hash-table '(b . (hash-table '(c . 3))) '(a . 1))</em>
+</pre>
+
 
 <p>To return no value from a reader, use <code>(values)</code>.
 </p>
@@ -5223,57 +5267,11 @@ Here we scan the symbol table looking for any function that doesn't have documen
 	          (let ((max-args (cdr (arity val))))
 	            (if (or (&gt; max-args 4)
 	       	            (memq sym '(exit abort)))
-		        (format #t ";skip ~S for now~%" sym)
+		        (format () ";skip ~S for now~%" sym)
 		        (begin
-		          (format #t ";whack on ~S...~%" sym)
+		          (format () ";whack on ~S...~%" sym)
 		          (autotest val () max-args))))))))
     (<em class=red>symbol-table</em>)))
-</pre>
-
-<p>Equally useful, a profiler:
-</p>
-
-<pre class="indented">
-(define <em class=def id="profile">profile</em> 
-  (let ((documentation "(profile func) evaluates the function, then reports profiling information. \
-The function takes one argument, the environment in which loads and evals should operate."))
-    (lambda (expression)
-      (define calls (make-vector 1024 (cons 'unused -1)))
-      (define call 0)
-
-      (define (profile-1 n)
-        (set! (cdr (calls n)) (+ (cdr (calls n)) 1)))
-  
-      (define (wrap-all)
-        (let ((e (inlet)))
-          (for-each
-            (lambda (sym)
-              (if (and (<em class=red>defined?</em> sym)
-	               (not (constant? sym)))
-	          (let ((val (<em class=red>symbol-&gt;value</em> sym)))
-	            (if (procedure? val)
-	                (let ((new-val (apply lambda 'args `((profile-1 ,call) (apply ,val args)))))
-		          (set! (calls call) (cons sym 0))
-		          (set! call (+ call 1))
-		          (if (&gt;= call (length calls))
-			      (set! calls (copy calls (make-vector (* 2 (length calls)) (cons 'unused -1)))))
-		          (if (procedure-setter val)
-		              (set! (procedure-setter new-val) (procedure-setter val)))
-		          (varlet e sym new-val))))))
-           (<em class=red>symbol-table</em>))
-          e))
-
-      (expression (wrap-all))
-      (sort! calls (lambda (a b) (&gt; (cdr a) (cdr b))))
-      (do ((i 0 (+ i 1)))
-          ((= i call))
-        (if (&gt; (cdr (calls i)) 0)
-	    (format #t "~S: ~S~%" (car (calls i)) (cdr (calls i))))))))
-
-&gt; (profile (lambda (e) 
-             (load "lint.scm" e) 
-             (with-let e (lint "dsp.scm"))))
-;;; many lines of data print out
 </pre>
 </div>
 
@@ -5531,8 +5529,9 @@ is simply returned, unevaluated.
       ()
       (if (null? (cdr args))
 	  `(display ',(car args))
-	  (append (list 'begin `(display ',(car args)))
-		  (list (apply macroexpand (list (append '(rmac) (cdr args)))))))))
+	  (list 'begin
+                `(display ',(car args))
+		(apply macroexpand (list (append '(rmac) (cdr args))))))))
 
 &gt; (macroexpand (rmac a b c))
 <em class="gray">(begin (display 'a) (begin (display 'b) (display 'c)))</em>
@@ -5574,6 +5573,14 @@ is the same (in that context) as:
 
 
 <div class="separator"></div>
+<p id="profiling">If you build s7 with the flag -DWITH_PROFILE=1, s7 accumulates profiling data
+in the (*s7* 'profile-info) hash-table.  The line number reported sometimes points to the end of the form.
+Also, do loops and other iterations are sometimes highly optimized, so only the outer form is counted.
+profile.scm shows one way to sort and display this data. To clear the counts, <code>(fill! (*s7* 'profile-info) #f)</code>.
+</p>
+
+
+<div class="separator"></div>
 <p id="s7env"><b>*s7*</b> is an environment that gives access to some of s7's internal
 state: 
 </p>
@@ -5585,6 +5592,8 @@ max-vector-length             max size arg to make-vector and make-hash-table
 max-vector-dimensions         make-vector dimensions limit
 default-hash-table-length     default size for make-hash-table (8, tables resize as needed)
 initial-string-port-length    128, initial size of a string port's buffer
+history-size                  eval history buffer size if s7 built WITH_HISTORY=1
+profile-info                  profiling data if s7 built WITH_PROFILE=1
 
 default-rationalize-error     1e-12 (settable)
 morally-equal-float-epsilon   1e-15 (settable)
@@ -5727,7 +5736,8 @@ definition, and a later redefinition does not affect earlier uses.
 <li>change make-rectangular to complex, and remove make-polar.
 <li>remove unquote (the name, not the functionality).
 <li>remove cond-expand.
-<li>remove *-ci functions (they are completely useless)
+<li>remove *-ci functions
+<li>remove #d
 </ul>
 
 <p>(most of these are removed if you set the compiler flag WITH_PURE_S7), and perhaps:
@@ -5765,6 +5775,20 @@ In place of cond-expand, s7 uses <a href="#readercond">reader-cond</a>,
 so the read-time decision involves normal evaluation.
 </p>
 
+<p>Then there's the case case: a case clause without a result appears to be an error in r7rs.
+But the notation used to indicate that is the same as that used for begin.
+So if we allow <code>(begin)</code>, we should allow case clauses to have no explicit result.
+Currently in s7, the case case is an error and <code>(begin)</code> returns nil, which strikes me
+as, *horrors*, inconsistent.  But in cond,
+the "implicit progn" (in CL terminology) includes the test expression, so a clause without a result returns
+the test result (if true of course).  In the case case, a similar approach might return
+the selector value.  So should <code>(case x ((0 1)))</code> be an error, or equivalent
+to <code>(case x ((0 1) (begin)))</code> as in CL, or (my favorite) <code>(case x ((0 1) => values))</code>.
+If the latter, an empty else statement would also return the selector since it would be the
+same as <code>(else => values)</code>.
+</p>
+
+
 <p>
 Better ideas are always welcome!
 </p>
@@ -5772,11 +5796,12 @@ Better ideas are always welcome!
 <p>Here are the built-in s7 variables:
 </p>
 <ul>
-<li>*features*    ; a list of symbols
-<li>*libraries*   ; a list of (filename . let) pairs
-<li>*load-path*   ; a list of directories
-<li>*autoload*    ; autoload info (a function internally)
-<li>*#readers*    ; a list of (char . handler) pairs
+<li>*features*        ; a list of symbols
+<li>*libraries*       ; a list of (filename . let) pairs
+<li>*load-path*       ; a list of directories
+<li>*cload-directory* ; directory for cload output
+<li>*autoload*        ; autoload info
+<li>*#readers*        ; a list of (char . handler) pairs
 </ul>
 
 <p>And the built-in constants:
@@ -5787,7 +5812,7 @@ Better ideas are always welcome!
 <li>*s7*
 <li>nan.0 -nan.0 inf.0 -inf.0 (what crappy names! nan.0 is an inexact integer that is not a number?)
 <li>most-positive-fixnum most-negative-fixnum
-<li>*unbound-variable-hook* *missing-close-paren-hook* *load-hook* *error-hook*
+<li>*unbound-variable-hook* *missing-close-paren-hook* *load-hook* *error-hook* *read-error-hook*
 </ul>
 
 <p>__func__ is the name (or name and location) of the function currently being called, as in C.
@@ -5807,7 +5832,6 @@ Better ideas are always welcome!
 <li>omits make-polar and make-rectangular (use complex)
 <li>omits integer-length, exact?, inexact?, exact-&gt;inexact, inexact-&gt;exact, #i and #e
 <li>omits set-current-output-port and set-current-input-port
-<li>omits memq, memv, assq, assv
 </ul>
 
 </div>
@@ -5968,15 +5992,18 @@ few times.  You can turn off the optimization in question by setting the variabl
 to 1.  <code>(*s7* 'safety)</code> defaults to 0.  
 </p>
 
-<!-- there is another problem here: if the list constant in question is a program fragment
-     that can be optimized, then reapplied elsewhere, the optimization info remains in the
-     new, possibly inappropriate context.  This can cause segfaults.  The fix is to copy
-     the list with 2nd arg :readable. see tgen.scm
--->
+<p>A similar problem arises when you want to walk a function's source or reuse a piece of
+code directly.  When the function is evaluated, the optimizer changes the program source
+to speed up subsequent evaluation.  This annotation process means that nothing in that
+source is what it appears to be, so a tree walker will be confused, and if you copy that
+source and try to insert it into some other program source, the existing annotations
+will not fit the new context.  In both cases, you can get a clean version of the code
+by copying it with :readable as the second argument to copy.  There is an example
+in lint.scm, and in the snd file tools/tgen.scm.
+</p>
 
 </div>
 </details>
-
 
 
 <details id="circle">
@@ -6091,7 +6118,7 @@ then it is part of the language, and it doesn't look like the rest of the langua
 </p>
 
 <pre class="indented">
-(let ((ctr 0)) #1=(begin (format #t "~D " ctr) (set! ctr (+ ctr 1)) (if (&lt; ctr 4) #1# (newline))))
+(let ((ctr 0)) #1=(begin (format () "~D " ctr) (set! ctr (+ ctr 1)) (if (&lt; ctr 4) #1# (newline))))
 </pre>
 
 <p>which prints "0 1 2 3" and a newline.
@@ -6117,10 +6144,10 @@ sequences in its argument, or nil.
 <pre class="indented">
 (define (for-each-permutation func vals)
   ;; apply func to every permutation of vals: 
-  ;;   (for-each-permutation (lambda args (format #t "~{~A~^ ~}~%" args)) '(1 2 3))
+  ;;   (for-each-permutation (lambda args (format () "~{~A~^ ~}~%" args)) '(1 2 3))
   (define (pinner cur nvals len)
     (if (= len 1)
-        (apply func (cons (car nvals) cur))
+        (apply func (car nvals) cur)
         (do ((i 0 (+ i 1)))                       ; I suppose a named let would be more Schemish
             ((= i len))
           (let ((start nvals))
@@ -6535,6 +6562,7 @@ WITH_QUASIQUOTE_VECTOR         1 if you want to use the `#(...) junk (defualt is
 WITH_IMMUTATBLE_UNQUOTE        1 if you want "unquote" omitted (default is 0)
 WITH_EXTRA_EXPONENT_MARKERS    1 if you want "d", "f", "l", and "s" in addition to "e" as exponent markers (default is 0)
                                    if someone defends these exponent markers, ask him to read 1l11+11l1i
+                                   (in 2 million lines of open-source Scheme, there is not one use of these silly things)
 WITH_SYSTEM_EXTRAS             1 if you want some additional OS-related functions built-in (default is 0)
 WITH_MAIN                      1 if you want s7.c to include a main program section that runs a REPL.
 WITH_C_LOADER		       1 if you want to be able to load shared object files with load.
@@ -7813,7 +7841,7 @@ int main(int argc, char **argv)
 }
 
 /*
- *    &gt; (do ((i 0 (+ i 1))) ((= i -1)) (format #t "~D " i) (sleep))
+ *    &gt; (do ((i 0 (+ i 1))) ((= i -1)) (format () "~D " i) (sleep))
  *      ;;; now type C-C to break out of this loop
  *    0 1 2 ^Cinterrupted!
  *      ;;; call the continuation to continue from where we were interrupted
@@ -8822,44 +8850,6 @@ repl.scm is a repl.
 </p>
 
 
-<div class="header" id="lint"><h4>lint.scm</h4></div>
-
-<p>lint tries to find errors or infelicities in your scheme code.
-To try  it:
-</p>
-
-<pre class="indented">
-(load "lint.scm")
-(lint "some-code.scm")
-</pre>
-
-
-<p>lint tries to reduce false positives, so its default behavior is somewhat laconic.  There are several
-variables at the start of lint.scm to control additional output:
-</p>
-
-
-<pre class="indented">
-*report-unused-parameters*           ; if #t, report unused function/macro parameters
-*report-unused-top-level-functions*  ; if #t, report unused functions
-*report-undefined-variables*         ; if #t, report undefined identifiers
-*report-shadowed-variables*          ; if #t, report function parameters that are shadowed
-*report-minor-stuff*                 ; if #t, report all sorts of other stuff
-</pre>
-
-
-<p>lint is not smart about functions defined outside the current file, so *report-undefined-variables*
-sometimes gets confused.  *report-minor-stuff* adds output about overly complicated boolean and numerical
-expressions, dangerous floating point operations, and
-whatever else it thinks is odd.
-</p>
-
-<p>Also in lint.scm is html-lint.  It reads an HTML file looking for
-Scheme code.  If any is found, it runs s7 and then lint over it, reporting troubles.
-</p>
-
-
-
 <div class="header" id="cload"><h4>cload.scm</h4></div>
 
 <p>cload.scm defines the macro c-define that reduces the overhead
@@ -9179,8 +9169,8 @@ The special symbol '** holds the last value.
 
 <p>Meta keys are a problem on the Mac.  You can use ESC instead, but that requires
 super-human capacities.  I stared at replacement control keys, and nothing seemed
-right.  I don't know how to remap these commands, but it's easy to do: see repl.scm
-which has a small table of mappings, and try out your own.
+right.  If you can think of something, it's easy to define replacements: see repl.scm
+which has a small table of mappings.
 </p>
 
 <p>To run the repl, either build s7 with the compiler flag -DWITH_MAIN,
@@ -9324,6 +9314,50 @@ not tested:
 (load "/home/bil/test/libxm/libxm.so" (inlet 'init_func 'Init_libxm))
 
 -->
+
+
+<div class="header" id="lint"><h4>lint.scm</h4></div>
+
+<p>lint tries to find errors or infelicities in your scheme code.
+To try  it:
+</p>
+
+<pre class="indented">
+(load "lint.scm")
+(lint "some-code.scm")
+</pre>
+
+
+<p>lint tries to reduce false positives, so its default behavior is somewhat laconic.  There are several
+variables at the start of lint.scm to control additional output:
+</p>
+
+
+<pre class="indented">
+*report-unused-top-level-functions*  ; if #t, report unused functions
+*report-undefined-variables*         ; if #t, report undefined identifiers
+*report-shadowed-variables*          ; if #t, report function parameters that are shadowed
+</pre>
+
+<p>lint is not smart about functions defined outside the current file, so *report-undefined-variables*
+sometimes gets confused. You'll sometimes get a recommendation from lint that is less than helpful; nobody's perfect.
+If it's actually wrong, and not just wrong-headed, please let me know.
+Also in lint.scm is html-lint.  It reads an HTML file looking for
+Scheme code.  If any is found, it runs s7 and then lint over it, reporting troubles.
+</p>
+
+
+<blockquote>
+<div class="indented">
+<p>After months of intense typing,
+Insanely declares his labors complete.  "Ship it!" says Mr Big, and hands
+him a million stock options. Meanwhile, in the basement behind an old door
+with the eldritch sign "eep Ou", in a labyrinth of pounding pipes and fluorescent lights,
+a forgotten shadow types <code>(lint "insanely-great.scm")</code>...
+</p>
+</div>
+</blockquote>
+
 
 
 <!-- ================================================================================ -->
