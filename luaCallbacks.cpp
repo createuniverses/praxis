@@ -84,8 +84,13 @@ void luaInitCallbacks()
 
     luaCall("function getProdMp3Name() return \"\" end");
 
-    luaCall("table.unpack = unpack");
-    luaCall("load = loadstring");
+    // Lua 5.1:
+    //luaCall("table.unpack = unpack");
+    //luaCall("load = loadstring");
+
+    // Lua 5.2:
+    luaCall("unpack = table.unpack");
+    luaCall("loadstring = load");
 
     luaInitCallbacksOpenGL();
     luaInitCallbacksEditor();

@@ -959,7 +959,14 @@ void luaInitCallbacksEditor()
         {NULL, NULL}
     };
 
-    luaL_register(g_pLuaState, "editor", lua_editorlib);
+    // Lua 5.1:
+    //luaL_register(g_pLuaState, "editor", lua_editorlib);
+
+    // Lua 5.2:
+    lua_newtable(g_pLuaState);
+    luaL_setfuncs (g_pLuaState,lua_editorlib,0);
+    lua_pushvalue(g_pLuaState,-1);
+    lua_setglobal(g_pLuaState,"editor");
 
     luaL_newmetatable(g_pLuaState, "LiveCode.editor");
 }

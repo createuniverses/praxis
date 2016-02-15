@@ -5,7 +5,8 @@ CONFIG -= qt
 INCLUDEPATH += ./MathLib/
 INCLUDEPATH += ./World/
 INCLUDEPATH += ./OpenGlut/include/
-INCLUDEPATH += ./lua-5.1.4/src/
+#INCLUDEPATH += ./lua-5.1.4/src/
+INCLUDEPATH += ./lua-5.2.4/src/
 INCLUDEPATH += ./Voxel/
 INCLUDEPATH += ./Neural/
 
@@ -105,40 +106,6 @@ SOURCES += main.cpp \
     Neural/AI_NeuralNetwork.cpp \
     Neural/UT_String.cpp \
     Neural/UT_Functions.cpp \
-    lpeg-0.12/lpcap.c \
-    lpeg-0.12/lpcode.c \
-    lpeg-0.12/lpprint.c \
-    lpeg-0.12/lptree.c \
-    lpeg-0.12/lpvm.c \
-    lua-5.1.4/src/lapi.c \
-    lua-5.1.4/src/lauxlib.c \
-    lua-5.1.4/src/lbaselib.c \
-    lua-5.1.4/src/lcode.c \
-    lua-5.1.4/src/ldblib.c \
-    lua-5.1.4/src/ldebug.c \
-    lua-5.1.4/src/ldo.c \
-    lua-5.1.4/src/ldump.c \
-    lua-5.1.4/src/lfunc.c \
-    lua-5.1.4/src/lgc.c \
-    lua-5.1.4/src/linit.c \
-    lua-5.1.4/src/liolib.c \
-    lua-5.1.4/src/llex.c \
-    lua-5.1.4/src/lmathlib.c \
-    lua-5.1.4/src/lmem.c \
-    lua-5.1.4/src/loadlib.c \
-    lua-5.1.4/src/lobject.c \
-    lua-5.1.4/src/lopcodes.c \
-    lua-5.1.4/src/loslib.c \
-    lua-5.1.4/src/lparser.c \
-    lua-5.1.4/src/lstate.c \
-    lua-5.1.4/src/lstring.c \
-    lua-5.1.4/src/lstrlib.c \
-    lua-5.1.4/src/ltable.c \
-    lua-5.1.4/src/ltablib.c \
-    lua-5.1.4/src/ltm.c \
-    lua-5.1.4/src/lundump.c \
-    lua-5.1.4/src/lvm.c \
-    lua-5.1.4/src/lzio.c \
     s7/s7.c \
     lispCallbacks.cpp \
     lispInterface.cpp \
@@ -283,7 +250,44 @@ SOURCES += main.cpp \
     luaCBLang.cpp \
     luaCBJoystick.cpp \
     luaCBSystem.cpp \
-    glew/source/glew.c
+    glew/source/glew.c \
+    lua-5.2.4/src/lapi.c \
+    lua-5.2.4/src/lauxlib.c \
+    lua-5.2.4/src/lbaselib.c \
+    lua-5.2.4/src/lbitlib.c \
+    lua-5.2.4/src/lcode.c \
+    lua-5.2.4/src/lcorolib.c \
+    lua-5.2.4/src/lctype.c \
+    lua-5.2.4/src/ldblib.c \
+    lua-5.2.4/src/ldebug.c \
+    lua-5.2.4/src/ldo.c \
+    lua-5.2.4/src/ldump.c \
+    lua-5.2.4/src/lfunc.c \
+    lua-5.2.4/src/lgc.c \
+    lua-5.2.4/src/linit.c \
+    lua-5.2.4/src/liolib.c \
+    lua-5.2.4/src/llex.c \
+    lua-5.2.4/src/lmathlib.c \
+    lua-5.2.4/src/lmem.c \
+    lua-5.2.4/src/loadlib.c \
+    lua-5.2.4/src/lobject.c \
+    lua-5.2.4/src/lopcodes.c \
+    lua-5.2.4/src/loslib.c \
+    lua-5.2.4/src/lparser.c \
+    lua-5.2.4/src/lstate.c \
+    lua-5.2.4/src/lstring.c \
+    lua-5.2.4/src/lstrlib.c \
+    lua-5.2.4/src/ltable.c \
+    lua-5.2.4/src/ltablib.c \
+    lua-5.2.4/src/ltm.c \
+    lua-5.2.4/src/lundump.c \
+    lua-5.2.4/src/lvm.c \
+    lua-5.2.4/src/lzio.c \
+    lpeg-1.0.0/lpcap.c \
+    lpeg-1.0.0/lpcode.c \
+    lpeg-1.0.0/lpprint.c \
+    lpeg-1.0.0/lptree.c \
+    lpeg-1.0.0/lpvm.c
 
 unix {
 SOURCES += \
@@ -323,35 +327,6 @@ HEADERS += \
     Neural/AI_NeuralNetwork.h \
     Neural/UT_String.h \
     Neural/UT_Functions.h \
-    lpeg-0.12/lpcap.h \
-    lpeg-0.12/lpcode.h \
-    lpeg-0.12/lpprint.h \
-    lpeg-0.12/lptree.h \
-    lpeg-0.12/lptypes.h \
-    lpeg-0.12/lpvm.h \
-    lua-5.1.4/src/lapi.h \
-    lua-5.1.4/src/lauxlib.h \
-    lua-5.1.4/src/lcode.h \
-    lua-5.1.4/src/ldebug.h \
-    lua-5.1.4/src/ldo.h \
-    lua-5.1.4/src/lfunc.h \
-    lua-5.1.4/src/lgc.h \
-    lua-5.1.4/src/llex.h \
-    lua-5.1.4/src/llimits.h \
-    lua-5.1.4/src/lmem.h \
-    lua-5.1.4/src/lobject.h \
-    lua-5.1.4/src/lopcodes.h \
-    lua-5.1.4/src/lparser.h \
-    lua-5.1.4/src/lstate.h \
-    lua-5.1.4/src/lstring.h \
-    lua-5.1.4/src/ltable.h \
-    lua-5.1.4/src/ltm.h \
-    lua-5.1.4/src/lua.h \
-    lua-5.1.4/src/luaconf.h \
-    lua-5.1.4/src/lualib.h \
-    lua-5.1.4/src/lundump.h \
-    lua-5.1.4/src/lvm.h \
-    lua-5.1.4/src/lzio.h \
     s7/s7.h \
     lispCallbacks.h \
     lispInterface.h \
@@ -501,7 +476,38 @@ HEADERS += \
     luaCB.h \
     glew/include/GL/glew.h \
     glew/include/GL/glxew.h \
-    glew/include/GL/wglew.h
+    glew/include/GL/wglew.h \
+    lua-5.2.4/src/lapi.h \
+    lua-5.2.4/src/lauxlib.h \
+    lua-5.2.4/src/lcode.h \
+    lua-5.2.4/src/lctype.h \
+    lua-5.2.4/src/ldebug.h \
+    lua-5.2.4/src/ldo.h \
+    lua-5.2.4/src/lfunc.h \
+    lua-5.2.4/src/lgc.h \
+    lua-5.2.4/src/llex.h \
+    lua-5.2.4/src/llimits.h \
+    lua-5.2.4/src/lmem.h \
+    lua-5.2.4/src/lobject.h \
+    lua-5.2.4/src/lopcodes.h \
+    lua-5.2.4/src/lparser.h \
+    lua-5.2.4/src/lstate.h \
+    lua-5.2.4/src/lstring.h \
+    lua-5.2.4/src/ltable.h \
+    lua-5.2.4/src/ltm.h \
+    lua-5.2.4/src/lua.h \
+    lua-5.2.4/src/lua.hpp \
+    lua-5.2.4/src/luaconf.h \
+    lua-5.2.4/src/lualib.h \
+    lua-5.2.4/src/lundump.h \
+    lua-5.2.4/src/lvm.h \
+    lua-5.2.4/src/lzio.h \
+    lpeg-1.0.0/lpcap.h \
+    lpeg-1.0.0/lpcode.h \
+    lpeg-1.0.0/lpprint.h \
+    lpeg-1.0.0/lptree.h \
+    lpeg-1.0.0/lptypes.h \
+    lpeg-1.0.0/lpvm.h
 
 unix {
 HEADERS += \

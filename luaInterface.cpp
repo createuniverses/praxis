@@ -64,7 +64,13 @@ void luaInit()
 
     luaL_openlibs(g_pLuaState);
 
-    luaopen_lpeg(g_pLuaState);
+    // Prepare lpeg library
+    // Used luaL_openlibs as reference
+    luaL_requiref(g_pLuaState, "lpeg", luaopen_lpeg, 0);
+    lua_pop(g_pLuaState, 1);  /* remove lib */
+
+    //luaopen_lpeg(g_pLuaState);
+    //lua_setglobal(g_pLuaState,"lpeg");
 
 //    lua_register(g_pLuaState, "foo",    cbLuaFoo);
     lua_register(g_pLuaState, "print",  cbLuaPrint);

@@ -118,16 +118,17 @@ void luaInitCallbacksTextureLib()
         {NULL, NULL}
     };
 
-    luaL_register(g_pLuaState, "texture",   lua_texturelib);
+    // Lua 5.1:
+    //luaL_register(g_pLuaState, "texture",   lua_texturelib);
+
+    // Lua 5.2:
+    lua_newtable(g_pLuaState);
+    luaL_setfuncs (g_pLuaState,lua_texturelib,0);
+    lua_pushvalue(g_pLuaState,-1);
+    lua_setglobal(g_pLuaState,"texture");
 
     luaL_newmetatable(g_pLuaState, "LiveCode.texture");
     lua_pushstring(g_pLuaState, "__gc");
     lua_pushcfunction(g_pLuaState, luaCBTextureGC);
     lua_settable(g_pLuaState, -3);
-
-    // Lua 5.2:
-    //    lua_newtable(g_pLuaState);
-    //    luaL_setfuncs (g_pLuaState,lua_texturelib,0);
-    //    lua_pushvalue(g_pLuaState,-1);
-    //    lua_setglobal(g_pLuaState,"texture");
 }
