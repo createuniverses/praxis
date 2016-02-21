@@ -50,6 +50,16 @@ bool PraxisServer::Start()
     u_long nInterfaceAddr = inet_addr("127.0.0.1");
     if (nInterfaceAddr != INADDR_NONE) {
         ServerSocket = socket(AF_INET, SOCK_STREAM, 0);
+
+        // Attempting to fix occasional "connection refused" message from putty
+        // which tends to happen when trying to re-establish the server
+        // after restarting praxis.
+        //
+        //   "Pitfall 3: Address in use error (EADDRINUSE)"
+        //   http://www.ibm.com/developerworks/library/l-sockpit/
+        int on = 1;
+        int ret = setsockopt( ServerSocket, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on) );
+
         if (ServerSocket != INVALID_SOCKET) {
 
             sockaddr_in sinInterface;
