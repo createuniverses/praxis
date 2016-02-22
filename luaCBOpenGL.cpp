@@ -955,6 +955,37 @@ int luaCBGLCreateProgram(lua_State * L)
     return 2;
 }
 
+int luaCBGenFramebuffers(lua_State * L)
+{
+    GLuint fboId = 0;
+    glGenFramebuffersEXT(1, &fboId);
+    lua_pushnumber(L, fboId);
+    return 1;
+}
+
+int luaCBBindFramebuffer(lua_State * L)
+{
+    GLuint fboId = luaL_checknumber(L, 1);
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
+    return 0;
+}
+
+int luaCBGenRenderbuffers(lua_State * L)
+{
+    GLuint rboId = 0;
+    glGenRenderbuffersEXT(1, &rboId);
+    lua_pushnumber(L, rboId);
+    return 1;
+}
+
+int luaCBBindRenderbuffer(lua_State * L)
+{
+    GLuint rboId = luaL_checknumber(L, 1);
+    glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, rboId);
+    //glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+    return 0;
+}
+
 void luaInitCallbacksOpenGL()
 {
     lua_register(g_pLuaState, "drawLine",              luaCBDrawLine);
