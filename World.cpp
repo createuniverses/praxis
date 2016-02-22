@@ -269,6 +269,22 @@ void World::Render()
 {
     UseMainWindowContext();
 
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    int fHeight = viewport[3];
+    int fWidth = viewport[2];
+
+    if(m_bRunning)
+    {
+        if(!luaCall("prerender()"))
+        {
+            m_bRunning = false;
+        }
+
+        //ioCall("render()");
+    }
+
+    glViewport(0,0,fWidth, fHeight);
+
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
@@ -440,9 +456,6 @@ void World::Render()
     // Calculate and display FPS
     // ????
     // PROFIT
-
-    int fHeight = viewport[3];
-    int fWidth = viewport[2];
 
     if(m_bRenderOutput)
         DrawText2D(mlVector3D(10 + GLEditor::m_nDesiredTextureSize + 10, 35 + GLEditor::m_nDesiredTextureSize - 13),  SelectEndLines(PraxisLog::trace,20), fWidth, fHeight);
@@ -1027,7 +1040,7 @@ void World::OnWheelUp(int nX, int nY)
 
 void World::BuildGLMatrices()
 {
-    glGetIntegerv(GL_VIEWPORT, viewport);
+    //glGetIntegerv(GL_VIEWPORT, viewport);
 
     // Projection Matrix
     glMatrixMode(GL_PROJECTION);

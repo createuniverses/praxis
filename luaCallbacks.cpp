@@ -29,6 +29,7 @@ void luaInitCallbacks()
     luaCall("function init() end");
     luaCall("function update() end");
     luaCall("function render() end");
+    luaCall("function prerender() end");
     luaCall("function postrender() end");
 
     luaCall("function render() "

@@ -986,6 +986,16 @@ int luaCBBindRenderbuffer(lua_State * L)
     return 0;
 }
 
+int luaCBGLClearColor(lua_State * L)
+{
+    GLuint r = luaL_checknumber(L, 1);
+    GLuint g = luaL_checknumber(L, 2);
+    GLuint b = luaL_checknumber(L, 3);
+    GLuint a = luaL_checknumber(L, 4);
+    glClearColor(r, g, b, a);
+    return 0;
+}
+
 void luaInitCallbacksOpenGL()
 {
     lua_register(g_pLuaState, "drawLine",              luaCBDrawLine);
