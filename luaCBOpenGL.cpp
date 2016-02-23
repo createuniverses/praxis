@@ -955,7 +955,7 @@ int luaCBGLCreateProgram(lua_State * L)
     return 2;
 }
 
-int luaCBGenFramebuffers(lua_State * L)
+int luaCBGLGenFramebuffers(lua_State * L)
 {
     GLuint fboId = 0;
     glGenFramebuffersEXT(1, &fboId);
@@ -963,14 +963,14 @@ int luaCBGenFramebuffers(lua_State * L)
     return 1;
 }
 
-int luaCBBindFramebuffer(lua_State * L)
+int luaCBGLBindFramebuffer(lua_State * L)
 {
     GLuint fboId = luaL_checknumber(L, 1);
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
     return 0;
 }
 
-int luaCBGenRenderbuffers(lua_State * L)
+int luaCBGLGenRenderbuffers(lua_State * L)
 {
     GLuint rboId = 0;
     glGenRenderbuffersEXT(1, &rboId);
@@ -978,11 +978,24 @@ int luaCBGenRenderbuffers(lua_State * L)
     return 1;
 }
 
-int luaCBBindRenderbuffer(lua_State * L)
+int luaCBGLBindRenderbuffer(lua_State * L)
 {
     GLuint rboId = luaL_checknumber(L, 1);
     glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, rboId);
     //glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+    return 0;
+}
+
+int luaCBGLBindTexture(lua_State * L)
+{
+    GLuint texId = luaL_checknumber(L, 1);
+    glBindTexture(GL_TEXTURE_2D, texId);
+    return 0;
+}
+
+int luaCBGLGenerateMipmap(lua_State * L)
+{
+    glGenerateMipmapEXT(GL_TEXTURE_2D);
     return 0;
 }
 
@@ -994,6 +1007,54 @@ int luaCBGLClearColor(lua_State * L)
     GLuint a = luaL_checknumber(L, 4);
     glClearColor(r, g, b, a);
     return 0;
+}
+
+int luaCBGLRenderbufferStorage(lua_State * L)
+{
+    GLuint nWidth  = luaL_checknumber(L, 1);
+    GLuint nHeight = luaL_checknumber(L, 2);
+    // glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+    glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, nWidth, nHeight);
+    return 0;
+}
+
+int luaCBGLFramebufferTexture2D(lua_State * L)
+{
+    GLuint texId = luaL_checknumber(L, 1);
+    // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId, 0);
+    glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, texId, 0);
+    return 0;
+}
+
+int luaCBGLFramebufferRenderbuffer(lua_State *L)
+{
+    GLuint rboId = luaL_checknumber(L, 1);
+    // glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboId);
+    glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, rboId);
+    return 0;
+}
+
+int luaCBGLPrepareFBOTexture(lua_State * L)
+{
+    GLuint textureId = 0;
+    GLuint nWidth = 256;
+    GLuint nHeight = 256;
+
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_2D, textureId);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); // automatic mipmap generation included in OpenGL v1.4
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, nWidth, nHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    lua_pushnumber(L, textureId);
+    return 1;
 }
 
 void luaInitCallbacksOpenGL()
@@ -1085,4 +1146,20 @@ void luaInitCallbacksOpenGL()
     lua_register(g_pLuaState, "glDATest",               luaCBDrawArraysTest);
     lua_register(g_pLuaState, "glCreateProgram",        luaCBGLCreateProgram);
     lua_register(g_pLuaState, "glUseProgram",           luaCBGLUseProgram);
+
+    lua_register(g_pLuaState, "glGenFramebuffers",      luaCBGLGenFramebuffers);
+    lua_register(g_pLuaState, "glBindFramebuffer",      luaCBGLBindFramebuffer);
+    lua_register(g_pLuaState, "glGenRenderbuffers",     luaCBGLGenRenderbuffers);
+    lua_register(g_pLuaState, "glBindRenderbuffer",     luaCBGLBindRenderbuffer);
+
+    lua_register(g_pLuaState, "glBindTexture",          luaCBGLBindTexture);
+    lua_register(g_pLuaState, "glGenerateMipmap",       luaCBGLGenerateMipmap);
+
+    lua_register(g_pLuaState, "glClearColor",           luaCBGLClearColor);
+
+    lua_register(g_pLuaState, "glRenderbufferStorage",      luaCBGLRenderbufferStorage);
+    lua_register(g_pLuaState, "glFramebufferTexture2D",     luaCBGLFramebufferTexture2D);
+    lua_register(g_pLuaState, "glFramebufferRenderbuffer",  luaCBGLFramebufferRenderbuffer);
+
+    lua_register(g_pLuaState, "glPrepareFBOTexture",        luaCBGLPrepareFBOTexture);
 }
