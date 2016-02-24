@@ -1057,6 +1057,159 @@ int luaCBGLPrepareFBOTexture(lua_State * L)
     return 1;
 }
 
+int luaCBGLUniformf(lua_State * L)
+{
+    int n = lua_gettop(L);
+
+    if(n<2) luaL_error(L, "At least 2 arguments required.");
+
+    GLuint id = luaL_checknumber(L, 1);
+    GLfloat params[4];
+
+    switch(n)
+    {
+    case 2:
+        params[0] = luaL_checknumber(L, 2);
+        glUniform1f(id, params[0]);
+        break;
+    case 3:
+        params[0] = luaL_checknumber(L, 2);
+        params[1] = luaL_checknumber(L, 3);
+        glUniform2f(id, params[0], params[1]);
+        break;
+    case 4:
+        params[0] = luaL_checknumber(L, 2);
+        params[1] = luaL_checknumber(L, 3);
+        params[2] = luaL_checknumber(L, 4);
+        glUniform3f(id, params[0], params[1], params[3]);
+        break;
+    case 5:
+        params[0] = luaL_checknumber(L, 2);
+        params[1] = luaL_checknumber(L, 3);
+        params[2] = luaL_checknumber(L, 4);
+        params[3] = luaL_checknumber(L, 5);
+        glUniform4f(id, params[0], params[1], params[2], params[3]);
+        break;
+    default:
+        luaL_error(L, "id followed by 1 to 4 arguments expected.");
+        break;
+    }
+
+    return 0;
+}
+
+int luaCBGLUniformi(lua_State * L)
+{
+    int n = lua_gettop(L);
+
+    if(n<2) luaL_error(L, "At least 2 arguments required.");
+
+    GLuint id = luaL_checknumber(L, 1);
+    GLuint params[4];
+
+    switch(n)
+    {
+    case 2:
+        params[0] = luaL_checknumber(L, 2);
+        glUniform1i(id, params[0]);
+        break;
+    case 3:
+        params[0] = luaL_checknumber(L, 2);
+        params[1] = luaL_checknumber(L, 3);
+        glUniform2i(id, params[0], params[1]);
+        break;
+    case 4:
+        params[0] = luaL_checknumber(L, 2);
+        params[1] = luaL_checknumber(L, 3);
+        params[2] = luaL_checknumber(L, 4);
+        glUniform3i(id, params[0], params[1], params[3]);
+        break;
+    case 5:
+        params[0] = luaL_checknumber(L, 2);
+        params[1] = luaL_checknumber(L, 3);
+        params[2] = luaL_checknumber(L, 4);
+        params[3] = luaL_checknumber(L, 5);
+        glUniform4i(id, params[0], params[1], params[2], params[3]);
+        break;
+    default:
+        luaL_error(L, "id followed by 1 to 4 arguments expected.");
+        break;
+    }
+
+    return 0;
+}
+
+int luaCBGLGetUniformLocation(lua_State * L)
+{
+    int n = lua_gettop(L);
+
+    if(n!=2) luaL_error(L, "Prog id and uniform name required.");
+
+    GLuint       prog = luaL_checknumber(L, 1);
+    const char * name = luaL_checkstring(L, 2);
+
+    GLuint loc = glGetUniformLocation(prog, name);
+
+    lua_pushnumber(L, loc);
+
+    return 1;
+}
+
+int luaCBGLGetError(lua_State * L)
+{
+    /* #define GL_NO_ERROR 0
+     * #define GL_INVALID_ENUM 0x0500
+     * #define GL_INVALID_VALUE 0x0501
+     * #define GL_INVALID_OPERATION 0x0502
+     * #define GL_STACK_OVERFLOW 0x0503
+     * #define GL_STACK_UNDERFLOW 0x0504
+     * #define GL_OUT_OF_MEMORY 0x0505
+     */
+
+    GLenum e = glGetError();
+
+    switch(e)
+    {
+    case GL_NO_ERROR:
+        lua_pushstring(L, "GL_NO_ERROR");
+        break;
+    case GL_INVALID_ENUM:
+        lua_pushstring(L, "GL_INVALID_ENUM");
+        break;
+    case GL_INVALID_VALUE:
+        lua_pushstring(L, "GL_INVALID_VALUE");
+        break;
+    case GL_INVALID_OPERATION:
+        lua_pushstring(L, "GL_INVALID_OPERATION");
+        break;
+    case GL_INVALID_FRAMEBUFFER_OPERATION_EXT:
+        lua_pushstring(L, "GL_INVALID_FRAMEBUFFER_OPERATION");
+        break;
+    case GL_OUT_OF_MEMORY:
+        lua_pushstring(L, "GL_OUT_OF_MEMORY");
+        break;
+    case GL_STACK_UNDERFLOW:
+        lua_pushstring(L, "GL_STACK_UNDERFLOW");
+        break;
+    case GL_STACK_OVERFLOW:
+        lua_pushstring(L, "GL_STACK_OVERFLOW");
+        break;
+
+    default:
+        lua_pushstring(L, "Unknown");
+        break;
+    }
+
+    return 1;
+}
+
+int luaCBGLActiveTexture(lua_State * L)
+{
+    GLuint tnum = luaL_checknumber(L, 1);
+    glActiveTexture(GL_TEXTURE0 + tnum);
+    return 0;
+}
+
 void luaInitCallbacksOpenGL()
 {
     lua_register(g_pLuaState, "drawLine",              luaCBDrawLine);
@@ -1140,10 +1293,8 @@ void luaInitCallbacksOpenGL()
 //    lua_register(g_pLuaState, "glWriteToArray",         luaCBGLWriteToBuffer);
 //    lua_register(g_pLuaState, "glDrawArray",            luaCBDrawArray);
 
-//    lua_register(g_pLuaState, "glUniform",              luaCBGLUniform);
-//    lua_register(g_pLuaState, "glGetUniformLocation",   luaCBGLGetUniformLocation);
-
     lua_register(g_pLuaState, "glDATest",               luaCBDrawArraysTest);
+
     lua_register(g_pLuaState, "glCreateProgram",        luaCBGLCreateProgram);
     lua_register(g_pLuaState, "glUseProgram",           luaCBGLUseProgram);
 
@@ -1162,4 +1313,15 @@ void luaInitCallbacksOpenGL()
     lua_register(g_pLuaState, "glFramebufferRenderbuffer",  luaCBGLFramebufferRenderbuffer);
 
     lua_register(g_pLuaState, "glPrepareFBOTexture",        luaCBGLPrepareFBOTexture);
+
+    // This should be enough for shadertoy, I may add the vector and matrix versions of these
+    // later if needed.
+    lua_register(g_pLuaState, "glUniformf",              luaCBGLUniformf);
+    lua_register(g_pLuaState, "glUniformi",              luaCBGLUniformi);
+
+    lua_register(g_pLuaState, "glGetUniformLocation",    luaCBGLGetUniformLocation);
+
+    lua_register(g_pLuaState, "glGetError",              luaCBGLGetError);
+
+    lua_register(g_pLuaState, "glActiveTexture",         luaCBGLActiveTexture);
 }
