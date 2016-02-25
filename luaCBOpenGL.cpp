@@ -999,12 +999,22 @@ int luaCBGLGenerateMipmap(lua_State * L)
     return 0;
 }
 
+static float Int2FloatCol(int c)
+{
+  float n = (float)c / 255.0f;
+  if(n < 0.0f)
+    n = 0.0f;
+  if(n > 1.0f)
+    n = 1.0f;
+  return n;
+}
+
 int luaCBGLClearColor(lua_State * L)
 {
-    GLuint r = luaL_checknumber(L, 1);
-    GLuint g = luaL_checknumber(L, 2);
-    GLuint b = luaL_checknumber(L, 3);
-    GLuint a = luaL_checknumber(L, 4);
+    GLuint r = Int2FloatCol(luaL_checknumber(L, 1));
+    GLuint g = Int2FloatCol(luaL_checknumber(L, 2));
+    GLuint b = Int2FloatCol(luaL_checknumber(L, 3));
+    GLuint a = Int2FloatCol(luaL_checknumber(L, 4));
     glClearColor(r, g, b, a);
     return 0;
 }
@@ -1036,9 +1046,13 @@ int luaCBGLFramebufferRenderbuffer(lua_State *L)
 
 int luaCBGLPrepareFBOTexture(lua_State * L)
 {
-    GLuint textureId = 0;
     GLuint nWidth = 256;
     GLuint nHeight = 256;
+
+    nWidth = luaL_checknumber(L, 1);
+    nHeight = luaL_checknumber(L, 2);
+
+    GLuint textureId = 0;
 
     glGenTextures(1, &textureId);
     glBindTexture(GL_TEXTURE_2D, textureId);

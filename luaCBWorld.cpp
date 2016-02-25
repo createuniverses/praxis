@@ -286,6 +286,12 @@ int luaCBContinue(lua_State * L)
     return 0;
 }
 
+int luaCBIsRunning(lua_State * L)
+{
+    lua_pushboolean(L, g_pWorld->IsRunning());
+    return 1;
+}
+
 int luaCBSetClearColor(lua_State * L)
 {
     g_pWorld->m_nClearColorRed   = luaL_checknumber(L, 1);
@@ -358,6 +364,7 @@ void luaInitCallbacksWorld()
 
     lua_register(g_pLuaState, "pause",                 luaCBPause);
     lua_register(g_pLuaState, "continue",              luaCBContinue);
+    lua_register(g_pLuaState, "isRunning",             luaCBIsRunning);
 
     lua_register(g_pLuaState, "setClearColor",         luaCBSetClearColor);
     lua_register(g_pLuaState, "getClearColor",         luaCBGetClearColor);
