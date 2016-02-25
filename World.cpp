@@ -177,7 +177,6 @@ void World::Update()
 
     // Polling the date modified property of a file can cause sporadic stalls
     // Polling the clipboard should be cheap and quick
-    // Better than implementing a TCP facility
     // Poll the clipboard, check if it is text and that it has a praxis: prefix.
     // If it does, then run the script following the prefix.
     // Empty the clipboard so it doesn't get run again.
@@ -186,8 +185,8 @@ void World::Update()
     // Step 1: Refer to Win32 book to see example of how to access the clipboard.
     // The clipboard is Chapter 12 in Petzold.
 
-    luaCall("if string.sub(getClipboardText(), 1, 10) == \"-- praxis:\" then "
-               "local sCmd = string.sub(getClipboardText(), 11) "
+    luaCall("if string.sub(getClipboardText(), 1, #praxis_instance_name + 4) == \"-- \" .. praxis_instance_name .. \":\" then "
+               "local sCmd = string.sub(getClipboardText(), #praxis_instance_name + 4 + 1) "
                "clearClipboardText() "
                "luaCall(sCmd) "
             "end");
@@ -206,9 +205,6 @@ void World::Update()
     }
     pthread_mutex_unlock (&g_inputthreadmutex);
 #endif
-
-
-
 
     m_nUpdateCount++;
 }

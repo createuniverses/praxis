@@ -93,6 +93,8 @@ void luaInitCallbacks()
     luaCall("unpack = table.unpack");
     luaCall("loadstring = load");
 
+    luaCall("praxis_instance_name = \"praxis\"");
+
     luaInitCallbacksOpenGL();
     luaInitCallbacksEditor();
     luaInitCallbacksServer();

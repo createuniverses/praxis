@@ -187,6 +187,14 @@ int luaCBGetWindowRect(lua_State * L)
     return 4;
 }
 
+int luaCBWindowToFront(lua_State * L)
+{
+#ifdef __PRAXIS_WINDOWS__
+    ::SetForegroundWindow(glutGetWindowHandle());
+#endif
+    return 0;
+}
+
 void luaInitCallbacksWindow()
 {
     lua_register(g_pLuaState, "getScreenWidth",           luaCBGetScreenWidth);
@@ -214,4 +222,6 @@ void luaInitCallbacksWindow()
     lua_register(g_pLuaState, "turnOffBorders",        luaCBTurnOffBorders);
 
     lua_register(g_pLuaState, "dbgGetPaddedBorder",    luaCBGetPaddedBorder);
+
+    lua_register(g_pLuaState, "windowToFront",         luaCBWindowToFront);
 }
