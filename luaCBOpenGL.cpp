@@ -875,6 +875,8 @@ int luaCBGLCreateProgram(lua_State * L)
     const char * vertex_shader_source   = luaL_checkstring(L, 1);
     const char * fragment_shader_source = luaL_checkstring(L, 2);
 
+    std::string sMessages;
+
     GLuint vertex_shader;
     GLuint fragment_shader;
     GLuint program;
@@ -898,6 +900,15 @@ int luaCBGLCreateProgram(lua_State * L)
             glDeleteShader(vertex_shader);
             return 2;
         }
+        else
+        {
+            const int MAX_INFO_LOG_SIZE = 2048;
+            GLchar infoLog[MAX_INFO_LOG_SIZE];
+            glGetShaderInfoLog(vertex_shader, MAX_INFO_LOG_SIZE, NULL, infoLog);
+            sMessages = sMessages +
+                        std::string("Messages from vertex shader compiler\n") +
+                        std::string(infoLog) + std::string("\n");
+        }
     }
 
     // Create and compile fragment shader
@@ -919,6 +930,15 @@ int luaCBGLCreateProgram(lua_State * L)
             glDeleteShader(vertex_shader);
             glDeleteShader(fragment_shader);
             return 2;
+        }
+        else
+        {
+            const int MAX_INFO_LOG_SIZE = 2048;
+            GLchar infoLog[MAX_INFO_LOG_SIZE];
+            glGetShaderInfoLog(fragment_shader, MAX_INFO_LOG_SIZE, NULL, infoLog);
+            sMessages = sMessages +
+                        std::string("Messages from fragment shader compiler\n") +
+                        std::string(infoLog) + std::string("\n");
         }
     }
 
@@ -944,6 +964,15 @@ int luaCBGLCreateProgram(lua_State * L)
             glDeleteProgram(program);
             return 2;
         }
+        else
+        {
+            const int MAX_INFO_LOG_SIZE = 2048;
+            GLchar infoLog[MAX_INFO_LOG_SIZE];
+            glGetShaderInfoLog(program, MAX_INFO_LOG_SIZE, NULL, infoLog);
+            sMessages = sMessages +
+                        std::string("Messages from linker\n") +
+                        std::string(infoLog) + std::string("\n");
+        }
     }
 
     // Delete the shaders as the program has them now
@@ -951,7 +980,7 @@ int luaCBGLCreateProgram(lua_State * L)
     glDeleteShader(fragment_shader);
 
     lua_pushnumber(L, program);
-    lua_pushnumber(L, 0);
+    lua_pushstring(L, sMessages.c_str());
     return 2;
 }
 
@@ -1071,8 +1100,11 @@ int luaCBGLPrepareFBOTexture(lua_State * L)
 
     //glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); // automatic mipmap generation included in OpenGL v1.4
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, nWidth, nHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, nWidth, nHeight, 0, GL_RGBA, GLEW_ARB_half_float_pixel, 0);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, nWidth, nHeight, 0, GL_RGBA, GL_FLOAT, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nWidth, nHeight, 0, GL_RGBA, GL_FLOAT, 0);
+
+    glClampColorARB(GL_CLAMP_VERTEX_COLOR_ARB, FALSE);
+    glClampColorARB(GL_CLAMP_FRAGMENT_COLOR_ARB, FALSE);
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
