@@ -1130,8 +1130,8 @@ int luaCBGLPrepareFBOTexture(lua_State * L)
     //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, nWidth, nHeight, 0, GL_RGBA, GL_FLOAT, 0);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nWidth, nHeight, 0, GL_RGBA, GL_FLOAT, 0);
 
-    glClampColorARB(GL_CLAMP_VERTEX_COLOR_ARB, FALSE);
-    glClampColorARB(GL_CLAMP_FRAGMENT_COLOR_ARB, FALSE);
+    glClampColorARB(GL_CLAMP_VERTEX_COLOR_ARB, GL_FALSE);
+    glClampColorARB(GL_CLAMP_FRAGMENT_COLOR_ARB, GL_FALSE);
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
