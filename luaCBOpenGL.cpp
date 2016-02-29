@@ -5,6 +5,8 @@
 
 #include "luaCB.h"
 
+#include <sstream>
+
 #include <glm/vec3.hpp> // glm::vec3
 #include <glm/vec4.hpp> // glm::vec4
 #include <glm/mat4x4.hpp> // glm::mat4
@@ -1078,25 +1080,50 @@ int luaCBGLPrepareFBOTexture(lua_State * L)
     GLuint nWidth = 256;
     GLuint nHeight = 256;
 
+    int n = lua_gettop(L);
+
+    if(n<2) luaL_error(L, "At least 2 arguments required.");
+
     nWidth = luaL_checknumber(L, 1);
     nHeight = luaL_checknumber(L, 2);
+
+    GLint filterparam = GL_NEAREST;
+    GLint wrapparam = GL_CLAMP_TO_EDGE;
+
+    if(n >= 3)
+    {
+        filterparam = luaL_checknumber(L, 3);
+        if(filterparam != GL_NEAREST &&
+           filterparam != GL_LINEAR)
+        {
+            luaL_error(L, "Only GL_NEAREST or GL_LINEAR for arg 3");
+        }
+    }
+
+    if(n >= 4)
+    {
+        wrapparam = luaL_checknumber(L, 4);
+        if(wrapparam != GL_CLAMP_TO_EDGE &&
+           wrapparam != GL_REPEAT &&
+           wrapparam != GL_CLAMP)
+        {
+            luaL_error(L, "Only GL_CLAMP_TO_EDGE, GL_REPEAT or GL_CLAMP for arg 4");
+        }
+    }
 
     GLuint textureId = 0;
 
     glGenTextures(1, &textureId);
     glBindTexture(GL_TEXTURE_2D, textureId);
 
-    //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterparam);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterparam);
 
-    //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapparam);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapparam);
 
     //glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); // automatic mipmap generation included in OpenGL v1.4
 
@@ -1267,6 +1294,13 @@ int luaCBGLActiveTexture(lua_State * L)
 
 void luaInitCallbacksOpenGL()
 {
+    stringstream ss;
+    ss << "GL_LINEAR = " << GL_LINEAR << "\n";
+    ss << "GL_NEAREST = " << GL_NEAREST << "\n";
+    ss << "GL_CLAMP_TO_EDGE = " << GL_CLAMP_TO_EDGE << "\n";
+    ss << "GL_REPEAT = " << GL_REPEAT << "\n";
+    luaCall(ss.str());
+
     lua_register(g_pLuaState, "drawLine",              luaCBDrawLine);
     lua_register(g_pLuaState, "getCamPos",             luaCBGetCameraPosition);
     lua_register(g_pLuaState, "setCamPos",             luaCBSetCameraPosition);
