@@ -1,6 +1,8 @@
 
 #include "lispCallbacks.h"
 
+#include "lispInterface.h"
+
 #include "PraxisTexture.h"
 #include "PraxisServer.h"
 #include "PraxisLog.h"
@@ -8,6 +10,8 @@
 #include "World.h"
 
 #include "SingleWorldConfiguration.h"
+
+#include <sstream>
 
 extern s7_scheme * g_pLisp;
 
@@ -37,6 +41,13 @@ static s7_pointer s7cbDrawLine(s7_scheme *sc, s7_pointer args)
     return(s7_make_integer(sc, 0));
 }
 
+static s7_pointer s7cbGLBegin(s7_scheme * sc, s7_pointer args)
+{
+    GLenum arg = GL_LINES;
+    glBegin(arg);
+    return s7_nil(sc);
+}
+
 static s7_pointer s7cbNewTransform(s7_scheme * sc, s7_pointer args)
 {
 
@@ -46,6 +57,26 @@ static s7_pointer s7cbNewTransform(s7_scheme * sc, s7_pointer args)
 void lispInitCallbacks()
 {
     s7_type_tag_transform = s7_new_type("transform", NULL, NULL, NULL, NULL, NULL, NULL);
+
+    stringstream ss;
+    ss << "(define GL_PROJECTION " << GL_PROJECTION << ")\n";
+    ss << "(define GL_MODELVIEW " << GL_MODELVIEW << ")\n";
+
+    ss << "(define GL_TRIANGLES " << GL_TRIANGLES << ")\n";
+    ss << "(define GL_QUADS " << GL_QUADS << ")\n";
+    ss << "(define GL_LINES " << GL_LINES << ")\n";
+
+    ss << "(define GL_LIGHTING " << GL_LIGHTING << ")\n";
+    ss << "(define GL_LIGHT0 " << GL_LIGHT0 << ")\n";
+    ss << "(define GL_LIGHT1 " << GL_LIGHT1 << ")\n";
+    ss << "(define GL_TEXTURE_2D " << GL_TEXTURE_2D << ")\n";
+    ss << "(define GL_POLYGON_OFFSET_FILL " << GL_POLYGON_OFFSET_FILL << ")\n";
+
+    ss << "(define GL_LINEAR " << GL_LINEAR << ")\n";
+    ss << "(define GL_NEAREST " << GL_NEAREST << ")\n";
+    ss << "(define GL_CLAMP_TO_EDGE " << GL_CLAMP_TO_EDGE << ")\n";
+    ss << "(define GL_REPEAT " << GL_REPEAT << ")\n";
+    lispCall(ss.str());
 
     s7_define_function(g_pLisp, "draw-line", s7cbDrawLine, 6, 0, false, "");
 }
