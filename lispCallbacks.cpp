@@ -11,6 +11,11 @@
 
 extern s7_scheme * g_pLisp;
 
+#include <glm/vec3.hpp> // glm::vec3
+#include <glm/vec4.hpp> // glm::vec4
+#include <glm/mat4x4.hpp> // glm::mat4
+#include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
+
 static int s7_type_tag_transform = 0;
 
 static s7_pointer s7cbDrawLine(s7_scheme *sc, s7_pointer args)
