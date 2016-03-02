@@ -430,10 +430,9 @@ int luaCBGlutWireSphere(lua_State * L)
     float slices = 15;
     float stacks = 15;
     if(lua_gettop(L) > 1)
-    {
-        float slices = luaL_checknumber(L, 2);
-        float stacks = luaL_checknumber(L, 3);
-    }
+        slices = luaL_checknumber(L, 2);
+    if(lua_gettop(L) > 2)
+        stacks = luaL_checknumber(L, 3);
     glutWireSphere(radius, slices, stacks);
     return 0;
 }
@@ -444,10 +443,9 @@ int luaCBGlutSolidSphere(lua_State * L)
     float slices = 15;
     float stacks = 15;
     if(lua_gettop(L) > 1)
-    {
-        float slices = luaL_checknumber(L, 2);
-        float stacks = luaL_checknumber(L, 3);
-    }
+        slices = luaL_checknumber(L, 2);
+    if(lua_gettop(L) > 2)
+        stacks = luaL_checknumber(L, 3);
     glutSolidSphere(radius, slices, stacks);
     return 0;
 }
@@ -1139,6 +1137,20 @@ int luaCBGLPrepareFBOTexture(lua_State * L)
     return 1;
 }
 
+int luaCBGLGetTextureAccessLimits(lua_State * L)
+{
+    GLint maxTexInstructions = 0;
+    GLint maxTexIndirections = 0;
+
+    glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB, GL_MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB, &maxTexInstructions);
+    glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB, GL_MAX_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB, &maxTexIndirections);
+
+    lua_pushnumber(L, maxTexInstructions);
+    lua_pushnumber(L, maxTexIndirections);
+
+    return 2;
+}
+
 int luaCBGLUniformf(lua_State * L)
 {
     int n = lua_gettop(L);
@@ -1295,6 +1307,19 @@ int luaCBGLActiveTexture(lua_State * L)
 void luaInitCallbacksOpenGL()
 {
     stringstream ss;
+    ss << "GL_PROJECTION = " << GL_PROJECTION << "\n";
+    ss << "GL_MODELVIEW = " << GL_MODELVIEW << "\n";
+
+    ss << "GL_TRIANGLES = " << GL_TRIANGLES << "\n";
+    ss << "GL_QUADS = " << GL_QUADS << "\n";
+    ss << "GL_LINES = " << GL_LINES << "\n";
+
+    ss << "GL_LIGHTING = " << GL_LIGHTING << "\n";
+    ss << "GL_LIGHT0 = " << GL_LIGHT0 << "\n";
+    ss << "GL_LIGHT1 = " << GL_LIGHT1 << "\n";
+    ss << "GL_TEXTURE_2D = " << GL_TEXTURE_2D << "\n";
+    ss << "GL_POLYGON_OFFSET_FILL = " << GL_POLYGON_OFFSET_FILL << "\n";
+
     ss << "GL_LINEAR = " << GL_LINEAR << "\n";
     ss << "GL_NEAREST = " << GL_NEAREST << "\n";
     ss << "GL_CLAMP_TO_EDGE = " << GL_CLAMP_TO_EDGE << "\n";
@@ -1312,23 +1337,29 @@ void luaInitCallbacksOpenGL()
 
     // glBegin
     lua_register(g_pLuaState, "beginTriGL",            luaCBBeginTrianglesGL);
-    lua_register(g_pLuaState, "glBeginTriangles",      luaCBBeginTrianglesGL);
     lua_register(g_pLuaState, "beginQuadGL",           luaCBBeginQuadsGL);
-    lua_register(g_pLuaState, "glBeginQuads",          luaCBBeginQuadsGL);
     lua_register(g_pLuaState, "beginLinGL",            luaCBBeginLinesGL);
-    lua_register(g_pLuaState, "glBeginLines",          luaCBBeginLinesGL);
-    // glEnd
     lua_register(g_pLuaState, "endGL",                 luaCBEndGL);
-    lua_register(g_pLuaState, "glEnd",                 luaCBEndGL);
-    // glVertex
-    lua_register(g_pLuaState, "vectorGL",              luaCBVectorGL);
-    lua_register(g_pLuaState, "glVertex",              luaCBVectorGL);
 
+    lua_register(g_pLuaState, "vectorGL",              luaCBVectorGL);
     lua_register(g_pLuaState, "texGL",                 luaCBTexGL);
     lua_register(g_pLuaState, "colorGL",               luaCBColorGL);
     lua_register(g_pLuaState, "getColorGL",            luaCBGetColorGL);
     lua_register(g_pLuaState, "lightGL",               luaCBSetLightPosGL);
     lua_register(g_pLuaState, "normalGL",              luaCBNormalGL);
+
+    lua_register(g_pLuaState, "glBeginTriangles",      luaCBBeginTrianglesGL);
+    lua_register(g_pLuaState, "glBeginQuads",          luaCBBeginQuadsGL);
+    lua_register(g_pLuaState, "glBeginLines",          luaCBBeginLinesGL);
+    lua_register(g_pLuaState, "glEnd",                 luaCBEndGL);
+
+    lua_register(g_pLuaState, "glVertex",              luaCBVectorGL);
+    lua_register(g_pLuaState, "glTexCoord",            luaCBTexGL);
+    lua_register(g_pLuaState, "glColor",               luaCBColorGL);
+    lua_register(g_pLuaState, "glLight",               luaCBSetLightPosGL);
+    lua_register(g_pLuaState, "glNormal",              luaCBNormalGL);
+
+    lua_register(g_pLuaState, "glGetColor",            luaCBGetColorGL);
 
     lua_register(g_pLuaState, "enableLighting",        luaCBEnableLighting);
     lua_register(g_pLuaState, "disableLighting",       luaCBDisableLighting);
@@ -1413,4 +1444,6 @@ void luaInitCallbacksOpenGL()
     lua_register(g_pLuaState, "glGetError",              luaCBGLGetError);
 
     lua_register(g_pLuaState, "glActiveTexture",         luaCBGLActiveTexture);
+
+    lua_register(g_pLuaState, "glGetTextureAccessLimits",  luaCBGLGetTextureAccessLimits);
 }
