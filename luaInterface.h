@@ -24,7 +24,7 @@ extern "C"
 }
 
 void luaInit();
-bool luaCall(std::string sCmd);
+bool luaCall(std::string sCmd, const char * errfn = "onerror");
 void luaClose();
 
 bool luaIsCommandComplete(std::string sCmd);

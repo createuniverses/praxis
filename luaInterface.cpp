@@ -93,7 +93,7 @@ void luaInit()
     g_bLuaRunning = true;
 }
 
-bool luaCall(std::string sCmd)
+bool luaCall(std::string sCmd, const char * errfn)
 {
 #ifdef __PRAXIS_WINDOWS__
     EnterCriticalSection (&g_cs) ;
@@ -101,7 +101,8 @@ bool luaCall(std::string sCmd)
 
     std::string & sError = PraxisLog::error;
 
-    lua_getglobal(g_pLuaState, "onerror");
+    // lua_getglobal(g_pLuaState, "onerror"); // need to distinguish errors emanating from render and emanating from repl or elsewhere
+    lua_getglobal(g_pLuaState, errfn); // need to distinguish errors emanating from render and emanating from repl or elsewhere
     int error = (luaL_loadstring(g_pLuaState, sCmd.c_str()) || lua_pcall(g_pLuaState, 0, LUA_MULTRET, -2));
 
     if (error)
