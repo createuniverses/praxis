@@ -41,10 +41,63 @@ static s7_pointer s7cbDrawLine(s7_scheme *sc, s7_pointer args)
     return(s7_make_integer(sc, 0));
 }
 
+// Old OpenGL, adequate for low poly
 static s7_pointer s7cbGLBegin(s7_scheme * sc, s7_pointer args)
 {
-    GLenum arg = GL_LINES;
+    GLenum arg = s7_number_to_integer(sc, s7_list_ref(sc, args, 0));
     glBegin(arg);
+    return s7_nil(sc);
+}
+
+static s7_pointer s7cbGLEnd(s7_scheme * sc, s7_pointer args)
+{
+    glEnd();
+    return s7_nil(sc);
+}
+
+static s7_pointer s7cbGLVertex(s7_scheme * sc, s7_pointer args)
+{
+    GLfloat x,y,z;
+    x = s7_number_to_real(sc, s7_list_ref(sc, args, 0));
+    y = s7_number_to_real(sc, s7_list_ref(sc, args, 1));
+    z = s7_number_to_real(sc, s7_list_ref(sc, args, 2));
+    glVertex3f(x,y,z);
+    return s7_nil(sc);
+}
+
+static s7_pointer s7cbGLColor(s7_scheme * sc, s7_pointer args)
+{
+    GLubyte r,g,b,a;
+    r = s7_number_to_integer(sc, s7_list_ref(sc, args, 0));
+    g = s7_number_to_integer(sc, s7_list_ref(sc, args, 1));
+    b = s7_number_to_integer(sc, s7_list_ref(sc, args, 2));
+    a = s7_number_to_integer(sc, s7_list_ref(sc, args, 3));
+    glColor4ub(r,g,b,a);
+    return s7_nil(sc);
+}
+
+static s7_pointer s7cbGLNormal(s7_scheme * sc, s7_pointer args)
+{
+    GLfloat x,y,z;
+    x = s7_number_to_real(sc, s7_list_ref(sc, args, 0));
+    y = s7_number_to_real(sc, s7_list_ref(sc, args, 1));
+    z = s7_number_to_real(sc, s7_list_ref(sc, args, 2));
+    glNormal3f(x,y,z);
+    return s7_nil(sc);
+}
+
+static s7_pointer s7cbGLTexCoord(s7_scheme * sc, s7_pointer args)
+{
+    return s7_nil(sc);
+}
+
+static s7_pointer s7cbGLEnable(s7_scheme * sc, s7_pointer args)
+{
+    return s7_nil(sc);
+}
+
+static s7_pointer s7cbGLDisable(s7_scheme * sc, s7_pointer args)
+{
     return s7_nil(sc);
 }
 
@@ -78,5 +131,17 @@ void lispInitCallbacks()
     ss << "(define GL_REPEAT " << GL_REPEAT << ")\n";
     lispCall(ss.str());
 
-    s7_define_function(g_pLisp, "draw-line", s7cbDrawLine, 6, 0, false, "");
+    s7_define_function(g_pLisp, "draw-line", s7cbDrawLine,    6,      0, false, "");
+
+    s7_define_function(g_pLisp, "glBegin",   s7cbGLBegin,     1,      0, false, "");
+    s7_define_function(g_pLisp, "glEnd",     s7cbGLEnd,       0,      0, false, "");
+    s7_define_function(g_pLisp, "glVertex",  s7cbGLVertex,    3,      0, false, "");
+    s7_define_function(g_pLisp, "glColor",   s7cbGLColor,     4,      0, false, "");
+    s7_define_function(g_pLisp, "glNormal",  s7cbGLNormal,    3,      0, false, "");
+    // glTexCoord
+    // glEnable
+    // glDisable
+
+    // Shader functions
+    // FBO functions
 }
