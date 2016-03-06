@@ -367,5 +367,6 @@ void luaInitCallbacksWorld()
     lua_register(g_pLuaState, "isRunning",             luaCBIsRunning);
 
     lua_register(g_pLuaState, "setClearColor",         luaCBSetClearColor);
+    lua_register(g_pLuaState, "setClearColor_c",       luaCBSetClearColor);
     lua_register(g_pLuaState, "getClearColor",         luaCBGetClearColor);
 }

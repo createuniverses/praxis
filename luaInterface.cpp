@@ -77,8 +77,17 @@ void luaInit()
 
     luaL_dostring(g_pLuaState,
                   "function onerror(s) "
+                    "return s .. \"\\n\" .. debug.traceback() "
+                  "end");
+
+    luaL_dostring(g_pLuaState,
+                  "function onerrorgl(s) "
                     "endGL() "
                     "glResetStencil() "
+                    "glUseProgram(0); "
+                    "glBindFramebuffer(0) "
+                    "glBindRenderbuffer(0) "
+                    "setClearColor_c(0,0,0) "
                     "return s .. \"\\n\" .. debug.traceback() "
                   "end");
 

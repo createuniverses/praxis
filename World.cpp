@@ -271,7 +271,7 @@ void World::Render()
 
     if(m_bRunning)
     {
-        if(!luaCall("prerender()"))
+        if(!luaCall("prerender()", "onerrorgl"))
         {
             m_bRunning = false;
         }
@@ -345,7 +345,7 @@ void World::Render()
 
     if(m_bRunning)
     {
-        if(!luaCall("render()"))
+        if(!luaCall("render()", "onerrorgl"))
         {
             m_bRunning = false;
         }
@@ -386,7 +386,7 @@ void World::Render()
 
     if(m_bRunning)
     {
-        if(!luaCall("postrender()"))
+        if(!luaCall("postrender()", "onerrorgl"))
         {
             m_bRunning = false;
         }

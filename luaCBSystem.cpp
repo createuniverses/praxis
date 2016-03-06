@@ -42,6 +42,10 @@ int luaCBGetFPS(lua_State * L)
     return 1;
 }
 
+#ifdef __PRAXIS_LINUX__
+#include <unistd.h>
+#endif
+
 int luaCBGetCurrentDir(lua_State * L)
 {
 #ifdef __PRAXIS_WINDOWS__
@@ -55,13 +59,13 @@ int luaCBGetCurrentDir(lua_State * L)
     lua_pushstring(L, buf);
 #endif
 #ifdef __PRAXIS_LINUX__
-    lua_pushstring(L, "");
+    const char * dirname = get_current_dir_name();
+    lua_pushstring(L, dirname);
 #endif
     return 1;
 }
 
 #ifdef __PRAXIS_LINUX__
-#include <unistd.h>
 int luaCBSetCurrentDir(lua_State * L)
 {
     std::string sDir = luaL_checkstring(L, 1);
