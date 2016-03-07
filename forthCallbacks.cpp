@@ -1,50 +1,56 @@
 
 #include "forthCallbacks.h"
 
+extern "C"
+{
+#include "pforth/pf_all.h"
+}
+
+#include "World.h"
+
+#include "SingleWorldConfiguration.h"
+
+#include <sstream>
+
+#include <glm/vec3.hpp> // glm::vec3
+#include <glm/vec4.hpp> // glm::vec4
+#include <glm/mat4x4.hpp> // glm::mat4
+#include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
+
+static void pfcbTest()
+{
+    PF_FLOAT n1 = POP_FLOAT_STACK;
+    PF_FLOAT n2 = POP_FLOAT_STACK;
+
+    PUSH_FLOAT_STACK(n1*n2);
+
+    MSG("praxis PForth C Test!");
+}
+
+static void pfcbDrawLine()
+{
+    PF_FLOAT x1 = POP_FLOAT_STACK;
+    PF_FLOAT y1 = POP_FLOAT_STACK;
+    PF_FLOAT z1 = POP_FLOAT_STACK;
+
+    PF_FLOAT x2 = POP_FLOAT_STACK;
+    PF_FLOAT y2 = POP_FLOAT_STACK;
+    PF_FLOAT z2 = POP_FLOAT_STACK;
+
+    glBegin(GL_LINES);
+
+    glVertex3f(x1,y1,z1);
+    glVertex3f(x2,y2,z2);
+
+    glEnd();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
 void forthInitCallbacks()
 {
-#if 0
-    // WikiReader assembler functions simlib.4th will expect
+    void praxisDefinePForthCFunction(const char * name, CFunc0 func);
 
-    ficlDictionarySetPrimitive(g_ficlDictionary, "lcd-line",        ficlCB_LCDLine,       FICL_WORD_DEFAULT);
-    ficlDictionarySetPrimitive(g_ficlDictionary, "lcd-set-point",   ficlCB_LCDSetPoint,   FICL_WORD_DEFAULT);
-    ficlDictionarySetPrimitive(g_ficlDictionary, "lcd-vram",        ficlCB_VRAMPtr,       FICL_WORD_DEFAULT);
-    ficlDictionarySetPrimitive(g_ficlDictionary, "delay-us",        ficlCB_Delayus,       FICL_WORD_DEFAULT);
-
-    // button?
-    // button
-    // button-flush
-    ficlDictionarySetPrimitive(g_ficlDictionary, "button?",         ficlCB_ButtonQuery,   FICL_WORD_DEFAULT);
-    ficlDictionarySetPrimitive(g_ficlDictionary, "button",          ficlCB_Button,        FICL_WORD_DEFAULT);
-    ficlDictionarySetPrimitive(g_ficlDictionary, "button-flush",    ficlCB_ButtonFlush,   FICL_WORD_DEFAULT);
-
-    // key?
-    // key
-    // key-flush
-    ficlDictionarySetPrimitive(g_ficlDictionary, "key?",            ficlCB_KeyQuery,      FICL_WORD_DEFAULT);
-    ficlDictionarySetPrimitive(g_ficlDictionary, "key",             ficlCB_Key,           FICL_WORD_DEFAULT);
-    ficlDictionarySetPrimitive(g_ficlDictionary, "key-flush",       ficlCB_KeyFlush,      FICL_WORD_DEFAULT);
-
-    // ctp-pos?
-    // ctp-pos
-    // ctp-flush
-    ficlDictionarySetPrimitive(g_ficlDictionary, "ctp-pos?",        ficlCB_CTPPosQuery,   FICL_WORD_DEFAULT);
-    ficlDictionarySetPrimitive(g_ficlDictionary, "ctp-pos",         ficlCB_CTPPos,        FICL_WORD_DEFAULT);
-    ficlDictionarySetPrimitive(g_ficlDictionary, "ctp-flush",       ficlCB_CTPFlush,      FICL_WORD_DEFAULT);
-
-    ficlDictionarySetPrimitive(g_ficlDictionary, "wait-for-event",  ficlCB_WaitForEvent,  FICL_WORD_DEFAULT);
-
-    forthCall("load simlib.4th");
-    forthCall("load simtest.4th");
-
-    ficlDictionarySetPrimitive(g_ficlDictionary, "vm-lcd-refresh",           ficlCB_VMLCDRefresh,             FICL_WORD_DEFAULT);
-
-    ficlDictionarySetPrimitive(g_ficlDictionary, "vm-lcd-auto-refresh?",     ficlCB_VMLCDAutoRefreshQuery,    FICL_WORD_DEFAULT);
-    ficlDictionarySetPrimitive(g_ficlDictionary, "vm-lcd-auto-refresh-on",   ficlCB_VMLCDAutoRefreshOn,       FICL_WORD_DEFAULT);
-    ficlDictionarySetPrimitive(g_ficlDictionary, "vm-lcd-auto-refresh-off",  ficlCB_VMLCDAutoRefreshOff,      FICL_WORD_DEFAULT);
-
-    ficlDictionarySetPrimitive(g_ficlDictionary, "vm-lcd-timer-refresh?",    ficlCB_VMLCDTimerRefreshQuery,   FICL_WORD_DEFAULT);
-    ficlDictionarySetPrimitive(g_ficlDictionary, "vm-lcd-timer-refresh-on",  ficlCB_VMLCDTimerRefreshOn,      FICL_WORD_DEFAULT);
-    ficlDictionarySetPrimitive(g_ficlDictionary, "vm-lcd-timer-refresh-off", ficlCB_VMLCDTimerRefreshOff,     FICL_WORD_DEFAULT);
-#endif
+    praxisDefinePForthCFunction( "ctest",    (CFunc0)pfcbTest     );
+    praxisDefinePForthCFunction( "drawline", (CFunc0)pfcbDrawLine );
 }

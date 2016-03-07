@@ -565,6 +565,15 @@ extern cell_t         gIncludeIndex;
 #define POP_DATA_STACK (*gCurrentTask->td_StackPtr++)
 #define PUSH_DATA_STACK(x) {*(--(gCurrentTask->td_StackPtr)) = (cell_t) x; }
 
+#ifdef PF_SUPPORT_FP
+#define FLOAT_STACK_DEPTH (gCurrentTask->td_FloatStackBase - gCurrentTask->td_FloatStackPtr)
+#define DROP_FLOAT_STACK (gCurrentTask->td_FloatStackPtr++)
+#define POP_FLOAT_STACK (*gCurrentTask->td_FloatStackPtr++)
+#define PUSH_FLOAT_STACK(x) {*(--(gCurrentTask->td_FloatStackPtr)) = x; }
+#endif
+
+#define PF_MAX_CUSTOM_FUNCTIONS  (1024)
+
 /* Force Quad alignment. */
 #define QUADUP(x) (((x)+3)&~3)
 

@@ -108,6 +108,8 @@ extern "C"
 
 #include "pforth/pf_all.h"
 
+extern CFunc0 CustomFunctionTable[];
+
 int  sdTerminalOut( char c )
 {
     //printf("%c", c);
@@ -253,4 +255,21 @@ std::string forthGetState()
 void forthClose()
 {
 
+}
+
+void praxisDefinePForthCFunction(const char * name, CFunc0 func)
+{
+    static int i = 0;
+    if(i<PF_MAX_CUSTOM_FUNCTIONS)
+    {
+        CustomFunctionTable[i] = func;
+        CreateGlueToC( name, i, C_RETURNS_VOID, 0 );
+        i++;
+        printf("Defined PForth C function %s, index is now %d\n", name, i);
+    }
+    else
+    {
+        printf("Maximum number of custom PForth C functions reached.\n");
+        printf("Increase PF_MAX_CUSTOM_FUNCTIONS.\n");
+    }
 }

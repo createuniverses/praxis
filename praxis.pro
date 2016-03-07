@@ -59,6 +59,8 @@ unix {
     message(LIBS = $$LIBS)
 }
 
+DEFINES += PF_SUPPORT_FP
+
 DEFINES += _CRT_SECURE_NO_WARNINGS
 
 DEFINES -= UNICODE

@@ -44,8 +44,8 @@ static s7_pointer s7cbDrawLine(s7_scheme *sc, s7_pointer args)
 // Old OpenGL, adequate for low poly
 static s7_pointer s7cbGLBegin(s7_scheme * sc, s7_pointer args)
 {
-    GLenum arg = s7_number_to_integer(sc, s7_list_ref(sc, args, 0));
-    glBegin(arg);
+    GLenum mode = s7_number_to_integer(sc, s7_list_ref(sc, args, 0));
+    glBegin(mode);
     return s7_nil(sc);
 }
 
@@ -88,18 +88,77 @@ static s7_pointer s7cbGLNormal(s7_scheme * sc, s7_pointer args)
 
 static s7_pointer s7cbGLTexCoord(s7_scheme * sc, s7_pointer args)
 {
+    GLfloat s,t;
+    s = s7_number_to_real(sc, s7_list_ref(sc, args, 0));
+    t = s7_number_to_real(sc, s7_list_ref(sc, args, 1));
+    glTexCoord2f(s,t);
     return s7_nil(sc);
 }
 
 static s7_pointer s7cbGLEnable(s7_scheme * sc, s7_pointer args)
 {
+    GLenum cap = s7_number_to_integer(sc, s7_list_ref(sc, args, 0));
+    glEnable(cap);
     return s7_nil(sc);
 }
 
 static s7_pointer s7cbGLDisable(s7_scheme * sc, s7_pointer args)
 {
+    GLenum cap = s7_number_to_integer(sc, s7_list_ref(sc, args, 0));
+    glDisable(cap);
     return s7_nil(sc);
 }
+
+static s7_pointer s7cbGLMatrixMode(s7_scheme * sc, s7_pointer args)
+{
+    GLenum mode = s7_number_to_integer(sc, s7_list_ref(sc, args, 0));
+    glMatrixMode(mode);
+    return s7_nil(sc);
+}
+
+static s7_pointer s7cbGLPushMatrix(s7_scheme * sc, s7_pointer args)
+{
+    glPushMatrix();
+    return s7_nil(sc);
+}
+
+static s7_pointer s7cbGLPopMatrix(s7_scheme * sc, s7_pointer args)
+{
+    glPopMatrix();
+    return s7_nil(sc);
+}
+
+static s7_pointer s7cbGLTranslate(s7_scheme * sc, s7_pointer args)
+{
+    GLfloat x,y,z;
+    x = s7_number_to_real(sc, s7_list_ref(sc, args, 0));
+    y = s7_number_to_real(sc, s7_list_ref(sc, args, 1));
+    z = s7_number_to_real(sc, s7_list_ref(sc, args, 2));
+    glTranslatef(x,y,z);
+    return s7_nil(sc);
+}
+
+static s7_pointer s7cbGLRotate(s7_scheme * sc, s7_pointer args)
+{
+    GLfloat angle,x,y,z;
+    angle = s7_number_to_real(sc, s7_list_ref(sc, args, 0));
+    x     = s7_number_to_real(sc, s7_list_ref(sc, args, 1));
+    y     = s7_number_to_real(sc, s7_list_ref(sc, args, 2));
+    z     = s7_number_to_real(sc, s7_list_ref(sc, args, 3));
+    glRotatef(angle, x,y,z);
+    return s7_nil(sc);
+}
+
+static s7_pointer s7cbGLScale(s7_scheme * sc, s7_pointer args)
+{
+    GLfloat x,y,z;
+    x = s7_number_to_real(sc, s7_list_ref(sc, args, 0));
+    y = s7_number_to_real(sc, s7_list_ref(sc, args, 1));
+    z = s7_number_to_real(sc, s7_list_ref(sc, args, 2));
+    glScalef(x,y,z);
+    return s7_nil(sc);
+}
+
 
 static s7_pointer s7cbNewTransform(s7_scheme * sc, s7_pointer args)
 {
@@ -131,17 +190,27 @@ void lispInitCallbacks()
     ss << "(define GL_REPEAT " << GL_REPEAT << ")\n";
     lispCall(ss.str());
 
-    s7_define_function(g_pLisp, "draw-line", s7cbDrawLine,    6,      0, false, "");
+    s7_define_function(g_pLisp, "draw-line",      s7cbDrawLine,      6,      0, false, "");
 
-    s7_define_function(g_pLisp, "glBegin",   s7cbGLBegin,     1,      0, false, "");
-    s7_define_function(g_pLisp, "glEnd",     s7cbGLEnd,       0,      0, false, "");
-    s7_define_function(g_pLisp, "glVertex",  s7cbGLVertex,    3,      0, false, "");
-    s7_define_function(g_pLisp, "glColor",   s7cbGLColor,     4,      0, false, "");
-    s7_define_function(g_pLisp, "glNormal",  s7cbGLNormal,    3,      0, false, "");
-    // glTexCoord
-    // glEnable
-    // glDisable
+    s7_define_function(g_pLisp, "glBegin",        s7cbGLBegin,       1,      0, false, "");
+    s7_define_function(g_pLisp, "glEnd",          s7cbGLEnd,         0,      0, false, "");
+    s7_define_function(g_pLisp, "glVertex",       s7cbGLVertex,      3,      0, false, "");
+    s7_define_function(g_pLisp, "glColor",        s7cbGLColor,       4,      0, false, "");
+    s7_define_function(g_pLisp, "glNormal",       s7cbGLNormal,      3,      0, false, "");
+    s7_define_function(g_pLisp, "glTexCoord",     s7cbGLTexCoord,    2,      0, false, "");
+    s7_define_function(g_pLisp, "glEnable",       s7cbGLEnable,      1,      0, false, "");
+    s7_define_function(g_pLisp, "glDisable",      s7cbGLDisable,     1,      0, false, "");
+
+    s7_define_function(g_pLisp, "glMatrixMode",   s7cbGLMatrixMode,  1,      0, false, "");
+    s7_define_function(g_pLisp, "glPushMatrix",   s7cbGLPushMatrix,  0,      0, false, "");
+    s7_define_function(g_pLisp, "glPopMatrix",    s7cbGLPopMatrix,   0,      0, false, "");
+    s7_define_function(g_pLisp, "glTranslate",    s7cbGLTranslate,   3,      0, false, "");
+    s7_define_function(g_pLisp, "glRotate",       s7cbGLRotate,      3,      0, false, "");
+    s7_define_function(g_pLisp, "glScale",        s7cbGLScale,       3,      0, false, "");
 
     // Shader functions
+    // Uniforms
     // FBO functions
+    // DrawArrays
+    // GLM
 }

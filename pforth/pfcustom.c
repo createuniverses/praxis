@@ -37,6 +37,13 @@ static void CTest1( cell_t Val1, cell_t Val2 );
 ****************************************************************/
 static cell_t CTest0( cell_t Val )
 {
+    PF_FLOAT n1,n2;
+
+    n1 = POP_FLOAT_STACK;
+    n2 = POP_FLOAT_STACK;
+
+    PUSH_FLOAT_STACK(n1*n2);
+
 	MSG_NUM_D("CTest0: Val = ", Val);
 	return Val+1;
 }
@@ -73,6 +80,7 @@ Err LoadCustomFunctionTable( void )
 }
 
 #else
+#if 0
 /******************
 ** If your loader supports global initialization (most do.) then just
 ** create the table like this.
@@ -81,7 +89,11 @@ CFunc0 CustomFunctionTable[] =
 {
 	(CFunc0) CTest0,
 	(CFunc0) CTest1
-};	
+};
+#endif
+
+CFunc0 CustomFunctionTable[PF_MAX_CUSTOM_FUNCTIONS];
+
 #endif
 
 /****************************************************************
@@ -99,7 +111,7 @@ Err CompileCustomFunctions( void )
 ** Make sure order of functions matches that in LoadCustomFunctionTable().
 ** Parameters are: Name in UPPER CASE, Function, Index, Mode, NumParams
 */
-	err = CreateGlueToC( "CTEST0", i++, C_RETURNS_VALUE, 1 );
+    err = CreateGlueToC( "CTEST0", i++, C_RETURNS_VALUE, 0 );
 	if( err < 0 ) return err;
 	err = CreateGlueToC( "CTEST1", i++, C_RETURNS_VOID, 2 );
 	if( err < 0 ) return err;
