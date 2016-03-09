@@ -733,6 +733,9 @@ void GLEditor::RenderBuffer(bool bBackground)
 
 void GLEditor::RenderChars()
 {
+    // I can push this to Lua first.
+    // Or Lisp.
+
     glPushMatrix();
 
     unsigned int xcount=0;
