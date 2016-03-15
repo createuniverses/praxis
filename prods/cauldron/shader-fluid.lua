@@ -69,6 +69,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
  
     if(iFrame == 0)
     {
+       val = 0.0;
         //val = 
         //  random()*length(iResolution.xy)/100.0 + 
         //  smoothstep(length(iResolution.xy)/2.0, 0.5, length(iResolution.xy * 0.5 - fragCoord.xy))*25.0;
@@ -290,7 +291,9 @@ local function preparething(new)
   gather_shader_uniforms(g.copyshader)
 end
 
+--preparething(false)
 preparething(true)
+
 
 function prerender()
   local g = gameoflife
@@ -302,6 +305,8 @@ function prerender()
 end
 
 --clearTrace()
+
+
 
 
 
