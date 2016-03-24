@@ -146,6 +146,7 @@ void lispBeginHook(s7_scheme *sc, bool *all_done)
 #endif
 }
 
+#if 0
 bool lispCall(std::string sCmd)
 {
     g_sLispOutput = "";
@@ -178,6 +179,61 @@ bool lispCall(std::string sCmd)
     s7_set_current_error_port(g_pLisp, old_port);
     if (gc_loc != -1)
         s7_gc_unprotect_at(g_pLisp, gc_loc);
+
+    return true;
+}
+#endif
+bool lispCall(std::string sCmd)
+{
+    s7_pointer old_error_port;
+    s7_pointer old_output_port;
+    int gc_loc_error = -1;
+    int gc_loc_output = -1;
+    const char *errmsg = NULL;
+    const char *outmsg = NULL;
+
+    /* trap error messages */
+    old_error_port = s7_set_current_error_port(g_pLisp, s7_open_output_string(g_pLisp));
+    if (old_error_port != s7_nil(g_pLisp))
+        gc_loc_error = s7_gc_protect(g_pLisp, old_error_port);
+
+    /* trap output messages */
+    old_output_port = s7_set_current_output_port(g_pLisp, s7_open_output_string(g_pLisp));
+    if (old_output_port != s7_nil(g_pLisp))
+        gc_loc_output = s7_gc_protect(g_pLisp, old_output_port);
+
+    //lispCall(sCmd);
+    g_sLispOutput = "";
+    g_sLispError = "";
+
+    s7_set_begin_hook(g_pLisp, lispBeginHook);
+    s7_pointer val = s7_eval_c_string(g_pLisp, sCmd.c_str());
+    s7_set_begin_hook(g_pLisp, NULL);
+
+    g_sLispOutput = s7_object_to_c_string(g_pLisp, val);
+
+
+    /* retrieve error messages */
+    errmsg = s7_get_output_string(g_pLisp, s7_current_error_port(g_pLisp));
+    if(errmsg)
+        g_sLispError = errmsg;
+
+    /* retrieve output messages */
+    outmsg = s7_get_output_string(g_pLisp, s7_current_output_port(g_pLisp));
+    if(outmsg)
+      g_sLispOutput = std::string(outmsg) + g_sLispOutput;
+
+    /* restore error port */
+    s7_close_output_port(g_pLisp, s7_current_error_port(g_pLisp));
+    s7_set_current_error_port(g_pLisp, old_error_port);
+    if (gc_loc_error != -1)
+      s7_gc_unprotect_at(g_pLisp, gc_loc_error);
+
+    /* restore output port */
+    s7_close_output_port(g_pLisp, s7_current_output_port(g_pLisp));
+    s7_set_current_output_port(g_pLisp, old_output_port);
+    if (gc_loc_output != -1)
+      s7_gc_unprotect_at(g_pLisp, gc_loc_output);
 
     return true;
 }
