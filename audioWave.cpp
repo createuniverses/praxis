@@ -31,6 +31,8 @@ void MakeLiveBuffer()
 
 short ReadLiveBufferSample()
 {
+    if (pLiveBuffer==0) return 0;
+
     short nSample = pLiveBuffer[nLiveBufferReadPosition];
 
     if(nLiveBufferReadPosition == nLiveBufferWritePosition)
@@ -50,6 +52,8 @@ short ReadLiveBufferSample()
 
 void WriteLiveBufferSample(short nSample)
 {
+    if (pLiveBuffer==0) return;
+
     pLiveBuffer[nLiveBufferWritePosition] = nSample;
 
     nLiveBufferWritePosition = nLiveBufferWritePosition + 1;
