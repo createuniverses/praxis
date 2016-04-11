@@ -735,6 +735,7 @@ void GLEditor::RenderChars()
 {
     // I can push this to Lua first.
     // Or Lisp.
+    luaCall("edRenderChars()");
 
     glPushMatrix();
 
