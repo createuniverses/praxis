@@ -735,7 +735,12 @@ void GLEditor::RenderChars()
 {
     // I can push this to Lua first.
     // Or Lisp.
-    luaCall("edRenderChars()");
+
+    if(!m_bNativeControl)
+    {
+        luaCall("edRenderChars()");
+        return;
+    }
 
     glPushMatrix();
 
@@ -809,20 +814,7 @@ void GLEditor::RenderChars()
         {
             if (xcount>=m_LeftTextPosition && xcount < m_LeftTextPosition + m_VisibleColumns)
             {
-                if(m_bNativeControl)
-                {
-                    float dx = 0;
-                    float dy = 0;
-                    StrokeCharacter(m_Text[n], dx, dy);
-                }
-                else
-                {
-                    // Call Lua for each character rendered so effects can be implemented in Lua
-                    stringstream ss;
-                    //ss << "edRenderChar([[" << m_Text[n] << "]]," << xpos << "," << ypos << ")";
-                    ss << "edRenderChar(string.char(" << (int)m_Text[n] << ")," << n << "," << xpos << "," << ypos << ")";
-                    luaCall(ss.str());
-                }
+                StrokeCharacter(m_Text[n], 0,0);
 
                 xpos+=m_CharWidth;
             }

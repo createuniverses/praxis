@@ -201,13 +201,20 @@ int luaCBParseParentheses(lua_State * L)
     return 2;
 }
 
-int luaCBEdSetHighlight(lua_State * L)
+int luaCBEdSetParenHighlight(lua_State * L)
 {
     int n1 = luaL_checknumber(L, 1);
     int n2 = luaL_checknumber(L, 2);
     g_pWorld->GetEditor()->m_ParenthesesHighlight[0] = n1;
     g_pWorld->GetEditor()->m_ParenthesesHighlight[1] = n2;
     return 0;
+}
+
+int luaCBEdGetParenHighlight(lua_State * L)
+{
+  lua_pushnumber(L, g_pWorld->GetEditor()->m_ParenthesesHighlight[0]);
+  lua_pushnumber(L, g_pWorld->GetEditor()->m_ParenthesesHighlight[1]);
+  return 2;
 }
 
 int luaCBSetSearchText(lua_State * L)
@@ -272,8 +279,21 @@ int luaCBEdGetCharAt(lua_State * L)
     int nPosition = luaL_checknumber(L, 1);
     if(nPosition < 0 || nPosition >= g_pWorld->GetEditor()->m_Text.size())
         luaL_error(L, "Position out of range.");
+
+#if 0
     lua_pushstring(L, g_pWorld->GetEditor()->m_Text.substr(nPosition, 1).c_str());
     return 1;
+#endif
+
+    unsigned char c = g_pWorld->GetEditor()->m_Text.c_str()[nPosition];
+    lua_pushnumber(L, c);
+    return 1;
+}
+
+int luaCBEdGetBufferLength(lua_State * L)
+{
+  lua_pushnumber(L, g_pWorld->GetEditor()->m_Text.size());
+  return 1;
 }
 
 int luaCBGetEditorLineText(lua_State * L)
@@ -575,10 +595,10 @@ int luaCBEdGetStdCharHeight(lua_State * L)
 
 int luaCBEdStrokeCharacter(lua_State * L)
 {
-    std::string c = luaL_checkstring(L, 1);
+    const char * c = luaL_checkstring(L, 1);
     float dx = luaL_checknumber(L, 2);
     float dy = luaL_checknumber(L, 3);
-    g_pWorld->GetEditor()->StrokeCharacter(c.c_str()[0], dx, dy);
+    g_pWorld->GetEditor()->StrokeCharacter(c[0], dx, dy);
     return 0;
 }
 
@@ -853,7 +873,8 @@ void luaInitCallbacksEditor()
     lua_register(g_pLuaState, "readFile",              luaCBReadFile);
 
     lua_register(g_pLuaState, "edParseParentheses",    luaCBParseParentheses);
-    lua_register(g_pLuaState, "edSetHighlight",        luaCBEdSetHighlight);
+    lua_register(g_pLuaState, "edSetHighlight",        luaCBEdSetParenHighlight);
+    lua_register(g_pLuaState, "edGetParenHighlight",   luaCBEdGetParenHighlight);
 
     lua_register(g_pLuaState, "edGetRenderMode",       luaCBEdGetRenderMode);
     lua_register(g_pLuaState, "edSetRenderMode",       luaCBEdSetRenderMode);
@@ -891,6 +912,8 @@ void luaInitCallbacksEditor()
     lua_register(g_pLuaState, "getEditorLineEnd",      luaCBGetEditorLineEnd);
     lua_register(g_pLuaState, "getEditorLineText",     luaCBGetEditorLineText);
 
+
+
     lua_register(g_pLuaState, "setSearchText",         luaCBSetSearchText);
     lua_register(g_pLuaState, "getSearchText",         luaCBGetSearchText);
     lua_register(g_pLuaState, "findNext",              luaCBFindNext);
@@ -925,6 +948,8 @@ void luaInitCallbacksEditor()
     lua_register(g_pLuaState, "edDelete",              luaCBEdDelete);
 
     lua_register(g_pLuaState, "edGetAt",               luaCBEdGetAt);
+    lua_register(g_pLuaState, "edGetCharAt",           luaCBEdGetCharAt);
+    lua_register(g_pLuaState, "edGetBufferLength",     luaCBEdGetBufferLength);
 
     lua_register(g_pLuaState, "edInsertTextAt",        luaCBInsertTextAt);
 
