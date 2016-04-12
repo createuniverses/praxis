@@ -250,6 +250,13 @@ int luaCBBeginLinesGL(lua_State * L)
     return 0;
 }
 
+int luaCBBeginGL(lua_State * L)
+{
+    int mode = luaL_checknumber(L, 1);
+    glBegin(mode);
+    return 0;
+}
+
 int luaCBEndGL(lua_State *L)
 {
     glEnd();
@@ -1351,6 +1358,8 @@ void luaInitCallbacksOpenGL()
     lua_register(g_pLuaState, "glBeginTriangles",      luaCBBeginTrianglesGL);
     lua_register(g_pLuaState, "glBeginQuads",          luaCBBeginQuadsGL);
     lua_register(g_pLuaState, "glBeginLines",          luaCBBeginLinesGL);
+
+    lua_register(g_pLuaState, "glBegin",               luaCBBeginGL);
     lua_register(g_pLuaState, "glEnd",                 luaCBEndGL);
 
     lua_register(g_pLuaState, "glVertex",              luaCBVectorGL);

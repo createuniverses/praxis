@@ -738,7 +738,13 @@ void GLEditor::RenderChars()
 
     if(!m_bNativeControl)
     {
-        luaCall("edRenderChars()");
+        if(!luaCall("edRenderChars()", "onerrorgl"))
+        {
+            // Revert to native control on error.
+            // Optional?
+            m_bNativeControl = true;
+        }
+
         return;
     }
 
