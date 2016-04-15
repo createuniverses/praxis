@@ -7,20 +7,49 @@ function gather_shader_uniforms(shader)
   if shader.uloc == nil then
     shader.uloc = {}
   end
-  
-  local u = shader.uloc
-  
+
   glGetError()
-  
-  u.frame       = glGetUniformLocation(shader.prog, "iFrame")
-  assertgl()
-  u.resolution  = glGetUniformLocation(shader.prog, "iResolution")
-  assertgl()
-  u.mouse       = glGetUniformLocation(shader.prog, "iMouse")
-  assertgl()
-  u.sampler     = glGetUniformLocation(shader.prog, "iChannel0")  
-  assertgl()
+
+  local u = shader.uloc
+
+  u.frame       = glGetUniformLocation(shader.prog, "iFrame")        assertgl()
+  u.resolution  = glGetUniformLocation(shader.prog, "iResolution")   assertgl()
+  u.mouse       = glGetUniformLocation(shader.prog, "iMouse")        assertgl()
+  u.sampler     = glGetUniformLocation(shader.prog, "iChannel0")     assertgl()
+  u.sampler1    = glGetUniformLocation(shader.prog, "iChannel0")     assertgl()
+  u.sampler2    = glGetUniformLocation(shader.prog, "iChannel1")     assertgl()
 end
+
+shaderheader = [[
+uniform vec2      iResolution;           // viewport resolution (in pixels)
+uniform int       iFrame;                // shader playback frame
+uniform vec4      iMouse;                // mouse pixel coords. xy: current (if MLB down), zw: click
+uniform sampler2D iChannel0;             // input channel. XX = 2D/Cube
+uniform sampler2D iChannel1;             // input channel. XX = 2D/Cube
+]]
+
+shaderfooter = [[
+void main()
+{
+    mainImage(gl_FragColor, gl_FragCoord.xy );
+}
+]]
+
+shaderpassthruvertex = [[
+void main(void)
+{ 
+    gl_Position = gl_Vertex;
+    gl_Position.w = 1.0;
+}
+]]
+
+shadermvpvertex = [[
+void main(void)
+{ 
+    // normal MVP transform
+    gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+}
+]]
 
 mainshader.prog,shadres = glCreateProgram(
 
