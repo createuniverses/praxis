@@ -64,8 +64,9 @@ function render_to_fbo(fbo, shader)
   glBindTexture(0);
 end
 
-function render_to_fbo_with_input(fbo, shader, input, final)
-  if final == nil then final = false end
+function render_to_fbo_with_input(fbo, shader, ...)
+  local input = {...}
+  local final = false
   
   local u = shader.uloc
   local m = mouseinfo
@@ -110,10 +111,15 @@ function render_to_fbo_with_input(fbo, shader, input, final)
   glUniformi(u.frame, shader_frame_num)
   assertgl()
   
-  glActiveTexture(0);
-  glBindTexture(input.texId)
-  glUniformi(u.sampler, 0);
-  assertgl()
+  local samplers = {u.sampler1, u.sampler2}
+  for i=1,#input,1 do
+    if i>2 then break end
+    local tex = input[i]
+    glActiveTexture(0);
+    glBindTexture(tex.texId)
+    glUniformi(samplers[i], 0);
+    assertgl()
+  end
   
   beginQuadGL()
     colorGL(255,255,255,255)

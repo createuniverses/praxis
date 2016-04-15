@@ -211,7 +211,6 @@ function f5Pressed()
   dofile("mainshader.lua")
   dofile("render_to_fbo.lua")
   dofile("gameoflife.lua")
-  --dofile("fbotest3.lua")
 end
 
 function f6Pressed()
@@ -220,7 +219,14 @@ function f6Pressed()
   dofile("mainshader.lua")
   dofile("render_to_fbo.lua")
   dofile("shader-fluid.lua")
-  --dofile("fbotest3.lua")
+end
+
+function f7Pressed()
+  continue()
+  dofile("fbotest.lua")
+  dofile("mainshader.lua")
+  dofile("render_to_fbo.lua")
+  dofile("textshader.lua")
 end
 
 --windowedMode(50,200,710,740)

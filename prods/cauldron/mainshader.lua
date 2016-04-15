@@ -51,6 +51,12 @@ void main(void)
 }
 ]]
 
+function assembleshadersource(file)
+  local s = shaderheader .. readFile(file) .. shaderfooter
+  return s
+end
+
+
 mainshader.prog,shadres = glCreateProgram(
 
 [[

@@ -156,8 +156,8 @@ function prerender()
   
   local g = gameoflife
   
-  render_to_fbo_with_input(g.fbo_curr, g.mainshader, g.fbo_prev, true)
-  render_to_fbo_with_input(fbotest,    g.copyshader, g.fbo_curr, false)
+  render_to_fbo_with_input(g.fbo_curr, g.mainshader, g.fbo_prev)
+  render_to_fbo_with_input(fbotest,    g.copyshader, g.fbo_curr)
   
   g.fbo_curr, g.fbo_prev = g.fbo_prev, g.fbo_curr
 end
