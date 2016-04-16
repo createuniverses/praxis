@@ -18,6 +18,7 @@ function gather_shader_uniforms(shader)
   u.sampler     = glGetUniformLocation(shader.prog, "iChannel0")     assertgl()
   u.sampler1    = glGetUniformLocation(shader.prog, "iChannel0")     assertgl()
   u.sampler2    = glGetUniformLocation(shader.prog, "iChannel1")     assertgl()
+  u.globaltime  = glGetUniformLocation(shader.prog, "iGlobalTime")   assertgl()
 end
 
 shaderheader = [[
@@ -26,6 +27,7 @@ uniform int       iFrame;                // shader playback frame
 uniform vec4      iMouse;                // mouse pixel coords. xy: current (if MLB down), zw: click
 uniform sampler2D iChannel0;             // input channel. XX = 2D/Cube
 uniform sampler2D iChannel1;             // input channel. XX = 2D/Cube
+uniform float     iGlobalTime;           // global time
 ]]
 
 shaderfooter = [[
@@ -120,7 +122,9 @@ function use_shader(shader)
   
   glUniformi(u.frame, shader_frame_num)
   assertgl()
-  
+
+  -- do u.globaltime here as well
+
   --enableTexturing()
   glActiveTexture(0);
   glBindTexture(t.texId)

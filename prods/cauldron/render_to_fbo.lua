@@ -76,6 +76,8 @@ function render_to_fbo_with_input(fbo, shader, ...)
   local w2 = w*0.5
   local h2 = h*0.5
   local qs = fbo.qs
+
+  local vps = 30
   
   glBindFramebuffer(fbo.fboId)
   assertgl()
@@ -84,14 +86,15 @@ function render_to_fbo_with_input(fbo, shader, ...)
 
   glMatrixModeProjection()
   glLoadIdentity()
-  glOrtho(-1, 1, -1, 1, 1.0, 100.0)
+  --glOrtho(-1, 1, -1, 1, 1.0, 100.0)
+  glOrtho(-vps, vps, -vps, vps, 1.0, 100.0)
   
   glMatrixModeModelView()
   glLoadIdentity()
   glTranslate(0,0, -50)  
 
   --if final == true then
-    glClearColor(0, 0, 0, 255)
+    glClearColor(0,0,0,255)
     glClear()
   --end
   
@@ -102,6 +105,7 @@ function render_to_fbo_with_input(fbo, shader, ...)
   local mfh = h/qs -- mouse factor for height
   
   glUniformf(u.resolution, w, h);
+  --glUniformf(u.resolution, w, h);
   assertgl()
   
   glUniformf(u.mouse, m.pos.x    * mfw, m.pos.y    * mfh,
@@ -110,23 +114,27 @@ function render_to_fbo_with_input(fbo, shader, ...)
   
   glUniformi(u.frame, shader_frame_num)
   assertgl()
+
+  -- do u.globaltime here as well
+  -- u.globaltime from u.frame
+  --glUniformf(u.globaltime, 
   
   local samplers = {u.sampler1, u.sampler2}
   for i=1,#input,1 do
     if i>2 then break end
     local tex = input[i]
-    glActiveTexture(0);
+    glActiveTexture(i-1);
     glBindTexture(tex.texId)
-    glUniformi(samplers[i], 0);
+    glUniformi(samplers[i], i-1);
     assertgl()
   end
   
   beginQuadGL()
     colorGL(255,255,255,255)
-    vectorGL( -1, -1,  0)
-    vectorGL(  1, -1,  0)
-    vectorGL(  1,  1,  0)
-    vectorGL( -1,  1,  0)
+    vectorGL( -vps, -vps,  0)
+    vectorGL(  vps, -vps,  0)
+    vectorGL(  vps,  vps,  0)
+    vectorGL( -vps,  vps,  0)
   endGL()
   
   glUseProgram(0);

@@ -53,7 +53,11 @@ float readChar(in vec2 v)
     vec4 chunk = vec4(0);
     if (chunkNmbr > 0.5 || lineNmbr > 0.5) {
         chunk = texture2D(iChannel1, (vec2(chunkNmbr + 0.5, lineNmbr + 0.5)) / iResolution.xy);
+        //chunk = texture2D(iChannel1, (vec2(chunkNmbr + 0.5, lineNmbr + 0.5)) / vec2(128.0,128.0));
     }
+
+    // This works
+    //chunk = vec4(0x4c6f72);
     
     float word = 0.0;
     if      (chunkPos<2.5) word = chunk.x;
@@ -67,14 +71,19 @@ float readChar(in vec2 v)
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
-    vec2 pixel = (fragCoord - vec2(iResolution.x/2.0, 0.0)) / (ZOOM * (1.4 - fragCoord.y/iResolution.y));
-    
+    //vec2 pixel = (fragCoord - vec2(iResolution.x/2.0, 0.0)) / (ZOOM * (1.4 - fragCoord.y/iResolution.y));
+    vec2 pixel = fragCoord;
+
     fragColor = vec4(0);
 
-    if (pixel.x > -104.0) // hack
+    //if (pixel.x > -104.0) // hack
+    if (pixel.x > 0.0) // hack
     {
-        pixel.x  += 104.0; // hack
-        pixel.y   = pixel.y - 8.0*iGlobalTime;
+        float fFrame = float(iFrame);
+        
+        //pixel.x  += 104.0; // hack
+        pixel.y   = pixel.y - 8.0*fFrame/30.0;
+        //pixel.y   = pixel.y - 8.0*iGlobalTime;
         float ch  = readChar(floor(pixel/CHAR_SIZE));
         vec4 color = drawCh(ch, mod(pixel.x, CHAR_SIZE.x), mod(pixel.y, CHAR_SIZE.y));
 
@@ -85,5 +94,5 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     }
     
     //uncomment this line to see the output of Buf A
-    //if (fragCoord.y > iResolution.y-95.0 && fragCoord.x < 256.0) fragColor = texture2D(iChannel0, fragCoord / iResolution.xy);
+    if (fragCoord.y > iResolution.y-95.0 && fragCoord.x < 256.0) fragColor = texture2D(iChannel0, fragCoord / iResolution.xy);
 }

@@ -317,7 +317,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
     //write iResolution into BufA (store it for the next Frame)
     if (fragCoord.x<0.9 && fragCoord.y<0.9) {
-        fragColor = vec4(iResolution, 1.0);
+        fragColor = vec4(iResolution, 1.0, 0.0);
         return;
     }
 
@@ -326,13 +326,13 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
 
     vec2 pixel = vec2(floor(fragCoord.x), iResolution.y - 1.0 - floor(fragCoord.y));
-    vec2 char  = floor(pixel / CHAR_SIZE);
+    vec2 chara  = floor(pixel / CHAR_SIZE);
 
-    if (char.x < 31.5 && char.y < 7.5)
+    if (chara.x < 31.5 && chara.y < 7.5)
     {
-        if (iResolution != iPreviousResolution)
+        if (vec3(iResolution,0.0) != iPreviousResolution)
         {
-            vec4 ch = asciiToSprite(char.x + char.y*32.0);
+            vec4 ch = asciiToSprite(chara.x + chara.y*32.0);
             fragColor = vec4(vec3(drawCh(ch, mod(pixel.x, CHAR_SIZE.x), mod(pixel.y, CHAR_SIZE.y))), 1.0);
         }
         else

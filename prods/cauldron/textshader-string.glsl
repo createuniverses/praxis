@@ -12,7 +12,7 @@
 vec4 myText(vec2 v)
 {
     if (v.y < 0.5 || v.y > 22.5 || v.x > 2.5) {
-        return vec4(0x202020);
+        return vec4(0x202020, 0x202020, 0x202020, 0x202020);
     }
     if (v.y < 1.5) {
         if (v.x < 0.5)  return vec4(0x4c6f72, 0x656d20, 0x697073, 0x756d20);
@@ -22,7 +22,7 @@ vec4 myText(vec2 v)
     if (v.y < 2.5) {
         if (v.x < 0.5)  return vec4(0x202063, 0x6f6e73, 0x656374, 0x657475);
         if (v.x < 1.5)  return vec4(0x722061, 0x646970, 0x697363, 0x696e67);
-        if (v.x < 2.5)  return vec4(0x202020);
+        if (v.x < 2.5)  return vec4(0x202020, 0x202020, 0x202020, 0x202020);
     }
     if (v.y < 3.5) {
         if (v.x < 0.5)  return vec4(0x656c69, 0x742c20, 0x736564, 0x20646f);
@@ -37,7 +37,7 @@ vec4 myText(vec2 v)
     if (v.y < 5.5) {
         if (v.x < 0.5)  return vec4(0x202020, 0x20646f, 0x6c6f72, 0x65206d);
         if (v.x < 1.5)  return vec4(0x61676e, 0x612061, 0x6c6971, 0x75612e);
-        if (v.x < 2.5)  return vec4(0x202020);
+        if (v.x < 2.5)  return vec4(0x202020, 0x202020, 0x202020, 0x202020);
     }
     if (v.y < 6.5) {
         if (v.x < 0.5)  return vec4(0x202055, 0x742065, 0x6e696d, 0x206164);
@@ -57,12 +57,12 @@ vec4 myText(vec2 v)
     if (v.y < 9.5) {
         if (v.x < 0.5)  return vec4(0x202020, 0x616c69, 0x717569, 0x702065);
         if (v.x < 1.5)  return vec4(0x782065, 0x612063, 0x6f6d6d, 0x6f646f);
-        if (v.x < 2.5)  return vec4(0x202020);
+        if (v.x < 2.5)  return vec4(0x202020, 0x202020, 0x202020, 0x202020);
     }
     if (v.y < 10.5) {
         if (v.x < 0.5)  return vec4(0x202020, 0x202020, 0x202020, 0x636f6e);
         if (v.x < 1.5)  return vec4(0x736571, 0x756174, 0x2e2020, 0x202020);
-        if (v.x < 2.5)  return vec4(0x202020);
+        if (v.x < 2.5)  return vec4(0x202020, 0x202020, 0x202020, 0x202020);
     }
     if (v.y < 13.5) {
         return vec4(0x202020);
@@ -110,17 +110,20 @@ vec4 myText(vec2 v)
     if (v.y < 22.5) {
         if (v.x < 0.5)  return vec4(0x202020, 0x202020, 0x202065, 0x737420);
         if (v.x < 1.5)  return vec4(0x6c6162, 0x6f7275, 0x6d2e20, 0x202020);
-        if (v.x < 2.5)  return vec4(0x202020);
+        if (v.x < 2.5)  return vec4(0x202020, 0x202020, 0x202020, 0x202020);
     }
 
-    return vec4(0x202020);
+    return vec4(0x202020, 0x202020, 0x202020, 0x202020);
 }
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
+    //fragColor = vec4(0x102020);
+    //return;
+
     //write iResolution into BufA (store it for the next Frame)
     if (fragCoord.x<0.9 && fragCoord.y<0.9) {
-        fragColor = vec4(iResolution, 1.0);
+        fragColor = vec4(iResolution, 1.0, 0.0);
         return;
     }
 
@@ -128,7 +131,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     vec3 iPreviousResolution = texture2D(iChannel0, vec2(0.0)).xyz;
 
 
-    if (iResolution != iPreviousResolution)
+    if (vec3(iResolution,0.0) != iPreviousResolution)
     {
         fragColor = myText(floor(fragCoord));
     }
@@ -137,3 +140,4 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
         fragColor = texture2D(iChannel0, fragCoord / iResolution.xy);
     }
 }
+
