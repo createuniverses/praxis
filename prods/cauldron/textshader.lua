@@ -1,31 +1,21 @@
 -- Beginnings of a text shader
 -- Takes a font fbo and texture encoding a string as input
 
-if textshader == nil then
 textshader = {}
-end
 
 textshader.docshader    = {}
-if textshader.fontshader == nil then
-  textshader.fontshader   = {}
-end
-
+textshader.fontshader   = {}
 textshader.stringshader = {}
 textshader.copyshader   = {}
 
-if textshader.fontshader.prog == nil then
 printf("Compiling font shader...\n")
 textshader.fontshader.prog,shadres = glCreateProgram(
   shadermvpvertex,
   assembleshadersource("textshader-font.glsl"))
 assertglshader(shadres)
 printf("Compiling font shader...Done.\n")
-else
-printf("Font shader already exists, skipping...\n")
-end
 
 printf("Compiling string shader...\n")
-
 textshader.stringshader.prog,shadres = glCreateProgram(
   shaderpassthruvertex,
   assembleshadersource("textshader-string.glsl"))
@@ -51,8 +41,11 @@ local function preparething()
   fbotest = makefbo(sz,sz, GL_NEAREST)
   
   gather_shader_uniforms(g.docshader)
-  gather_shader_uniforms(g.fontshader)
   gather_shader_uniforms(g.stringshader)
+  
+
+  gather_shader_uniforms(g.fontshader)
+  
 end
 
 preparething()

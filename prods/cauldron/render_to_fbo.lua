@@ -92,7 +92,7 @@ function render_to_fbo_with_input(fbo, shader, ...)
   glLoadIdentity()
   glTranslate(0,0, -50)  
 
-  glClearColor(0,0,0,0)
+  glClearColor(0,0,0,255)
   glClear()
   
   glUseProgram(shader.prog)

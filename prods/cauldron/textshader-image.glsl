@@ -61,8 +61,8 @@ float readChar(in vec2 v)
 
     // This works
     //chunk = vec4(0x4c6f72);
-    //chunk = vec4(0x004c4d4e);
-    //chunk = vec4(0x616263,0x646566,0x676869,0x6a6b20);
+    //chunk = vec4(0x4d4e4f);
+    //chunk = vec4(0x616263,0x00646566,0x00676869,0x006a6b20);
     
     float word = 0.0;
     if      (chunkPos<2.5) word = chunk.x;

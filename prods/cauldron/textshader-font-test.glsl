@@ -36,11 +36,9 @@ vec4 cond(bool b)
 
 vec4 asciiToSprite(float a)
 {
-    a = a + 1.0;
-    
     vec4 pixel = vec4(0);
     
-    pixel = mix(pixel, vec4(0x000000, 0x000000, 0x000000, 0x000000), cond(a<0.5));
+    pixel = mix(pixel,vec4(0x000000, 0x000000, 0x000000, 0x000000), cond(a<0.5));
     pixel = mix(pixel, vec4(0x007ec3, 0x81a581, 0xbd99c3, 0x7e0000), cond(a<1.5));
     pixel = mix(pixel, vec4(0x007eff, 0xffdbff, 0xc3e7ff, 0x7e0000), cond(a<2.5));
     pixel = mix(pixel, vec4(0x000044, 0xeefefe, 0xfe7c38, 0x100000), cond(a<3.5));
