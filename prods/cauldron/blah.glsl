@@ -1,3 +1,15 @@
+#version 300 es
+
+precision highp float;
+precision highp int;
+
+
+uniform vec2      iResolution;           // viewport resolution (in pixels)
+uniform int       iFrame;                // shader playback frame
+uniform vec4      iMouse;                // mouse pixel coords. xy: current (if MLB down), zw: click
+uniform highp sampler2D iChannel0;             // input channel. XX = 2D/Cube
+uniform highp sampler2D iChannel1;             // input channel. XX = 2D/Cube
+uniform float     iGlobalTime;           // global time
 // --------------------------------------------------------------
 //
 //  This Shader codes a string into a texture.
@@ -117,9 +129,9 @@ vec4 myText(vec2 v)
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
-    fragColor = vec4(0x616263,0x646566,0x676869,0x6a6b20);
-    //fragColor = vec4(0x00,0x646566,0x00,0x6a6b20);
     //fragColor = vec4(0x00616263,0x00646566,0x00676869,0x006a6b20);
+    fragColor = vec4(0xffffffff,0x00000000,0x00000000,0x00000000);
+    fragColor = vec4(0xffffffff,0xffffffff,0xffffffff,0xffffffff);
     return;
 
     // write iResolution into BufA (store it for the next Frame)
@@ -149,3 +161,18 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     }
 }
 
+
+void main()
+{
+    mainImage(gl_FragColor, gl_FragCoord.xy );
+}
+
+
+
+
+
+
+do
+  closeBuffer()
+  switchToBuffer("initial")
+end

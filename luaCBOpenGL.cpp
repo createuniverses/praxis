@@ -1093,7 +1093,8 @@ int luaCBGLPrepareFBOTexture(lua_State * L)
     nHeight = luaL_checknumber(L, 2);
 
     GLint filterparam = GL_NEAREST;
-    GLint wrapparam = GL_CLAMP_TO_EDGE;
+    //GLint wrapparam = GL_CLAMP_TO_EDGE;
+    GLint wrapparam = GL_CLAMP;
 
     if(n >= 3)
     {
@@ -1133,7 +1134,10 @@ int luaCBGLPrepareFBOTexture(lua_State * L)
     //glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); // automatic mipmap generation included in OpenGL v1.4
 
     //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, nWidth, nHeight, 0, GL_RGBA, GL_FLOAT, 0);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nWidth, nHeight, 0, GL_RGBA, GL_FLOAT, 0);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nWidth, nHeight, 0, GL_RGBA, GL_FLOAT, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, nWidth, nHeight, 0, GL_RGBA, GL_HALF_FLOAT_ARB, 0);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nWidth, nHeight, 0, GL_RGBA, GL_3_BYTES, 0);
+    // GL_FLOAT_32_UNSIGNED_INT_24_8_REV_NV
 
     glClampColorARB(GL_CLAMP_VERTEX_COLOR_ARB, GL_FALSE);
     glClampColorARB(GL_CLAMP_FRAGMENT_COLOR_ARB, GL_FALSE);

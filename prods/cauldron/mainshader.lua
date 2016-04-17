@@ -22,6 +22,12 @@ function gather_shader_uniforms(shader)
 end
 
 shaderheader = [[
+#version 130
+
+// precision mediump float;
+// precision mediump int;
+
+
 uniform vec2      iResolution;           // viewport resolution (in pixels)
 uniform int       iFrame;                // shader playback frame
 uniform vec4      iMouse;                // mouse pixel coords. xy: current (if MLB down), zw: click
@@ -31,6 +37,7 @@ uniform float     iGlobalTime;           // global time
 ]]
 
 shaderfooter = [[
+
 void main()
 {
     mainImage(gl_FragColor, gl_FragCoord.xy );
