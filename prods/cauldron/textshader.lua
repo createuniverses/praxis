@@ -70,7 +70,7 @@ function prerender()
   render_to_fbo_with_input(g.fbo_font_curr,   g.fontshader,   g.fbo_font_prev)
   
   --printf("prerender 2\n")
-  render_to_fbo_with_input(g.fbo_string_curr, g.stringshader, g.fbo_string_prev)
+  render_to_fbo_with_input(g.fbo_string_curr, g.stringshader) --, g.fbo_string_prev)
   --printf("prerender 3\n")
   render_to_fbo_with_input(fbotest,           g.docshader,    g.fbo_font_curr, g.fbo_string_curr )
   --printf("prerender 4\n")

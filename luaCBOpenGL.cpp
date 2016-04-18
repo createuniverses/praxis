@@ -1206,6 +1206,20 @@ int luaCBGLGetTextureAccessLimits(lua_State * L)
     return 2;
 }
 
+int luaCBGLEnable(lua_State * L)
+{
+    GLenum cap = (GLenum)luaL_checknumber(L, 1);
+    glEnable(cap);
+    return 0;
+}
+
+int luaCBGLDisable(lua_State * L)
+{
+    GLenum cap = (GLenum)luaL_checknumber(L, 1);
+    glDisable(cap);
+    return 0;
+}
+
 int luaCBGLUniformf(lua_State * L)
 {
     int n = lua_gettop(L);
@@ -1379,6 +1393,8 @@ void luaInitCallbacksOpenGL()
     ss << "GL_NEAREST = " << GL_NEAREST << "\n";
     ss << "GL_CLAMP_TO_EDGE = " << GL_CLAMP_TO_EDGE << "\n";
     ss << "GL_REPEAT = " << GL_REPEAT << "\n";
+
+    ss << "GL_BLEND = " << GL_BLEND << "\n";
     luaCall(ss.str());
 
     lua_register(g_pLuaState, "drawLine",              luaCBDrawLine);
@@ -1505,4 +1521,7 @@ void luaInitCallbacksOpenGL()
     lua_register(g_pLuaState, "glActiveTexture",         luaCBGLActiveTexture);
 
     lua_register(g_pLuaState, "glGetTextureAccessLimits",  luaCBGLGetTextureAccessLimits);
+
+    lua_register(g_pLuaState, "glEnable",                luaCBGLEnable);
+    lua_register(g_pLuaState, "glDisable",               luaCBGLDisable);
 }

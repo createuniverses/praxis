@@ -122,18 +122,20 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     //fragColor = vec4(0x610000,0x620000,0x630000,0x640000);
     
     // This is interesting
-    fragColor = vec4(0x00616263,0x00646566,0x00676869,1.0);
+    // fragColor = vec4(0x00616263,0x00646566,0x00676869,1.0);
     
     // Shouldn't this be the same, since 0x3f800000 == 1.0f?
     //fragColor = vec4(0x00616263,0x00646566,0x00676869, 0x3f800000);
     
     // This looks like what is being drawn:
-    //fragColor = vec4(0x00616263,0x00646566,0x00676869, 1.0);
+    //fragColor = vec4(0x00c2c2c2,0x00646566,0x00717273, 0.5);
+    
+    // I think I know the reason. Old OpenGL is doing alpha blending when drawing to the fbo.
     
     // Some sort of feedback effect is happening.
 
     
-    return;
+    //return;
 
     // write iResolution into BufA (store it for the next Frame)
     if (fragCoord.x<0.9 && fragCoord.y<0.9) {

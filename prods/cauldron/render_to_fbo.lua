@@ -139,6 +139,8 @@ function render_to_fbo_with_input(fbo, shader, ...)
   --glBindTexture(fbo.texId);
   
   -- glColor4f
+  
+  glDisable(GL_BLEND)
 
   beginQuadGL()
     --colorGL(255,255,255,255)
@@ -149,6 +151,8 @@ function render_to_fbo_with_input(fbo, shader, ...)
     vectorGL(  vps,  vps,  0)
     vectorGL( -vps,  vps,  0)
   endGL()
+  
+  glEnable(GL_BLEND)
   
   glUseProgram(0);
   glBindFramebuffer(0);
