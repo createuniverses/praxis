@@ -52,8 +52,9 @@ float readChar(in vec2 v)
     
     vec4 chunk = vec4(0);
     if (chunkNmbr > 0.5 || lineNmbr > 0.5) {
-        chunk = texture2D(iChannel1, (vec2(chunkNmbr + 0.5, lineNmbr + 0.5)) / iResolution.xy);
-        //chunk = texture2D(iChannel1, (vec2(chunkNmbr + 0.5, lineNmbr + 0.5)) / vec2(128.0,128.0));
+        chunk = texture2D(iChannel1, ((vec2(chunkNmbr + 0.5, lineNmbr + 0.5)) / iResolution.xy));
+        //chunk = texture2D(iChannel1, ((vec2(chunkNmbr + 0.5, lineNmbr + 0.5))));
+        //chunk = texture2D(iChannel1, (vec2(chunkNmbr + 0.5, lineNmbr + 0.5)) / vec2(100.0,200.0));
     }
 
     //chunk = texture2D(iChannel1, vec2(0.0,0.0));

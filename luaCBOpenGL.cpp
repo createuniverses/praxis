@@ -1161,25 +1161,24 @@ int luaCBGLStringToTexture(lua_State * L)
     }
 
     int j = 0;
-    //for(int i = stringtexsize-1; i >= 0; i--)
     for(int i = 0; i < stringtexsize; i++)
     {
+        g_pStringTex[i] = sText[j%len];
+        if(g_pStringTex[i] == 20)
+            g_pStringTex[i] = (char)0;
+        j++;
+
         switch(i%4)
         {
         case 0:
-            g_pStringTex[i] = '\0';
-            break;
+            //g_pStringTex[i] = 0;
+            //break;
         case 1:
         case 2:
         case 3:
-            g_pStringTex[i] = sText[j%len];
-            j++;
             break;
         }
     }
-
-    // memcpy(g_pStringTex, sText, 1024);
-    // strncpy(g_pStringTex, sText, 1024); // 1024 just to be wimpy for now.
 
     GLuint textureId = 0;
 
@@ -1188,12 +1187,17 @@ int luaCBGLStringToTexture(lua_State * L)
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nWidth, nHeight, 0, GL_RGBA, GL_FLOAT, g_pStringTex);
 
     GLenum e = glGetError();
+
+    glClampColorARB(GL_CLAMP_READ_COLOR_ARB, GL_FALSE);
+
+    glClampColorARB(GL_CLAMP_VERTEX_COLOR_ARB, GL_FALSE);
+    glClampColorARB(GL_CLAMP_FRAGMENT_COLOR_ARB, GL_FALSE);
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
