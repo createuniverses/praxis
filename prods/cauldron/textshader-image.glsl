@@ -103,5 +103,6 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     
     //uncomment this line to see the output of Buf A
     // if (fragCoord.y > iResolution.y-100.0 && fragCoord.x < 256.0) fragColor = texture2D(iChannel1, vec2(0.0, 0.0));
-    // if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture2D(iChannel0, fragCoord / iResolution.xy);
+    //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture2D(iChannel0, fragCoord / iResolution.xy);
+    if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture2D(iChannel1, fragCoord / iResolution.xy);
 }
