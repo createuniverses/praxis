@@ -52,17 +52,20 @@ float readChar(in vec2 v)
     
     vec4 chunk = vec4(0);
     if (chunkNmbr > 0.5 || lineNmbr > 0.5) {
-        chunk = texture2D(iChannel1, (vec2(chunkNmbr + 0.5, lineNmbr + 0.5)) / iResolution.xy);
+        //chunk = texture2D(iChannel1, (vec2(chunkNmbr + 0.5, lineNmbr + 0.5)) / iResolution.xy);
         //chunk = texture2D(iChannel1, (vec2(chunkNmbr + 0.5, lineNmbr + 0.5)) / vec2(128.0,128.0));
     }
 
-    chunk = texture2D(iChannel1, vec2(1.0,1.0));
+    chunk = texture2D(iChannel1, vec2(0.0,0.0));
+    //chunk = texelFetch(iChannel1, vec2(0.0,0.0));
 
 
     // This works
     //chunk = vec4(0x4c6f72);
     //chunk = vec4(0x4d4e4f);
-    //chunk = vec4(0x616263,0x00646566,0x00676869,0x006a6b20);
+    
+    //chunk = vec4(0x616263,0x646566,0x676869,0x6a6b20);
+    //chunk = vec4(0x400000,0x400000,0x000000,0x000000);
     
     float word = 0.0;
     if      (chunkPos<2.5) word = chunk.x;
@@ -99,6 +102,6 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     }
     
     //uncomment this line to see the output of Buf A
-    if (fragCoord.y > iResolution.y-95.0 && fragCoord.x < 256.0) fragColor = texture2D(iChannel0, fragCoord / iResolution.xy);
-    //if (fragCoord.y > iResolution.y-95.0 && fragCoord.x < 256.0) fragColor = texture2D(iChannel1, fragCoord / iResolution.xy);
+    if (fragCoord.y > iResolution.y-100.0 && fragCoord.x < 256.0) fragColor = texture2D(iChannel1, vec2(0.0, 0.0));
+    if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture2D(iChannel0, fragCoord / iResolution.xy);
 }

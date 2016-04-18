@@ -1082,6 +1082,8 @@ int luaCBGLFramebufferRenderbuffer(lua_State *L)
 
 int luaCBGLPrepareFBOTexture(lua_State * L)
 {
+    glClampColorARB(GL_CLAMP_READ_COLOR_ARB, GL_FALSE);
+
     GLuint nWidth = 256;
     GLuint nHeight = 256;
 
@@ -1133,8 +1135,10 @@ int luaCBGLPrepareFBOTexture(lua_State * L)
 
     //glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); // automatic mipmap generation included in OpenGL v1.4
 
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nWidth, nHeight, 0, GL_RGBA, GL_FLOAT, 0);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nWidth, nHeight, 0, GL_RGBA, GL_HALF_FLOAT_ARB, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nWidth, nHeight, 0, GL_RGBA, GL_FLOAT, 0);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nWidth, nHeight, 0, GL_RGBA32F_ARB, GL_FLOAT, 0);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nWidth, nHeight, 0, GL_RGBA, GL_HALF_FLOAT_ARB, 0);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nWidth, nHeight, 0, GL_RGBA, GL_DOUBLE, 0);
 
     //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, nWidth, nHeight, 0, GL_RGBA, GL_FLOAT, 0);
     //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, nWidth, nHeight, 0, GL_RGBA, GL_HALF_FLOAT_ARB, 0);
@@ -1148,6 +1152,44 @@ int luaCBGLPrepareFBOTexture(lua_State * L)
 
     lua_pushnumber(L, textureId);
     return 1;
+}
+
+int luaCBGLSetTexParams(lua_State * L)
+{
+    int n = lua_gettop(L);
+
+    GLint filterparam = GL_NEAREST;
+    //GLint wrapparam = GL_CLAMP_TO_EDGE;
+    GLint wrapparam = GL_CLAMP;
+
+    if(n >= 1)
+    {
+        filterparam = luaL_checknumber(L, 1);
+        if(filterparam != GL_NEAREST &&
+           filterparam != GL_LINEAR)
+        {
+            luaL_error(L, "Only GL_NEAREST or GL_LINEAR for arg 3");
+        }
+    }
+
+    if(n >= 2)
+    {
+        wrapparam = luaL_checknumber(L, 2);
+        if(wrapparam != GL_CLAMP_TO_EDGE &&
+           wrapparam != GL_REPEAT &&
+           wrapparam != GL_CLAMP)
+        {
+            luaL_error(L, "Only GL_CLAMP_TO_EDGE, GL_REPEAT or GL_CLAMP for arg 4");
+        }
+    }
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterparam);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterparam);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapparam);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapparam);
+
+    return 0;
 }
 
 int luaCBGLGetTextureAccessLimits(lua_State * L)
@@ -1448,6 +1490,8 @@ void luaInitCallbacksOpenGL()
     lua_register(g_pLuaState, "glFramebufferRenderbuffer",  luaCBGLFramebufferRenderbuffer);
 
     lua_register(g_pLuaState, "glPrepareFBOTexture",        luaCBGLPrepareFBOTexture);
+
+    lua_register(g_pLuaState, "glSetTexParams",             luaCBGLSetTexParams);
 
     // This should be enough for shadertoy, I may add the vector and matrix versions of these
     // later if needed.

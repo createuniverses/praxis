@@ -1,19 +1,24 @@
 -- Beginnings of a text shader
 -- Takes a font fbo and texture encoding a string as input
 
-textshader = {}
+textshader = textshader or {}
 
 textshader.docshader    = {}
-textshader.fontshader   = {}
+textshader.fontshader   = textshader.fontshader or {}
 textshader.stringshader = {}
 textshader.copyshader   = {}
 
+if textshader.fontshader.prog == nil then
 printf("Compiling font shader...\n")
+-- textshader-font-mix is SIGNIFICANTLY faster on that first frame than textshader-font-choose
 textshader.fontshader.prog,shadres = glCreateProgram(
   shadermvpvertex,
-  assembleshadersource("textshader-font.glsl"))
+  assembleshadersource("textshader-font-mix.glsl"))
 assertglshader(shadres)
 printf("Compiling font shader...Done.\n")
+else
+printf("Skipping compilation of font shader.\n")
+end
 
 printf("Compiling string shader...\n")
 textshader.stringshader.prog,shadres = glCreateProgram(
@@ -53,14 +58,28 @@ preparething()
 function prerender()
   --do return end
   
+  --printf("prerender start\n")
+  
   local g = textshader
   
+  -- The first render using the font shader is very slow on some computers.
+  -- After that the first frame, its fine though.
+  -- Also, it isn't necessary to refresh the font FBO after it has been generated,
+  -- so this only needs to happen once. Refraining from calling this each frame speeds up
+  -- the framerate considerably.
   render_to_fbo_with_input(g.fbo_font_curr,   g.fontshader,   g.fbo_font_prev)
+  
+  --printf("prerender 2\n")
   render_to_fbo_with_input(g.fbo_string_curr, g.stringshader, g.fbo_string_prev)
+  --printf("prerender 3\n")
   render_to_fbo_with_input(fbotest,           g.docshader,    g.fbo_font_curr, g.fbo_string_curr )
+  --printf("prerender 4\n")
   
   g.fbo_font_curr, g.fbo_font_prev = g.fbo_font_prev, g.fbo_font_curr
+  --printf("prerender 5\n")
   g.fbo_string_curr, g.fbo_string_prev = g.fbo_string_prev, g.fbo_string_curr
+  
+  --printf("prerender end\n")
 end
 
 

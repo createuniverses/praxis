@@ -117,9 +117,22 @@ vec4 myText(vec2 v)
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
-    fragColor = vec4(0x616263,0x646566,0x676869,0x6a6b20);
-    //fragColor = vec4(0x00,0x646566,0x00,0x6a6b20);
-    //fragColor = vec4(0x00616263,0x00646566,0x00676869,0x006a6b20);
+    //fragColor = vec4(0x616263,0x646566,0x676869,0x6a6b20);
+    //fragColor = vec4(0x616263,0x646566,0x676869,1.0);
+    //fragColor = vec4(0x610000,0x620000,0x630000,0x640000);
+    
+    // This is interesting
+    fragColor = vec4(0x00616263,0x00646566,0x00676869,1.0);
+    
+    // Shouldn't this be the same, since 0x3f800000 == 1.0f?
+    //fragColor = vec4(0x00616263,0x00646566,0x00676869, 0x3f800000);
+    
+    // This looks like what is being drawn:
+    //fragColor = vec4(0x00616263,0x00646566,0x00676869, 1.0);
+    
+    // Some sort of feedback effect is happening.
+
+    
     return;
 
     // write iResolution into BufA (store it for the next Frame)
