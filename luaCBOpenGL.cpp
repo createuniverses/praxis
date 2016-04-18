@@ -1082,8 +1082,6 @@ int luaCBGLFramebufferRenderbuffer(lua_State *L)
 
 int luaCBGLPrepareFBOTexture(lua_State * L)
 {
-    glClampColorARB(GL_CLAMP_READ_COLOR_ARB, GL_FALSE);
-
     GLuint nWidth = 256;
     GLuint nHeight = 256;
 
@@ -1136,14 +1134,6 @@ int luaCBGLPrepareFBOTexture(lua_State * L)
     //glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); // automatic mipmap generation included in OpenGL v1.4
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nWidth, nHeight, 0, GL_RGBA, GL_FLOAT, 0);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nWidth, nHeight, 0, GL_RGBA32F_ARB, GL_FLOAT, 0);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nWidth, nHeight, 0, GL_RGBA, GL_HALF_FLOAT_ARB, 0);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nWidth, nHeight, 0, GL_RGBA, GL_DOUBLE, 0);
-
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, nWidth, nHeight, 0, GL_RGBA, GL_FLOAT, 0);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, nWidth, nHeight, 0, GL_RGBA, GL_HALF_FLOAT_ARB, 0);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nWidth, nHeight, 0, GL_RGBA, GL_3_BYTES, 0);
-    // GL_FLOAT_32_UNSIGNED_INT_24_8_REV_NV
 
     glClampColorARB(GL_CLAMP_VERTEX_COLOR_ARB, GL_FALSE);
     glClampColorARB(GL_CLAMP_FRAGMENT_COLOR_ARB, GL_FALSE);
@@ -1152,6 +1142,64 @@ int luaCBGLPrepareFBOTexture(lua_State * L)
 
     lua_pushnumber(L, textureId);
     return 1;
+}
+
+char * g_pStringTex = 0;
+int luaCBGLStringToTexture(lua_State * L)
+{
+    const char * sText = luaL_checkstring(L, 1);
+    int len = strlen(sText);
+    const int stringtexsize = 512*512*16;
+
+    int nWidth  = 512;
+    int nHeight = 512;
+
+    if(g_pStringTex == 0)
+    {
+        g_pStringTex = new char[stringtexsize];
+        memset(g_pStringTex, 0, stringtexsize);
+    }
+
+    int j = 0;
+    //for(int i = stringtexsize-1; i >= 0; i--)
+    for(int i = 0; i < stringtexsize; i++)
+    {
+        switch(i%4)
+        {
+        case 0:
+            g_pStringTex[i] = '\0';
+            break;
+        case 1:
+        case 2:
+        case 3:
+            g_pStringTex[i] = sText[j%len];
+            j++;
+            break;
+        }
+    }
+
+    // memcpy(g_pStringTex, sText, 1024);
+    // strncpy(g_pStringTex, sText, 1024); // 1024 just to be wimpy for now.
+
+    GLuint textureId = 0;
+
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_2D, textureId);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nWidth, nHeight, 0, GL_RGBA, GL_FLOAT, g_pStringTex);
+
+    GLenum e = glGetError();
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    lua_pushnumber(L, textureId);
+    lua_pushnumber(L, e);
+    return 2;
 }
 
 int luaCBGLSetTexParams(lua_State * L)
@@ -1363,7 +1411,9 @@ int luaCBGLGetError(lua_State * L)
         break;
     }
 
-    return 1;
+    lua_pushnumber(L, e);
+
+    return 2;
 }
 
 int luaCBGLActiveTexture(lua_State * L)
@@ -1524,4 +1574,6 @@ void luaInitCallbacksOpenGL()
 
     lua_register(g_pLuaState, "glEnable",                luaCBGLEnable);
     lua_register(g_pLuaState, "glDisable",               luaCBGLDisable);
+
+    lua_register(g_pLuaState, "glStringToTexture",       luaCBGLStringToTexture);
 }

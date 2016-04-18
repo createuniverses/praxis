@@ -93,7 +93,7 @@ function render_to_fbo_with_input(fbo, shader, ...)
   glTranslate(0,0, -50)  
 
   --if fbo==fbotest then
-    glClearColor(0,0,0,0)
+    glClearColor(0,0,0,255)
     glClear()
   --end
   
@@ -124,7 +124,7 @@ function render_to_fbo_with_input(fbo, shader, ...)
     local tex = input[i]
     glActiveTexture(i-1);
     glBindTexture(tex.texId)
-    glSetTexParams(GL_NEAREST)
+    --glSetTexParams(GL_NEAREST)
     assertgl()
   end
   
@@ -143,9 +143,6 @@ function render_to_fbo_with_input(fbo, shader, ...)
   glDisable(GL_BLEND)
 
   beginQuadGL()
-    --colorGL(255,255,255,255)
-    --colorGL(0,0,0,0)
-    --colorGL(65,65,65,65)
     vectorGL( -vps, -vps,  0)
     vectorGL(  vps, -vps,  0)
     vectorGL(  vps,  vps,  0)
