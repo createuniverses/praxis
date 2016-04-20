@@ -1,7 +1,15 @@
 -- praxis:
+--f7Pressed()
+--stringtex = glStringToTexture(" heQ llQ otQ heQ reQ !!Q")
+--stringtex = glStringToTexture("12345678abcdefghijklmnop")
+stringtex = glStringToTexture("Ok, this is fantastic!! I am very, very VERY happy that this works.")
+--stringtex = glStringToTexture("What other messages should I write here???")
+shader_frame_num = 0
+
 --stringtex,stringtexerr = glStringToTexture(readFile("prod.lua"))
 --stringtex,stringtexerr = glStringToTexture(readFile("textshader.lua"))
-stringtex,stringtexerr = glStringToTexture(readFile("stringtextest.lua"))
+
+--stringtex,stringtexerr = glStringToTexture(readFile("stringtextest.lua"))
 
 --stringtex,stringtexerr = glStringToTexture("hello there how are you")
 --                                             [r ][g ][b ][a ]

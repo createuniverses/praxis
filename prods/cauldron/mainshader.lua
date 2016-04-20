@@ -23,6 +23,8 @@ end
 
 shaderheader = [[
 
+#version 330
+
 uniform vec2      iResolution;           // viewport resolution (in pixels)
 uniform int       iFrame;                // shader playback frame
 uniform vec4      iMouse;                // mouse pixel coords. xy: current (if MLB down), zw: click

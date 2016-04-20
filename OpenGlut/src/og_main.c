@@ -1540,6 +1540,10 @@ void oglcbDoMMWOMDONE(DWORD dwParam1);
 int g_nPanBegin = 0;
 int g_nPanStartPos = 0;
 
+#define PRAXIS_GESTURE_SUPPORT
+#undef PRAXIS_GESTURE_SUPPORT
+
+#ifdef PRAXIS_GESTURE_SUPPORT
 LRESULT DecodeGesture(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     // Create a structure to populate and retrieve the extra message info.
@@ -1635,6 +1639,7 @@ LRESULT DecodeGesture(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
 }
+#endif
 
 
 /*
@@ -2094,9 +2099,12 @@ LRESULT CALLBACK ogWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
     }
     break;
 
+#if PRAXIS_GESTURE_SUPPORT
     case 0x0119: /* WM_GESTURE */
         DecodeGesture(hWnd, uMsg, wParam, lParam);
         break;
+#endif
+
 #if 0
     case 0x011A: /* WM_GESTURENOTIFY */
         printf("WM_GESTURENOTIFY\n");

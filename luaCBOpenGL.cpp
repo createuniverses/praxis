@@ -1164,8 +1164,6 @@ int luaCBGLStringToTexture(lua_State * L)
     for(int i = 0; i < stringtexsize; i++)
     {
         g_pStringTex[i] = sText[j%len];
-        if(g_pStringTex[i] == 20)
-            g_pStringTex[i] = (char)0;
         j++;
 
         switch(i%4)
