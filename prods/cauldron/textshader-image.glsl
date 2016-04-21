@@ -14,6 +14,9 @@ float ZOOM = floor(min(iResolution.x,iResolution.y) / 100.0);
  **/
 vec4 drawCh(in float character, in float x, in float y)
 {
+    if (character == 0.0)
+      return vec4(0.0, 1.0, 0.0, 0.4);
+      
     vec2 coord = floor(vec2(CHAR_SIZE.x*mod(character,32.0) + x, iResolution.y - CHAR_SIZE.y*floor(0.0+character/32.0) - y));
     return texture2D(iChannel0, (coord+vec2(0.5,0.5)) / iResolution.xy);
 }
@@ -27,13 +30,25 @@ float readChar(in vec2 v)
     
     vec4 chunk = texture2D(iChannel1, ((vec2(chunkNmbr + 0.5, lineNmbr + 0.5)) / iResolution.xy));
 
-    float fword = 0;
-    if      (chunkPos<3.5)  fword = chunk.x;
-    else if (chunkPos<7.5)  fword = chunk.y;
-    else if (chunkPos<11.5) fword = chunk.z;
-    else                    fword = chunk.a;
+    //float fword = 0.0;
+    //if      (chunkPos<3.5)  fword = chunk.x;
+    //else if (chunkPos<7.5)  fword = chunk.y;
+    //else if (chunkPos<11.5) fword = chunk.z;
+    //else                    fword = chunk.a;
     
-    uint iword = floatBitsToUint(fword);
+    uint iword = uint(0);
+    if      (chunkPos<3.5)  iword = floatBitsToUint(chunk.x);
+    else if (chunkPos<7.5)  iword = floatBitsToUint(chunk.y);
+    else if (chunkPos<11.5) iword = floatBitsToUint(chunk.z);
+    else                    iword = floatBitsToUint(chunk.a);
+    
+    if(iword == uint(0))
+      return 65.0;
+    
+    //if(chunk.x == 0.0 && chunk.y == 0.0 && chunk.z == 0.0)
+    //  return 65.0;
+    
+    //uint iword = floatBitsToUint(fword);
     
     uint ichara = uint(0);
     

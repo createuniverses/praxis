@@ -1093,8 +1093,8 @@ int luaCBGLPrepareFBOTexture(lua_State * L)
     nHeight = luaL_checknumber(L, 2);
 
     GLint filterparam = GL_NEAREST;
-    //GLint wrapparam = GL_CLAMP_TO_EDGE;
-    GLint wrapparam = GL_CLAMP;
+    GLint wrapparam = GL_CLAMP_TO_EDGE;
+    //GLint wrapparam = GL_CLAMP;
 
     if(n >= 3)
     {
@@ -1147,6 +1147,9 @@ int luaCBGLPrepareFBOTexture(lua_State * L)
 char * g_pStringTex = 0;
 int luaCBGLStringToTexture(lua_State * L)
 {
+    // Split this up into Lua callable functions
+    // This is so I can define how the string texture gets put together in Lua.
+
     const char * sText = luaL_checkstring(L, 1);
     int len = strlen(sText);
     const int stringtexsize = 512*512*16;
@@ -1155,11 +1158,11 @@ int luaCBGLStringToTexture(lua_State * L)
     int nHeight = 512;
 
     if(g_pStringTex == 0)
-    {
         g_pStringTex = new char[stringtexsize];
-        memset(g_pStringTex, 0, stringtexsize);
-    }
 
+    memset(g_pStringTex, 0, stringtexsize);
+
+#if 0
     int j = 0;
     for(int i = 0; i < stringtexsize; i++)
     {
@@ -1177,6 +1180,21 @@ int luaCBGLStringToTexture(lua_State * L)
             break;
         }
     }
+#endif
+
+    for(int line = 0; line < 10; line++)
+    {
+        int lineStart = line*512*16;
+        for(int i = 0; i < len; i++)
+        {
+            g_pStringTex[i+lineStart] = sText[i];
+            if(i % 4 == 2)
+                g_pStringTex[i+lineStart] = 0x00;
+        }
+
+        //for(int i=len; i < len+16; i++)
+        //    g_pStringTex[i+lineStart] = 0x20;
+    }
 
     GLuint textureId = 0;
 
@@ -1185,8 +1203,8 @@ int luaCBGLStringToTexture(lua_State * L)
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nWidth, nHeight, 0, GL_RGBA, GL_FLOAT, g_pStringTex);
 
@@ -1578,4 +1596,6 @@ void luaInitCallbacksOpenGL()
     lua_register(g_pLuaState, "glDisable",               luaCBGLDisable);
 
     lua_register(g_pLuaState, "glStringToTexture",       luaCBGLStringToTexture);
+
+    //lua_register(g_pLuaState, "glMakeStringTexture",     )
 }

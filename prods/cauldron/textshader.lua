@@ -82,7 +82,7 @@ function prerender()
   --printf("prerender end\n")
 end
 
-stringtex = glStringToTexture("Ok, this is fantastic!! A text editor in a shader!!")
+stringtex = glStringToTexture("Ok, this is fantastic!! A text editor in a shader!")
 
 setMaxFramerate(30)
 enableStdMouseCam()
@@ -96,6 +96,8 @@ function prerender()
   if numtextshaderrenderings < 2 then
     render_to_fbo_with_input(g.fbo_font_curr,   g.fontshader,   g.fbo_font_prev)
   end
+  
+  --glDisable(GL_BLEND)
   
   render_to_fbo_with_input(fbotest, g.docshader, g.fbo_font_curr, { texId = stringtex })
   
