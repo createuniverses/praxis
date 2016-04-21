@@ -15,9 +15,9 @@ if textshader.fontshader.prog == nil then
   textshader.fontshader.prog,shadres = glCreateProgram(
     --shadermvpvertex,
     shaderpassthruvertex_old,
-    --assembleshadersource_old("textshader-font-mix.glsl"))
+    assembleshadersource_old("textshader-font-mix.glsl"))
     --assembleshadersource_old("textshader-font-choose.glsl"))
-    assembleshadersource_old("textshader-font-origfix.glsl"))
+    --assembleshadersource_old("textshader-font-origfix.glsl"))
   
   assertglshader(shadres)
   
@@ -34,8 +34,8 @@ end
 --printf("Compiling string shader...Done.\n")
 
 textshader.docshader.prog,shadres = glCreateProgram(
-  shaderpassthruvertex,
-  assembleshadersource("textshader-image.glsl"))
+  shaderpassthruvertex_old,
+  assembleshadersource_old("textshader-image.glsl"))
 assertglshader(shadres)
 
 local function preparething()
