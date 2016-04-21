@@ -1188,8 +1188,8 @@ int luaCBGLStringToTexture(lua_State * L)
         for(int i = 0; i < len; i++)
         {
             g_pStringTex[i+lineStart] = sText[i];
-            if(i % 4 == 2)
-                g_pStringTex[i+lineStart] = 0x00;
+            //if(i % 4 == 2)
+            //    g_pStringTex[i+lineStart] = 0x00;
         }
 
         //for(int i=len; i < len+16; i++)

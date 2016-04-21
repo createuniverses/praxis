@@ -42,8 +42,8 @@ float readChar(in vec2 v)
     else if (chunkPos<11.5) iword = floatBitsToUint(chunk.z);
     else                    iword = floatBitsToUint(chunk.a);
     
-    if(iword == uint(0))
-      return 65.0;
+    //if(iword == uint(0))
+    //  return 65.0;
     
     //if(chunk.x == 0.0 && chunk.y == 0.0 && chunk.z == 0.0)
     //  return 65.0;

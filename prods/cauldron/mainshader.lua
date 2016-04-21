@@ -23,7 +23,7 @@ end
 
 shaderheader = [[
 
-#version 330
+#version 300 es
 
 precision highp float;
 precision highp int;
@@ -37,7 +37,29 @@ uniform float     iGlobalTime;           // global time
 
 ]]
 
+shaderheader_old = [[
+
+uniform vec2      iResolution;           // viewport resolution (in pixels)
+uniform int       iFrame;                // shader playback frame
+uniform vec4      iMouse;                // mouse pixel coords. xy: current (if MLB down), zw: click
+uniform sampler2D iChannel0;             // input channel. XX = 2D/Cube
+uniform sampler2D iChannel1;             // input channel. XX = 2D/Cube
+uniform float     iGlobalTime;           // global time
+
+]]
+
 shaderfooter = [[
+
+out vec4 myFragColor;
+
+void main()
+{
+    mainImage(myFragColor, gl_FragCoord.xy );
+    //mainImage(gl_FragColor, gl_FragCoord.xy );
+}
+]]
+
+shaderfooter_old = [[
 
 void main()
 {
@@ -46,6 +68,20 @@ void main()
 ]]
 
 shaderpassthruvertex = [[
+#version 300 es
+
+in vec4 myVertex;
+
+void main(void)
+{ 
+    //gl_Position = gl_Vertex;
+    gl_Position = myVertex;
+    gl_Position.w = 1.0;
+}
+]]
+
+shaderpassthruvertex_old = [[
+
 void main(void)
 { 
     gl_Position = gl_Vertex;
@@ -66,6 +102,10 @@ function assembleshadersource(file)
   return s
 end
 
+function assembleshadersource_old(file)
+  local s = shaderheader_old .. readFile(file) .. shaderfooter_old
+  return s
+end
 
 mainshader.prog,shadres = glCreateProgram(
 
