@@ -21,39 +21,33 @@ function gather_shader_uniforms(shader)
   u.globaltime  = glGetUniformLocation(shader.prog, "iGlobalTime")   assertgl()
 end
 
-shaderheader = [[
-
+shader300esheader = [[
 #version 300 es
 
-precision highp float;
-precision highp int;
-
-uniform vec2      iResolution;           // viewport resolution (in pixels)
-uniform int       iFrame;                // shader playback frame
-uniform vec4      iMouse;                // mouse pixel coords. xy: current (if MLB down), zw: click
-uniform sampler2D iChannel0;             // input channel. XX = 2D/Cube
-uniform sampler2D iChannel1;             // input channel. XX = 2D/Cube
-uniform float     iGlobalTime;           // global time
+precision mediump float;
+precision mediump int;
 
 ]]
 
-shaderheader_old = [[
-
+shader330header = [[
 #version 330
 
 precision highp float;
 precision highp int;
 
-uniform vec2      iResolution;           // viewport resolution (in pixels)
-uniform int       iFrame;                // shader playback frame
-uniform vec4      iMouse;                // mouse pixel coords. xy: current (if MLB down), zw: click
-uniform sampler2D iChannel0;             // input channel. XX = 2D/Cube
-uniform sampler2D iChannel1;             // input channel. XX = 2D/Cube
-uniform float     iGlobalTime;           // global time
+]]
+
+shaderheader = [[
+uniform vec2       iResolution;           // viewport resolution (in pixels)
+uniform int        iFrame;                // shader playback frame
+uniform vec4       iMouse;                // mouse pixel coords. xy: current (if MLB down), zw: click
+uniform sampler2D  iChannel0;             // input channel. XX = 2D/Cube
+uniform usampler2D iChannel1;             // input channel. XX = 2D/Cube
+uniform float      iGlobalTime;           // global time
 
 ]]
 
-shaderfooter = [[
+shader330footer = [[
 
 out vec4 myFragColor;
 
@@ -64,7 +58,9 @@ void main()
 }
 ]]
 
-shaderfooter_old = [[
+shader300esfooter = shader330footer
+
+shaderfooter = [[
 
 void main()
 {
@@ -72,7 +68,7 @@ void main()
 }
 ]]
 
-shaderpassthruvertex = [[
+shaderpassthruvertex300es = [[
 #version 300 es
 
 in vec4 myVertex;
@@ -85,8 +81,20 @@ void main(void)
 }
 ]]
 
-shaderpassthruvertex_old = [[
+shaderpassthruvertex330 = [[
+#version 330
 
+in vec4 myVertex;
+
+void main(void)
+{ 
+    //gl_Position = gl_Vertex;
+    gl_Position = myVertex;
+    gl_Position.w = 1.0;
+}
+]]
+
+shaderpassthruvertex = [[
 void main(void)
 { 
     gl_Position = gl_Vertex;
@@ -107,8 +115,13 @@ function assembleshadersource(file)
   return s
 end
 
-function assembleshadersource_old(file)
-  local s = shaderheader_old .. readFile(file) .. shaderfooter_old
+function assembleshadersource300es(file)
+  local s = shader300esheader .. shaderheader .. readFile(file) .. shader300esfooter
+  return s
+end
+
+function assembleshadersource330(file)
+  local s = shader330header .. shaderheader .. readFile(file) .. shader330footer
   return s
 end
 

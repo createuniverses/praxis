@@ -16,6 +16,10 @@ vec4 drawCh(in float character, in float x, in float y)
 {
     if (character == 0.0)
       return vec4(0.0, 1.0, 0.0, 0.4);
+
+    //if (character > 255.0)
+    //  character = mod(character, 256.0);
+    //character = 65.0;
       
     vec2 coord = floor(vec2(CHAR_SIZE.x*mod(character,32.0) + x, iResolution.y - CHAR_SIZE.y*floor(0.0+character/32.0) - y));
     return texture2D(iChannel0, (coord+vec2(0.5,0.5)) / iResolution.xy);
@@ -28,13 +32,27 @@ float readChar(in vec2 v)
     float chunkPos  = mod(v.x, 16.0);
     float bytePos   = floor(mod(chunkPos, 4.0));
     
-    vec4 chunk = texture(iChannel1, ((vec2(chunkNmbr + 0.5, lineNmbr + 0.5)) / iResolution.xy));
+    uvec4 chunk = texture(iChannel1, ((vec2(chunkNmbr + 0.5, lineNmbr + 0.5)) / iResolution.xy));
     
     uint iword = uint(0);
-    if      (chunkPos <  3.5)  iword = floatBitsToUint(chunk.x);
-    else if (chunkPos <  7.5)  iword = floatBitsToUint(chunk.y);
-    else if (chunkPos < 11.5)  iword = floatBitsToUint(chunk.z);
-    else                       iword = floatBitsToUint(chunk.a);
+    if      (chunkPos <  3.5)  iword = chunk.x;
+    else if (chunkPos <  7.5)  iword = chunk.y;
+    else if (chunkPos < 11.5)  iword = chunk.z;
+    else                       iword = chunk.a;
+
+    iword = iword >> uint(1);
+
+    //iword = uint(iword & uint(0x000000ff));
+    //return float(iword);
+    //float fword = 65.0;
+    //iword = floatBitsToUint(fword);
+
+    //iword = uint(0x64636200);
+    
+    //iword = uint(0x32c20000);
+    //iword = uint(0x36c20000);
+    //iword = uint(0x3ac20000);
+    //iword = uint(0x3ec20000);
 
     uint ichara = uint(0);
     if      (bytePos < 0.5)    ichara = (iword >> uint( 0));
@@ -43,8 +61,12 @@ float readChar(in vec2 v)
     else                       ichara = (iword >> uint(24));
 
     ichara = uint(ichara & uint(0x000000ff));
+
+    //ichara = uint(255)-ichara;
     
     float fchara = float(ichara);
+
+    //fchara = fchara * 0.5;
     
     return fchara;
 }

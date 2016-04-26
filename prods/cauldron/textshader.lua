@@ -3,6 +3,8 @@
 
 textshader = textshader or {}
 
+--textshader = {}
+
 textshader.docshader    = {}
 textshader.fontshader   = textshader.fontshader or {}
 textshader.stringshader = {}
@@ -14,10 +16,10 @@ if textshader.fontshader.prog == nil then
 
   textshader.fontshader.prog,shadres = glCreateProgram(
     --shadermvpvertex,
-    shaderpassthruvertex_old,
-    assembleshadersource_old("textshader-font-mix.glsl"))
-    --assembleshadersource_old("textshader-font-choose.glsl"))
-    --assembleshadersource_old("textshader-font-origfix.glsl"))
+    shaderpassthruvertex300es,
+    --assembleshadersource("textshader-font-mix.glsl"))
+    assembleshadersource300es("textshader-font-choose.glsl"))
+    --assembleshadersource("textshader-font-origfix.glsl"))
   
   assertglshader(shadres)
   
@@ -26,43 +28,45 @@ else
   printf("Skipping compilation of font shader.\n")
 end
 
---printf("Compiling string shader...\n")
---textshader.stringshader.prog,shadres = glCreateProgram(
---  shaderpassthruvertex,
---  assembleshadersource("textshader-string.glsl"))
---assertglshader(shadres)
---printf("Compiling string shader...Done.\n")
-
 textshader.docshader.prog,shadres = glCreateProgram(
-  shaderpassthruvertex_old,
-  assembleshadersource_old("textshader-image.glsl"))
+  shaderpassthruvertex300es,
+  assembleshadersource300es("textshader-image-uinttexture.glsl"))
+  --assembleshadersource300es("textshader-image-inttexture.glsl"))
+  --assembleshadersource300es("textshader-image.glsl"))
 assertglshader(shadres)
+
+printf("Compiling all shaders...Done.\n")
 
 local function preparething()
   local g = textshader
 
-  --local sz = 256
   local sz = 512
   
   g.fbo_font_curr   = makefbo(sz,sz, GL_NEAREST)
   g.fbo_font_prev   = makefbo(sz,sz, GL_NEAREST)
-  --g.fbo_string_curr = makefbo(sz,sz, GL_NEAREST)
-  --g.fbo_string_prev = makefbo(sz,sz, GL_NEAREST)
   
   fbotest = makefbo(sz,sz, GL_NEAREST)
   
   gather_shader_uniforms(g.docshader)
-  --gather_shader_uniforms(g.stringshader)
-  
-
   gather_shader_uniforms(g.fontshader)
   
 end
 
 preparething()
 
---stringtex = glStringToTexture("Ok, this is fantastic!! A text editor in a shader!")
-stringtex = glStringToTexture("1234567")
+--stringtex = glStringToTexture("Ok, this is fantastic!! A text editor in a shader!", GL_RGBA32F_ARB, GL_INT)
+--stringtex = glStringToTexture("Ok, this is fantastic!! A text editor in a shader!", GL_RGBA32F_ARB, GL_FLOAT)
+--stringtex = glStringToTexture("Ok,_this_is_fantastic!!_A_text_editor_in_a_shader!  ", GL_RGBA32F_ARB, GL_UNSIGNED_INT)
+--stringtex = glStringToTexture("Ok,_this_is_fantastic!!_A_text_editor_in_a_shader!  sdsdsdsds", GL_RGBA32F_ARB, GL_FLOAT)
+--stringtex = glStringToTexture("Ok,_this_is_fantastic!!_A_text editor_in_a_shader!___")
+--stringtex = glStringToTexture("1234567 ")
+
+
+--stringtex = glStringToTexture("1234567 ", GL_RGBA32F_ARB, GL_FLOAT-5)
+--stringtex = glStringToTexture("1234567 ", 36249, GL_INT)
+
+--stringtex = glStringToTexture("abcdefg ", GL_RGBA32F_ARB, GL_UNSIGNED_INT)
+
 
 setMaxFramerate(30)
 enableStdMouseCam()
@@ -74,7 +78,9 @@ function prerender()
   local g = textshader
   
   if numtextshaderrenderings < 2 then
+  printf("Rendering font...\n")
     render_to_fbo_with_input(g.fbo_font_curr,   g.fontshader,   g.fbo_font_prev)
+  printf("Rendering font...Done\n")
   end
   
   --glDisable(GL_BLEND)

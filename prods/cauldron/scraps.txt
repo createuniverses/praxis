@@ -1,0 +1,25 @@
+    //float fret = 65.0;
+    //if (chunk.x == 0.0) fret = fret + 1.0;
+    //if (chunk.y == 0.0) fret = fret + 2.0;
+    //if (chunk.z == 0.0) fret = fret + 4.0;
+    //if (chunk.a == 0.0) fret = fret + 8.0;
+    //return fret;
+
+    //float fword = 0.0;
+    //if      (chunkPos<3.5)  fword = chunk.x;
+    //else if (chunkPos<7.5)  fword = chunk.y;
+    //else if (chunkPos<11.5) fword = chunk.z;
+    //else                    fword = chunk.a;
+
+    //if (fword == 0.0)
+    //    return 65.0;
+
+
+    //int iword = int(0);
+    //if      (chunkPos<3.5)  iword = floatBitsToInt(chunk.x);
+    //else if (chunkPos<7.5)  iword = floatBitsToInt(chunk.y);
+    //else if (chunkPos<11.5) iword = floatBitsToInt(chunk.z);
+    //else                    iword = floatBitsToInt(chunk.a);
+    
+    //uint iword = floatBitsToUint(fword);
+

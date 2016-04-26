@@ -1,3 +1,15 @@
+#version 300 es
+
+precision mediump float;
+precision mediump int;
+
+uniform vec2       iResolution;           // viewport resolution (in pixels)
+uniform int        iFrame;                // shader playback frame
+uniform vec4       iMouse;                // mouse pixel coords. xy: current (if MLB down), zw: click
+uniform sampler2D  iChannel0;             // input channel. XX = 2D/Cube
+uniform usampler2D iChannel1;             // input channel. XX = 2D/Cube
+uniform float      iGlobalTime;           // global time
+
 //  Text rendering in a shader from a string texture
 //
 //  Adapted from shader program on Shadertoy written by Bart Verheijen 2016
@@ -16,6 +28,9 @@ vec4 drawCh(in float character, in float x, in float y)
 {
     if (character == 0.0)
       return vec4(0.0, 1.0, 0.0, 0.4);
+
+    //if (character > 255.0)
+    //  character = 65.0;
       
     vec2 coord = floor(vec2(CHAR_SIZE.x*mod(character,32.0) + x, iResolution.y - CHAR_SIZE.y*floor(0.0+character/32.0) - y));
     return texture2D(iChannel0, (coord+vec2(0.5,0.5)) / iResolution.xy);
@@ -28,13 +43,15 @@ float readChar(in vec2 v)
     float chunkPos  = mod(v.x, 16.0);
     float bytePos   = floor(mod(chunkPos, 4.0));
     
-    vec4 chunk = texture(iChannel1, ((vec2(chunkNmbr + 0.5, lineNmbr + 0.5)) / iResolution.xy));
+    uvec4 chunk = texture(iChannel1, ((vec2(chunkNmbr + 0.5, lineNmbr + 0.5)) / iResolution.xy));
     
     uint iword = uint(0);
-    if      (chunkPos <  3.5)  iword = floatBitsToUint(chunk.x);
-    else if (chunkPos <  7.5)  iword = floatBitsToUint(chunk.y);
-    else if (chunkPos < 11.5)  iword = floatBitsToUint(chunk.z);
-    else                       iword = floatBitsToUint(chunk.a);
+    else if (chunkPos <  7.5)  iword = chunk.y;
+    if      (chunkPos <  3.5)  iword = chunk.x;
+    else if (chunkPos < 11.5)  iword = chunk.z;
+    else                       iword = chunk.a;
+
+    return float(iword);
 
     uint ichara = uint(0);
     if      (bytePos < 0.5)    ichara = (iword >> uint( 0));
@@ -95,3 +112,12 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture2D(iChannel1, fragCoord / iResolution.xy);
 }
 
+
+
+out vec4 myFragColor;
+
+void main()
+{
+    mainImage(myFragColor, gl_FragCoord.xy );
+    //mainImage(gl_FragColor, gl_FragCoord.xy );
+}
