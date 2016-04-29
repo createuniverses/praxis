@@ -1153,6 +1153,9 @@ int luaCBGLStringToTexture(lua_State * L)
     const char * sText = luaL_checkstring(L, 1);
     int len = strlen(sText);
 
+    if(len <= 0)
+        return 0;
+
     const int stringtexsize = 512*512*16;
 
     GLint internalformat = GL_RGBA32F_ARB;
@@ -1161,7 +1164,8 @@ int luaCBGLStringToTexture(lua_State * L)
 
     int nargs = lua_gettop(L);
     if(nargs>1) internalformat = luaL_checknumber(L, 2);
-    if(nargs>2)           type = luaL_checknumber(L, 3);
+    if(nargs>2)         format = luaL_checknumber(L, 3);
+    if(nargs>3)           type = luaL_checknumber(L, 4);
 
     int nWidth  = 512;
     int nHeight = 512;
@@ -1227,12 +1231,26 @@ int luaCBGLStringToTexture(lua_State * L)
     memset(g_pStringTex, 0, stringtexsize);
 
     glBindTexture(GL_TEXTURE_2D, textureId);
-    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, type, g_pStringTex);
+    glGetTexImage(GL_TEXTURE_2D, 0, format, type, g_pStringTex);
     glBindTexture(GL_TEXTURE_2D, 0);
 
     lua_pushnumber(L, textureId);
     lua_pushnumber(L, e);
     return 2;
+}
+
+// Split into separate functions to facilitate experiments
+// Seeing the effect of different patterns of bytes
+
+
+int luaCBGLSetStringToTextureBuffer(lua_State * L)
+{
+    return 0;
+}
+
+int luaCBGLGetStringToTextureBuffer(lua_State * L)
+{
+    return 0;
 }
 
 int luaCBGLSetTexParams(lua_State * L)
@@ -1484,11 +1502,20 @@ void luaInitCallbacksOpenGL()
     ss << "GL_RGBA32I_EXT = " << GL_RGBA32I_EXT << "\n";
 
     ss << "GL_FLOAT = " << GL_FLOAT << "\n";
-    ss << "GL_UNSIGNED_INT = " << GL_UNSIGNED_INT << "\n";
+
     ss << "GL_INT = " << GL_INT << "\n";
+    ss << "GL_UNSIGNED_INT = " << GL_UNSIGNED_INT << "\n";
+
+    ss << "GL_BYTE = " << GL_BYTE << "\n";
+    ss << "GL_UNSIGNED_BYTE = " << GL_UNSIGNED_BYTE << "\n";
+
     ss << "GL_4_BYTES = " << GL_4_BYTES << "\n";
 
     ss << "GL_RGBA = " << GL_RGBA << "\n";
+
+    ss << "GL_RGBA8UI_EXT = " << GL_RGBA8UI_EXT << "\n";
+    ss << "GL_RGBA_INTEGER_EXT = " << GL_RGBA_INTEGER_EXT << "\n";
+
     luaCall(ss.str());
 
     lua_register(g_pLuaState, "drawLine",              luaCBDrawLine);

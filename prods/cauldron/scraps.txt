@@ -23,3 +23,82 @@
     
     //uint iword = floatBitsToUint(fword);
 
+
+float readChar(in vec2 v)
+{
+    float lineNmbr  = mod(v.y, 30.0);
+    float chunkNmbr = floor(v.x/4.0);
+    float chunkPos  = mod(v.x, 4.0);
+    //float bytePos   = floor(mod(chunkPos, 4.0));
+    
+    uvec4 chunk = texture(iChannel1, ((vec2(chunkNmbr + 0.5, lineNmbr + 0.5)) / iResolution.xy));
+    
+    uint iword = uint(0);
+    if      (chunkPos <  3.5)  iword = chunk.x;
+    else if (chunkPos <  7.5)  iword = chunk.y;
+    else if (chunkPos < 11.5)  iword = chunk.z;
+    else                       iword = chunk.a;
+
+    //iword = iword >> uint(1);
+
+    //iword = uint(iword & uint(0x000000ff));
+    //return float(iword);
+    //float fword = 65.0;
+    //iword = floatBitsToUint(fword);
+
+    //iword = uint(0x64636200);
+    
+    //iword = uint(0x32c20000);
+    //iword = uint(0x36c20000);
+    //iword = uint(0x3ac20000);
+    //iword = uint(0x3ec20000);
+
+    uint ichara = uint(0);
+    if      (bytePos < 0.5)    ichara = (iword >> uint( 0));
+    else if (bytePos < 1.5)    ichara = (iword >> uint( 8));
+    else if (bytePos < 2.5)    ichara = (iword >> uint(16));
+    else                       ichara = (iword >> uint(24));
+
+    ichara = uint(ichara & uint(0x000000ff));
+
+    //ichara = uint(255)-ichara;
+    
+    float fchara = float(ichara);
+
+    //fchara = fchara * 0.5;
+    
+    return fchara;
+}
+
+97 = 0x61
+
+Results in:
+
+row 6, col 3   = 6*32 + 3  = 195 = 0xC3
+row 6, col 2   = 6*32 + 2  = 194 = 0xC2
+row 6, col 2   = 6*32 + 2  = 194 = 0xC2
+row 1, col 30  = 1*32 + 30 =  62 = 0x3E
+
+    //ichar = chunk.x;
+
+    
+    //if      (component < 0.5) ichar = ichar >> 1u;
+    //else if (component < 1.5) ichar = ichar >> 2u;
+    //else if (component < 2.5) ichar = ichar >> 3u;
+    //else                      ichar = ichar >> 4u;
+    
+    //if      (component < 0.5) ichar = ichar >>  0u;
+    //else if (component < 1.5) ichar = ichar >>  8u;
+    //else if (component < 2.5) ichar = ichar >> 16u;
+    //else                      ichar = ichar >> 24u;
+    
+    //ichar = ichar >> 1u;
+    //ichar = ichar & 0x000000ffu;
+
+https://www.opengl.org/discussion_boards/showthread.php/181278-what-is-the-expected-result-for-unsigned-texture-having-isampler2D-in-shaders
+
+https://duckduckgo.com/?q=usampler2d+GL_UNSIGNED_BYTE&t=ffsb
+http://stackoverflow.com/questions/36496364/fetching-integer-byte-texture-data-as-is-in-opengl-es-3-0
+https://www.opengl.org/discussion_boards/showthread.php/181278-what-is-the-expected-result-for-unsigned-texture-having-isampler2D-in-shaders
+
+

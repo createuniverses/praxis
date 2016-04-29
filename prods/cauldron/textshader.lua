@@ -1,9 +1,9 @@
 -- Beginnings of a text shader
 -- Takes a font fbo and texture encoding a string as input
 
-textshader = textshader or {}
+--textshader = textshader or {}
 
---textshader = {}
+textshader = {}
 
 textshader.docshader    = {}
 textshader.fontshader   = textshader.fontshader or {}
@@ -15,11 +15,10 @@ if textshader.fontshader.prog == nil then
   -- textshader-font-mix is SIGNIFICANTLY faster on that first frame than textshader-font-choose
 
   textshader.fontshader.prog,shadres = glCreateProgram(
-    --shadermvpvertex,
-    shaderpassthruvertex300es,
-    --assembleshadersource("textshader-font-mix.glsl"))
-    assembleshadersource300es("textshader-font-choose.glsl"))
-    --assembleshadersource("textshader-font-origfix.glsl"))
+    shaderpassthruvertex330,
+    assembleshadersource330("textshader-font-choose.glsl"))
+    --shaderpassthruvertex300es,
+    --assembleshadersource300es("textshader-font-choose.glsl"))
   
   assertglshader(shadres)
   
@@ -29,10 +28,10 @@ else
 end
 
 textshader.docshader.prog,shadres = glCreateProgram(
-  shaderpassthruvertex300es,
-  assembleshadersource300es("textshader-image-uinttexture.glsl"))
-  --assembleshadersource300es("textshader-image-inttexture.glsl"))
-  --assembleshadersource300es("textshader-image.glsl"))
+  shaderpassthruvertex330,
+  assembleshadersource330("textshader-image-uinttexture.glsl"))
+  --shaderpassthruvertex300es,
+  --assembleshadersource300es("textshader-image-uinttexture.glsl"))
 assertglshader(shadres)
 
 printf("Compiling all shaders...Done.\n")
