@@ -1163,8 +1163,17 @@ public:
         memset(data, 0, size);
     }
 
+    void LoadFromFile(std::string sFilename)
+    {
+    }
+
+    void SaveToFile(std::string sFilename)
+    {
+    }
+
     void WriteString1(const char * text)
     {
+        int len = strlen(text);
         int j = 0;
         for(int i = 0; i < size; i++)
         {
@@ -1178,6 +1187,7 @@ public:
 
     void WriteString2(const char * text)
     {
+        int len = strlen(text);
         for(int line = 0; line < 10; line++)
         {
             int lineStart = line*512*16;
@@ -1205,7 +1215,7 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, internalformat, nWidth, nHeight, 0, format, type, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, type, data);
 
         error = glGetError();
 
@@ -1221,9 +1231,9 @@ public:
     void UpdateExistingOpenGLTexture(GLuint textureId)
     {
         glBindTexture(GL_TEXTURE_2D, textureId);
-        glTextureSubImage2D(GL_TEXTURE_2D, 0,0,0,
-                            width, height,
-                            format,type,data);
+        glTexSubImage2D(GL_TEXTURE_2D, 0,0,0,
+                        width, height,
+                        format,type,data);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
@@ -1253,10 +1263,9 @@ int luaCBGLStringToTexture(lua_State * L)
     // Split this up into Lua callable functions
     // This is so I can define how the string texture gets put together in Lua.
 
-    const char * sText = luaL_checkstring(L, 1);
-    int len = strlen(sText);
+    const char * text = luaL_checkstring(L, 1);
 
-    if(len <= 0)
+    if(strlen(text) <= 0)
         return 0;
 
     if(g_pStringTexture == 0)
@@ -1268,28 +1277,33 @@ int luaCBGLStringToTexture(lua_State * L)
     if(nargs>3) g_pStringTexture->type            = luaL_checknumber(L, 4);
 
     g_pStringTexture->Clear();
-    g_pStringTexture->WriteString1(sText);
-    //g_pStringTexture->WriteString2(sText);
+    g_pStringTexture->WriteString1(text);
+    //g_pStringTexture->WriteString2(text);
 
     GLuint textureId = g_pStringTexture->MakeNewOpenGLTexture();
     GLenum error = g_pStringTexture->error;
 
     // Test
-    ReadFromTexture(textureId);
+    g_pStringTexture->ReadFromTexture(textureId);
 
     lua_pushnumber(L, textureId);
     lua_pushnumber(L, error);
     return 2;
 }
 
-int luaCBGLSaveStringTextureBuffer(lua_State * L)
+int luaCBGLLoadStringTextureBuffer(lua_State * L)
 {
-    // Write buffer to file
+    if(g_pStringTexture == 0) return 0;
+    std::string sFilename = luaL_checkstring(L, 1);
+    g_pStringTexture->LoadFromFile(sFilename);
     return 0;
 }
 
-int luaCBGLLoadStringTextureBuffer(lua_State * L)
+int luaCBGLSaveStringTextureBuffer(lua_State * L)
 {
+    if(g_pStringTexture == 0) return 0;
+    std::string sFilename = luaL_checkstring(L, 1);
+    g_pStringTexture->SaveToFile(sFilename);
     return 0;
 }
 
@@ -1298,62 +1312,17 @@ int luaCBGLLoadStringTextureBuffer(lua_State * L)
 
 int luaCBGLInitTexBuffer(lua_State * L)
 {
-    const int stringtexsize = 512*512*16;
-
-    if(g_pStringTex == 0)
-        g_pStringTex = new char[g_nStringTexSize];
-
-    memset(g_pStringTex, 0, g_nStringTexSize);
-
+    if(g_pStringTexture == 0) g_pStringTexture = new StringTexture();
     return 0;
 }
 
 int luaCBGLMakeTexture(lua_State * L)
 {
-    // defaults
-    //GLint internalformat = GL_RGBA32F_ARB;
-    //GLenum format = GL_RGBA;
-    //GLenum type = GL_FLOAT;
-
-    GLsizei width          = luaL_checknumber(L, 1);
-    GLsizei height         = luaL_checknumber(L, 2);
-    GLint   internalformat = luaL_checknumber(L, 3);
-    GLenum  format         = luaL_checknumber(L, 4);
-    GLenum  type           = luaL_checknumber(L, 5);
-
-    if(width >512) width  = 512;
-    if(height>512) height = 512;
-
-    GLuint textureId = 0;
-
-    glGenTextures(1, &textureId);
-    glBindTexture(GL_TEXTURE_2D, textureId);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, type, g_pStringTex);
-
-    GLenum e = glGetError();
-
-    glClampColorARB(GL_CLAMP_READ_COLOR_ARB, GL_FALSE);
-    glClampColorARB(GL_CLAMP_VERTEX_COLOR_ARB, GL_FALSE);
-    glClampColorARB(GL_CLAMP_FRAGMENT_COLOR_ARB, GL_FALSE);
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    lua_pushnumber(L, textureId);
-    lua_pushnumber(L, e);
-    return 2;
+    return 0;
 }
 
 int luaCBGLGetTexImage()
 {
-    glBindTexture(GL_TEXTURE_2D, textureId);
-    glGetTexImage(GL_TEXTURE_2D, 0, format, type, g_pStringTex);
-    glBindTexture(GL_TEXTURE_2D, 0);
     return 0;
 }
 
