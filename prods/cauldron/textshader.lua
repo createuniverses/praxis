@@ -15,10 +15,10 @@ if textshader.fontshader.prog == nil then
   -- textshader-font-mix is SIGNIFICANTLY faster on that first frame than textshader-font-choose
 
   textshader.fontshader.prog,shadres = glCreateProgram(
-    --shaderpassthruvertex330,
-    --assembleshadersource330("textshader-font-choose.glsl"))
-    shaderpassthruvertex300es,
-    assembleshadersource300es("textshader-font-mix.glsl"))
+    shaderpassthruvertex330,
+    assembleshadersource330("textshader-font-mix.glsl"))
+    --shaderpassthruvertex300es,
+    --assembleshadersource300es("textshader-font-mix.glsl"))
   
   assertglshader(shadres)
   
@@ -28,10 +28,11 @@ else
 end
 
 textshader.docshader.prog,shadres = glCreateProgram(
-  --shaderpassthruvertex330,
-  --assembleshadersource330("textshader-image-uinttexture.glsl"))
-  shaderpassthruvertex300es,
-  assembleshadersource300es("textshader-image-uinttexture.glsl"))
+  shaderpassthruvertex330,
+  assembleshadersource330("textshader-image-uinttexture.glsl"))
+  --shaderpassthruvertex300es,
+  --assembleshadersource300es("textshader-image-uinttexture.glsl"))
+  
 assertglshader(shadres)
 
 printf("Compiling all shaders...Done.\n")
@@ -70,7 +71,7 @@ preparething()
 setMaxFramerate(30)
 enableStdMouseCam()
 
-numtextshaderrenderings = 0
+numtextshaderrenderings = numtextshaderrenderings or 0
 
 function prerender()
   

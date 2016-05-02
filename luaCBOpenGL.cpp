@@ -5,7 +5,10 @@
 
 #include "luaCB.h"
 
+#include <iostream>
+#include <fstream>
 #include <sstream>
+#include <vector>
 
 #include <glm/vec3.hpp> // glm::vec3
 #include <glm/vec4.hpp> // glm::vec4
@@ -1149,10 +1152,10 @@ class StringTexture
 public:
     StringTexture()
     {
-        data = new char[size];
-        size = 512 * 512 * 16;
         width = 512;
         height = 512;
+        size = width * height * 16;
+        data = new char[size];
         internalformat = GL_RGBA32F_ARB;
         format = GL_RGBA;
         type = GL_FLOAT;
@@ -1165,10 +1168,20 @@ public:
 
     void LoadFromFile(std::string sFilename)
     {
+        std::ifstream infile (sFilename,std::ofstream::binary);
+        infile.seekg (0,infile.end);
+        long filesize = infile.tellg();
+        infile.seekg (0);
+        if(filesize >= size)
+            infile.read (data, size);
+        infile.close();
     }
 
     void SaveToFile(std::string sFilename)
     {
+        std::ofstream outfile (sFilename,std::ofstream::binary);
+        outfile.write (data, size);
+        outfile.close();
     }
 
     void WriteString1(const char * text)
@@ -1237,12 +1250,16 @@ public:
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    void ReadFromTexture(GLuint textureId)
+    void ReadFromTexture(GLuint textureId, GLenum format, GLenum type)
     {
         memset(data, 0, size);
 
         glBindTexture(GL_TEXTURE_2D, textureId);
-        glGetTexImage(GL_TEXTURE_2D, 0, format, type, data);
+        if(type == GL_FLOAT)
+            glGetTexImage(GL_TEXTURE_2D, 0, format, type, (GLfloat *)data);
+        else
+            glGetTexImage(GL_TEXTURE_2D, 0, format, type, data);
+
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
@@ -1284,7 +1301,7 @@ int luaCBGLStringToTexture(lua_State * L)
     GLenum error = g_pStringTexture->error;
 
     // Test
-    g_pStringTexture->ReadFromTexture(textureId);
+    //g_pStringTexture->ReadFromTexture(textureId, g_pStringTexture->format, g_pStringTexture->type);
 
     lua_pushnumber(L, textureId);
     lua_pushnumber(L, error);
@@ -1307,32 +1324,22 @@ int luaCBGLSaveStringTextureBuffer(lua_State * L)
     return 0;
 }
 
+int luaCBGLSetStringTexture(lua_State * L)
+{
+    if(g_pStringTexture == 0) return 0;
+    GLuint textureId   = luaL_checknumber(L, 1);
+    GLenum format      = luaL_checknumber(L, 2);
+    GLenum type        = luaL_checknumber(L, 3);
+    g_pStringTexture->ReadFromTexture(textureId, format, type);
+    return 0;
+}
+
 // Split into separate functions to facilitate experiments
 // Seeing the effect of different patterns of bytes
 
 int luaCBGLInitTexBuffer(lua_State * L)
 {
     if(g_pStringTexture == 0) g_pStringTexture = new StringTexture();
-    return 0;
-}
-
-int luaCBGLMakeTexture(lua_State * L)
-{
-    return 0;
-}
-
-int luaCBGLGetTexImage()
-{
-    return 0;
-}
-
-int luaCBGLSetStringToTextureBuffer(lua_State * L)
-{
-    return 0;
-}
-
-int luaCBGLGetStringToTextureBuffer(lua_State * L)
-{
     return 0;
 }
 
@@ -1730,6 +1737,14 @@ void luaInitCallbacksOpenGL()
     lua_register(g_pLuaState, "glDisable",               luaCBGLDisable);
 
     lua_register(g_pLuaState, "glStringToTexture",       luaCBGLStringToTexture);
+
+    lua_register(g_pLuaState, "glLoadStringTexture",     luaCBGLLoadStringTextureBuffer);
+    lua_register(g_pLuaState, "glSaveStringTexture",     luaCBGLSaveStringTextureBuffer);
+    lua_register(g_pLuaState, "glSetStringTexture",      luaCBGLSetStringTexture);
+
+    // luaCBGLLoadStringTextureBuffer
+    // luaCBGLSaveStringTextureBuffer
+    // luaCBGLSetStringTextureFromTexture
 
     //lua_register(g_pLuaState, "glMakeStringTexture",     )
 }
