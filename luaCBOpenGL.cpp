@@ -1144,7 +1144,109 @@ int luaCBGLPrepareFBOTexture(lua_State * L)
     return 1;
 }
 
-char * g_pStringTex = 0;
+class StringTexture
+{
+public:
+    StringTexture()
+    {
+        data = new char[size];
+        size = 512 * 512 * 16;
+        width = 512;
+        height = 512;
+        internalformat = GL_RGBA32F_ARB;
+        format = GL_RGBA;
+        type = GL_FLOAT;
+    }
+
+    void Clear()
+    {
+        memset(data, 0, size);
+    }
+
+    void WriteString1(const char * text)
+    {
+        int j = 0;
+        for(int i = 0; i < size; i++)
+        {
+            data[i] = text[j%len];
+            j++;
+
+            if(data[i] == ' ')
+                data[i] = 0x0;
+        }
+    }
+
+    void WriteString2(const char * text)
+    {
+        for(int line = 0; line < 10; line++)
+        {
+            int lineStart = line*512*16;
+            for(int i = 0; i < len; i++)
+            {
+                data[i+lineStart] = text[i];
+                //if(i % 4 == 2)
+                //    data[i+lineStart] = 0x00;
+            }
+
+            //for(int i=len; i < len+16; i++)
+            //    data[i+lineStart] = 0x20;
+        }
+    }
+
+    GLuint MakeNewOpenGLTexture()
+    {
+        GLuint textureId = 0;
+
+        glGenTextures(1, &textureId);
+        glBindTexture(GL_TEXTURE_2D, textureId);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, internalformat, nWidth, nHeight, 0, format, type, data);
+
+        error = glGetError();
+
+        glClampColorARB(GL_CLAMP_READ_COLOR_ARB, GL_FALSE);
+        glClampColorARB(GL_CLAMP_VERTEX_COLOR_ARB, GL_FALSE);
+        glClampColorARB(GL_CLAMP_FRAGMENT_COLOR_ARB, GL_FALSE);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        return textureId;
+    }
+
+    void UpdateExistingOpenGLTexture(GLuint textureId)
+    {
+        glBindTexture(GL_TEXTURE_2D, textureId);
+        glTextureSubImage2D(GL_TEXTURE_2D, 0,0,0,
+                            width, height,
+                            format,type,data);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    void ReadFromTexture(GLuint textureId)
+    {
+        memset(data, 0, size);
+
+        glBindTexture(GL_TEXTURE_2D, textureId);
+        glGetTexImage(GL_TEXTURE_2D, 0, format, type, data);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    char *  data;
+    int     size;
+    GLsizei width;
+    GLsizei height;
+    GLint   internalformat;
+    GLenum  format;
+    GLenum  type;
+    GLenum  error;
+};
+
+StringTexture * g_pStringTexture = 0;
 
 int luaCBGLStringToTexture(lua_State * L)
 {
@@ -1157,86 +1259,26 @@ int luaCBGLStringToTexture(lua_State * L)
     if(len <= 0)
         return 0;
 
-    const int stringtexsize = 512*512*16;
-
-    GLint internalformat = GL_RGBA32F_ARB;
-    GLenum format = GL_RGBA;
-    GLenum type = GL_FLOAT;
+    if(g_pStringTexture == 0)
+        g_pStringTexture = new StringTexture();
 
     int nargs = lua_gettop(L);
-    if(nargs>1) internalformat = luaL_checknumber(L, 2);
-    if(nargs>2)         format = luaL_checknumber(L, 3);
-    if(nargs>3)           type = luaL_checknumber(L, 4);
+    if(nargs>1) g_pStringTexture->internalformat  = luaL_checknumber(L, 2);
+    if(nargs>2) g_pStringTexture->format          = luaL_checknumber(L, 3);
+    if(nargs>3) g_pStringTexture->type            = luaL_checknumber(L, 4);
 
-    int nWidth  = 512;
-    int nHeight = 512;
+    g_pStringTexture->Clear();
+    g_pStringTexture->WriteString1(sText);
+    //g_pStringTexture->WriteString2(sText);
 
-    if(g_pStringTex == 0)
-        g_pStringTex = new char[stringtexsize];
+    GLuint textureId = g_pStringTexture->MakeNewOpenGLTexture();
+    GLenum error = g_pStringTexture->error;
 
-    memset(g_pStringTex, 0, stringtexsize);
-
-#if 1
-    int j = 0;
-    for(int i = 0; i < stringtexsize; i++)
-    {
-        g_pStringTex[i] = sText[j%len];
-        j++;
-
-        if(g_pStringTex[i] == ' ')
-            g_pStringTex[i] = 0x0;
-    }
-#endif
-
-#if 0
-    for(int line = 0; line < 10; line++)
-    {
-        int lineStart = line*512*16;
-        for(int i = 0; i < len; i++)
-        {
-            g_pStringTex[i+lineStart] = sText[i];
-            //if(i % 4 == 2)
-            //    g_pStringTex[i+lineStart] = 0x00;
-        }
-
-        //for(int i=len; i < len+16; i++)
-        //    g_pStringTex[i+lineStart] = 0x20;
-    }
-#endif
-
-    GLuint textureId = 0;
-
-    glGenTextures(1, &textureId);
-    glBindTexture(GL_TEXTURE_2D, textureId);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nWidth, nHeight, 0, GL_RGBA, GL_FLOAT, g_pStringTex);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32UI_EXT, nWidth, nHeight, 0, GL_RGBA, GL_UNSIGNED_INT, g_pStringTex);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32I_EXT, nWidth, nHeight, 0, GL_RGBA, GL_INT, g_pStringTex);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, internalformat, nWidth, nHeight, 0, format, type, g_pStringTex);
-
-    GLenum e = glGetError();
-
-    glClampColorARB(GL_CLAMP_READ_COLOR_ARB, GL_FALSE);
-
-    glClampColorARB(GL_CLAMP_VERTEX_COLOR_ARB, GL_FALSE);
-    glClampColorARB(GL_CLAMP_FRAGMENT_COLOR_ARB, GL_FALSE);
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    memset(g_pStringTex, 0, stringtexsize);
-
-    glBindTexture(GL_TEXTURE_2D, textureId);
-    glGetTexImage(GL_TEXTURE_2D, 0, format, type, g_pStringTex);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    // Test
+    ReadFromTexture(textureId);
 
     lua_pushnumber(L, textureId);
-    lua_pushnumber(L, e);
+    lua_pushnumber(L, error);
     return 2;
 }
 
@@ -1256,10 +1298,12 @@ int luaCBGLLoadStringTextureBuffer(lua_State * L)
 
 int luaCBGLInitTexBuffer(lua_State * L)
 {
-    if(g_pStringTex == 0)
-        g_pStringTex = new char[stringtexsize];
+    const int stringtexsize = 512*512*16;
 
-    memset(g_pStringTex, 0, stringtexsize);
+    if(g_pStringTex == 0)
+        g_pStringTex = new char[g_nStringTexSize];
+
+    memset(g_pStringTex, 0, g_nStringTexSize);
 
     return 0;
 }
@@ -1280,10 +1324,6 @@ int luaCBGLMakeTexture(lua_State * L)
     if(width >512) width  = 512;
     if(height>512) height = 512;
 
-
-    const int stringtexsize = 512*512*16;
-
-
     GLuint textureId = 0;
 
     glGenTextures(1, &textureId);
@@ -1294,16 +1334,11 @@ int luaCBGLMakeTexture(lua_State * L)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nWidth, nHeight, 0, GL_RGBA, GL_FLOAT, g_pStringTex);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32UI_EXT, nWidth, nHeight, 0, GL_RGBA, GL_UNSIGNED_INT, g_pStringTex);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32I_EXT, nWidth, nHeight, 0, GL_RGBA, GL_INT, g_pStringTex);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, internalformat, nWidth, nHeight, 0, format, type, g_pStringTex);
+    glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, type, g_pStringTex);
 
     GLenum e = glGetError();
 
     glClampColorARB(GL_CLAMP_READ_COLOR_ARB, GL_FALSE);
-
     glClampColorARB(GL_CLAMP_VERTEX_COLOR_ARB, GL_FALSE);
     glClampColorARB(GL_CLAMP_FRAGMENT_COLOR_ARB, GL_FALSE);
 
