@@ -1308,6 +1308,23 @@ int luaCBGLStringToTexture(lua_State * L)
     return 2;
 }
 
+int luaCBGLCreateTexture(lua_State * L)
+{
+    if(g_pStringTexture == 0)
+        g_pStringTexture = new StringTexture();
+
+    g_pStringTexture->internalformat  = luaL_checknumber(L, 1);
+    g_pStringTexture->format          = luaL_checknumber(L, 2);
+    g_pStringTexture->type            = luaL_checknumber(L, 3);
+
+    GLuint textureId = g_pStringTexture->MakeNewOpenGLTexture();
+    GLenum error = g_pStringTexture->error;
+
+    lua_pushnumber(L, textureId);
+    lua_pushnumber(L, error);
+    return 2;
+}
+
 int luaCBGLLoadStringTextureBuffer(lua_State * L)
 {
     if(g_pStringTexture == 0) return 0;
@@ -1741,6 +1758,11 @@ void luaInitCallbacksOpenGL()
     lua_register(g_pLuaState, "glLoadStringTexture",     luaCBGLLoadStringTextureBuffer);
     lua_register(g_pLuaState, "glSaveStringTexture",     luaCBGLSaveStringTextureBuffer);
     lua_register(g_pLuaState, "glSetStringTexture",      luaCBGLSetStringTexture);
+
+    lua_register(g_pLuaState, "glCreateTexture",         luaCBGLCreateTexture);
+
+    // Need to add functions that split up glStringToTexture more
+    // Need to add function that generates the texture from the data that is there
 
     // luaCBGLLoadStringTextureBuffer
     // luaCBGLSaveStringTextureBuffer

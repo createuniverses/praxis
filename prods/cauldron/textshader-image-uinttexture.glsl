@@ -83,21 +83,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
         fragColor = color;
     }
     
-    //uncomment this line to see the output of the font texture
-    //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture(iChannel0, fragCoord / iResolution.xy);
-    
-
-    if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture(iChannel1, fragCoord / iResolution.xy);
-    
-    //uncomment this line to see the output of the string texture
-    //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0)
-    if (false)
-    {
-      uvec4 pixel = texture(iChannel1, fragCoord / iResolution.xy);
-      fragColor.r = float(pixel.r) / 256.0;
-      fragColor.g = float(pixel.g) / 256.0;
-      fragColor.b = float(pixel.b) / 256.0;
-      fragColor.a = float(pixel.a) / 256.0;
-    }
+    if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture(iChannel0, fragCoord / iResolution.xy);
+    //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture(iChannel1, fragCoord / iResolution.xy);
 }
 
