@@ -28,16 +28,20 @@ vec4 drawCh(in float character, in float x, in float y)
 float readChar(in vec2 v)
 {
     float line      = mod(v.y, 30.0);
-    float pixel     = floor(v.x/4.0);
-    float component = mod(v.x, 4.0);
+    float column    = floor(v.x);
     
-    uvec4 chunk = texture(iChannel1, ((vec2(pixel + 0.5, line + 0.5)) / iResolution.xy));
+    //float pixel     = floor(v.x/4.0);
+    //float component = mod(v.x, 4.0);
     
-    uint ichar = 0u;
-    if      (component < 0.5) ichar = chunk.x;
-    else if (component < 1.5) ichar = chunk.y;
-    else if (component < 2.5) ichar = chunk.z;
-    else                      ichar = chunk.a;
+    uvec4 chunk = texture(iChannel1, ((vec2(column + 0.5, line + 0.5)) / iResolution.xy));
+    
+    //uint ichar = 0u;
+    //if      (component < 0.5) ichar = chunk.x;
+    //else if (component < 1.5) ichar = chunk.y;
+    //else if (component < 2.5) ichar = chunk.z;
+    //else                      ichar = chunk.a;
+    
+    uint ichar = chunk.a;
     
     float fchar = float(ichar);
     
@@ -83,7 +87,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
         fragColor = color;
     }
     
-    if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture(iChannel0, fragCoord / iResolution.xy);
+    //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture(iChannel0, fragCoord / iResolution.xy);
     //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture(iChannel1, fragCoord / iResolution.xy);
 }
 

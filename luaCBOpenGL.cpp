@@ -1169,7 +1169,7 @@ public:
         type = type_in;
     }
 
-    GLuint MakeNewOpenGLTexture()
+    GLuint MakeTexture()
     {
         GLuint textureId = 0;
 
@@ -1194,16 +1194,27 @@ public:
         return textureId;
     }
 
-    void UpdateExistingOpenGLTexture(GLuint textureId)
+    void WriteToTexture(GLuint textureId)
     {
         glBindTexture(GL_TEXTURE_2D, textureId);
-        glTexSubImage2D(GL_TEXTURE_2D, 0,0,0,
+        glTexSubImage2D(GL_TEXTURE_2D, 0,
+                        0,0,
                         width, height,
                         format,type,data);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    void CopyFromExistingOpenGLTexture(GLuint textureId)
+    void WriteToTexture(GLuint textureId, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height)
+    {
+        glBindTexture(GL_TEXTURE_2D, textureId);
+        glTexSubImage2D(GL_TEXTURE_2D, 0,
+                        xoffset, yoffset,
+                        width, height,
+                        format,type,data);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    void LoadFromTexture(GLuint textureId)
     {
         memset(data, 0, size);
 
@@ -1232,14 +1243,28 @@ public:
         infile.close();
     }
 
-    void SaveToFile(std::string sFilename)
+    void WriteToFile(std::string sFilename)
     {
         std::ofstream outfile (sFilename,std::ofstream::binary);
         outfile.write (data, size);
         outfile.close();
     }
 
-    void WriteString1(const char * text)
+    void SetByte(char byte, int pos)
+    {
+        data[pos] = byte;
+    }
+
+    void LoadFromString(const char * text, int offset)
+    {
+        int len = strlen(text);
+        for(int i = 0; i < len; i++)
+        {
+            data[i+offset] = text[i];
+        }
+    }
+
+    void LoadFromString1(const char * text)
     {
         int len = strlen(text);
         int j = 0;
@@ -1253,7 +1278,7 @@ public:
         }
     }
 
-    void WriteString2(const char * text)
+    void LoadFromString2(const char * text)
     {
         int len = strlen(text);
         for(int line = 0; line < 10; line++)
@@ -1289,6 +1314,52 @@ void StartupTextureWorkbench()
         g_pTextureWorkbench = new TextureWorkbench();
 }
 
+int luaCBGLTexWBClear(lua_State * L)
+{
+    g_pTextureWorkbench->Clear();
+    return 0;
+}
+
+int luaCBGLTexWBWriteToTexture(lua_State * L)
+{
+    int nargs = lua_gettop(L);
+    if(nargs == 1)
+    {
+        GLuint textureId = luaL_checknumber(L, 1);
+        g_pTextureWorkbench->WriteToTexture(textureId);
+    }
+    else if(nargs > 1)
+    {
+        GLuint textureId = luaL_checknumber(L, 1);
+        GLint xoffset    = luaL_checknumber(L, 2);
+        GLint yoffset    = luaL_checknumber(L, 3);
+        GLsizei width    = luaL_checknumber(L, 4);
+        GLsizei height   = luaL_checknumber(L, 5);
+        g_pTextureWorkbench->WriteToTexture(textureId, xoffset, yoffset, width, height);
+    }
+    else
+    {
+        luaL_error(L, "One argument or 5 arguments");
+    }
+    return 0;
+}
+
+int luaCBGLTexWBSetByte(lua_State * L)
+{
+    char c = luaL_checknumber(L, 1);
+    int  p = luaL_checknumber(L, 2);
+    g_pTextureWorkbench->SetByte(c,p);
+    return 0;
+}
+
+int luaCBGLTexWBLoadFromString(lua_State * L)
+{
+    const char * text = luaL_checkstring(L, 1);
+    int offset = luaL_checknumber(L, 2);
+    g_pTextureWorkbench->LoadFromString(text, offset);
+    return 0;
+}
+
 int luaCBGLStringToTexture(lua_State * L)
 {
     const char * text = luaL_checkstring(L, 1);
@@ -1301,51 +1372,51 @@ int luaCBGLStringToTexture(lua_State * L)
                                     luaL_checknumber(L, 4));
 
     g_pTextureWorkbench->Clear();
-    g_pTextureWorkbench->WriteString1(text);
-    //g_pTextureWorkbench->WriteString2(text);
+    g_pTextureWorkbench->LoadFromString1(text);
+    //g_pTextureWorkbench->LoadFromString2(text);
 
-    GLuint textureId = g_pTextureWorkbench->MakeNewOpenGLTexture();
+    GLuint textureId = g_pTextureWorkbench->MakeTexture();
 
     // Test
-    //g_pTextureWorkbench->CopyFromExistingOpenGLTexture(textureId);
+    //g_pTextureWorkbench->LoadFromTexture(textureId);
 
     lua_pushnumber(L, textureId);
     return 1;
 }
 
-int luaCBGLCreateTexture(lua_State * L)
+int luaCBGLTexWBMakeTexture(lua_State * L)
 {
     g_pTextureWorkbench->SetOptions(luaL_checknumber(L, 1),
                                     luaL_checknumber(L, 2),
                                     luaL_checknumber(L, 3));
 
-    GLuint textureId = g_pTextureWorkbench->MakeNewOpenGLTexture();
+    GLuint textureId = g_pTextureWorkbench->MakeTexture();
 
     lua_pushnumber(L, textureId);
     return 1;
 }
 
-int luaCBGLLoadStringTextureBuffer(lua_State * L)
+int luaCBGLTexWBLoadFromFile(lua_State * L)
 {
     std::string sFilename = luaL_checkstring(L, 1);
     g_pTextureWorkbench->LoadFromFile(sFilename);
     return 0;
 }
 
-int luaCBGLSaveStringTextureBuffer(lua_State * L)
+int luaCBGLTexWBWriteToFile(lua_State * L)
 {
     std::string sFilename = luaL_checkstring(L, 1);
-    g_pTextureWorkbench->SaveToFile(sFilename);
+    g_pTextureWorkbench->WriteToFile(sFilename);
     return 0;
 }
 
-int luaCBGLSetStringTexture(lua_State * L)
+int luaCBGLTexWBLoadFromTexture(lua_State * L)
 {
     GLuint textureId   = luaL_checknumber(L, 1);
     g_pTextureWorkbench->SetOptions(g_pTextureWorkbench->internalformat,
                                     luaL_checknumber(L, 2),
                                     luaL_checknumber(L, 3));
-    g_pTextureWorkbench->CopyFromExistingOpenGLTexture(textureId);
+    g_pTextureWorkbench->LoadFromTexture(textureId);
     return 0;
 }
 
@@ -1612,7 +1683,10 @@ void luaInitCallbacksOpenGL()
     ss << "GL_RGBA = " << GL_RGBA << "\n";
 
     ss << "GL_RGBA8UI_EXT = " << GL_RGBA8UI_EXT << "\n";
+    ss << "GL_ALPHA8UI_EXT = " << GL_ALPHA8UI_EXT << "\n";
+
     ss << "GL_RGBA_INTEGER_EXT = " << GL_RGBA_INTEGER_EXT << "\n";
+    ss << "GL_ALPHA_INTEGER_EXT = " << GL_ALPHA_INTEGER_EXT << "\n";
 
     luaCall(ss.str());
 
@@ -1746,11 +1820,20 @@ void luaInitCallbacksOpenGL()
 
     lua_register(g_pLuaState, "glStringToTexture",       luaCBGLStringToTexture);
 
-    lua_register(g_pLuaState, "glLoadStringTexture",     luaCBGLLoadStringTextureBuffer);
-    lua_register(g_pLuaState, "glSaveStringTexture",     luaCBGLSaveStringTextureBuffer);
-    lua_register(g_pLuaState, "glSetStringTexture",      luaCBGLSetStringTexture);
+    lua_register(g_pLuaState, "glTexWBLoadFromFile",     luaCBGLTexWBLoadFromFile);
+    lua_register(g_pLuaState, "glTexWBLoadFromTexture",  luaCBGLTexWBLoadFromTexture);
 
-    lua_register(g_pLuaState, "glCreateTexture",         luaCBGLCreateTexture);
+    lua_register(g_pLuaState, "glTexWBWriteToFile",      luaCBGLTexWBWriteToFile);
+    lua_register(g_pLuaState, "glTexWBWriteToTexture",   luaCBGLTexWBWriteToTexture);
+
+    lua_register(g_pLuaState, "glTexWBMakeTexture",      luaCBGLTexWBMakeTexture);
+
+    lua_register(g_pLuaState, "glTexWBClear",            luaCBGLTexWBClear);
+    lua_register(g_pLuaState, "glTexWBSetByte",          luaCBGLTexWBSetByte);
+    lua_register(g_pLuaState, "glTexWBLoadFromString",   luaCBGLTexWBLoadFromString);
+    //luaCBGLTexWBClear
+    //luaCBGLTexWBSetByte
+    //luaCBGLTexWBLoadFromString
 
     // Need to add functions that split up glStringToTexture more
     // Need to add function that generates the texture from the data that is there

@@ -30,16 +30,30 @@ function updatetextshadertext(s)
     GL_UNSIGNED_BYTE)
 end
 
+function updatetextshadertext(s)
+  stringtex = glStringToTexture(
+    s,
+    GL_ALPHA8UI_EXT,
+    GL_ALPHA_INTEGER_EXT,
+    GL_UNSIGNED_BYTE)
+end
+
 function loadfonttexture()
-  glLoadStringTexture("test2.bin")
-  fonttex = glCreateTexture(GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT)
+  glTexWBLoadFromFile("test2.bin")
+  fonttex = glTexWBMakeTexture(GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT)
+end
+
+function textshaderwriteline(text, linenum)
+  glTexWBLoadFromString(text, 0)
+  --glTexWBWriteToTexture(stringtex,0,linenum,math.ceil(#text / 4),1)
+  glTexWBWriteToTexture(stringtex,0,linenum,#text,1)
 end
 
 compiletextshader()
 maketextshaderfbos()
 
-updatetextshadertext("hello there")
 loadfonttexture()
+updatetextshadertext("hello there")
 
 setMaxFramerate(30)
 enableStdMouseCam()
