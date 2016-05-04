@@ -1147,10 +1147,10 @@ int luaCBGLPrepareFBOTexture(lua_State * L)
     return 1;
 }
 
-class StringTexture
+class TextureWorkbench
 {
 public:
-    StringTexture()
+    TextureWorkbench()
     {
         width = 512;
         height = 512;
@@ -1159,6 +1159,61 @@ public:
         internalformat = GL_RGBA32F_ARB;
         format = GL_RGBA;
         type = GL_FLOAT;
+        error = GL_NO_ERROR;
+    }
+
+    void SetOptions(GLint internalformat_in, GLenum  format_in, GLenum type_in)
+    {
+        internalformat = internalformat_in;
+        format = format_in;
+        type = type_in;
+    }
+
+    GLuint MakeNewOpenGLTexture()
+    {
+        GLuint textureId = 0;
+
+        glGenTextures(1, &textureId);
+        glBindTexture(GL_TEXTURE_2D, textureId);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, type, data);
+
+        error = glGetError();
+
+        glClampColorARB(GL_CLAMP_READ_COLOR_ARB, GL_FALSE);
+        glClampColorARB(GL_CLAMP_VERTEX_COLOR_ARB, GL_FALSE);
+        glClampColorARB(GL_CLAMP_FRAGMENT_COLOR_ARB, GL_FALSE);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        return textureId;
+    }
+
+    void UpdateExistingOpenGLTexture(GLuint textureId)
+    {
+        glBindTexture(GL_TEXTURE_2D, textureId);
+        glTexSubImage2D(GL_TEXTURE_2D, 0,0,0,
+                        width, height,
+                        format,type,data);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    void CopyFromExistingOpenGLTexture(GLuint textureId)
+    {
+        memset(data, 0, size);
+
+        glBindTexture(GL_TEXTURE_2D, textureId);
+        if(type == GL_FLOAT)
+            glGetTexImage(GL_TEXTURE_2D, 0, format, type, (GLfloat *)data);
+        else
+            glGetTexImage(GL_TEXTURE_2D, 0, format, type, data);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 
     void Clear()
@@ -1216,53 +1271,6 @@ public:
         }
     }
 
-    GLuint MakeNewOpenGLTexture()
-    {
-        GLuint textureId = 0;
-
-        glGenTextures(1, &textureId);
-        glBindTexture(GL_TEXTURE_2D, textureId);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-        glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, type, data);
-
-        error = glGetError();
-
-        glClampColorARB(GL_CLAMP_READ_COLOR_ARB, GL_FALSE);
-        glClampColorARB(GL_CLAMP_VERTEX_COLOR_ARB, GL_FALSE);
-        glClampColorARB(GL_CLAMP_FRAGMENT_COLOR_ARB, GL_FALSE);
-
-        glBindTexture(GL_TEXTURE_2D, 0);
-
-        return textureId;
-    }
-
-    void UpdateExistingOpenGLTexture(GLuint textureId)
-    {
-        glBindTexture(GL_TEXTURE_2D, textureId);
-        glTexSubImage2D(GL_TEXTURE_2D, 0,0,0,
-                        width, height,
-                        format,type,data);
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
-
-    void ReadFromTexture(GLuint textureId, GLenum format, GLenum type)
-    {
-        memset(data, 0, size);
-
-        glBindTexture(GL_TEXTURE_2D, textureId);
-        if(type == GL_FLOAT)
-            glGetTexImage(GL_TEXTURE_2D, 0, format, type, (GLfloat *)data);
-        else
-            glGetTexImage(GL_TEXTURE_2D, 0, format, type, data);
-
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
-
     char *  data;
     int     size;
     GLsizei width;
@@ -1273,90 +1281,71 @@ public:
     GLenum  error;
 };
 
-StringTexture * g_pStringTexture = 0;
+TextureWorkbench * g_pTextureWorkbench = 0;
+
+void StartupTextureWorkbench()
+{
+    if(g_pTextureWorkbench == 0)
+        g_pTextureWorkbench = new TextureWorkbench();
+}
 
 int luaCBGLStringToTexture(lua_State * L)
 {
-    // Split this up into Lua callable functions
-    // This is so I can define how the string texture gets put together in Lua.
-
     const char * text = luaL_checkstring(L, 1);
 
     if(strlen(text) <= 0)
         return 0;
 
-    if(g_pStringTexture == 0)
-        g_pStringTexture = new StringTexture();
+    g_pTextureWorkbench->SetOptions(luaL_checknumber(L, 2),
+                                    luaL_checknumber(L, 3),
+                                    luaL_checknumber(L, 4));
 
-    int nargs = lua_gettop(L);
-    if(nargs>1) g_pStringTexture->internalformat  = luaL_checknumber(L, 2);
-    if(nargs>2) g_pStringTexture->format          = luaL_checknumber(L, 3);
-    if(nargs>3) g_pStringTexture->type            = luaL_checknumber(L, 4);
+    g_pTextureWorkbench->Clear();
+    g_pTextureWorkbench->WriteString1(text);
+    //g_pTextureWorkbench->WriteString2(text);
 
-    g_pStringTexture->Clear();
-    g_pStringTexture->WriteString1(text);
-    //g_pStringTexture->WriteString2(text);
-
-    GLuint textureId = g_pStringTexture->MakeNewOpenGLTexture();
-    GLenum error = g_pStringTexture->error;
+    GLuint textureId = g_pTextureWorkbench->MakeNewOpenGLTexture();
 
     // Test
-    //g_pStringTexture->ReadFromTexture(textureId, g_pStringTexture->format, g_pStringTexture->type);
+    //g_pTextureWorkbench->CopyFromExistingOpenGLTexture(textureId);
 
     lua_pushnumber(L, textureId);
-    lua_pushnumber(L, error);
-    return 2;
+    return 1;
 }
 
 int luaCBGLCreateTexture(lua_State * L)
 {
-    if(g_pStringTexture == 0)
-        g_pStringTexture = new StringTexture();
+    g_pTextureWorkbench->SetOptions(luaL_checknumber(L, 1),
+                                    luaL_checknumber(L, 2),
+                                    luaL_checknumber(L, 3));
 
-    g_pStringTexture->internalformat  = luaL_checknumber(L, 1);
-    g_pStringTexture->format          = luaL_checknumber(L, 2);
-    g_pStringTexture->type            = luaL_checknumber(L, 3);
-
-    GLuint textureId = g_pStringTexture->MakeNewOpenGLTexture();
-    GLenum error = g_pStringTexture->error;
+    GLuint textureId = g_pTextureWorkbench->MakeNewOpenGLTexture();
 
     lua_pushnumber(L, textureId);
-    lua_pushnumber(L, error);
-    return 2;
+    return 1;
 }
 
 int luaCBGLLoadStringTextureBuffer(lua_State * L)
 {
-    if(g_pStringTexture == 0) return 0;
     std::string sFilename = luaL_checkstring(L, 1);
-    g_pStringTexture->LoadFromFile(sFilename);
+    g_pTextureWorkbench->LoadFromFile(sFilename);
     return 0;
 }
 
 int luaCBGLSaveStringTextureBuffer(lua_State * L)
 {
-    if(g_pStringTexture == 0) return 0;
     std::string sFilename = luaL_checkstring(L, 1);
-    g_pStringTexture->SaveToFile(sFilename);
+    g_pTextureWorkbench->SaveToFile(sFilename);
     return 0;
 }
 
 int luaCBGLSetStringTexture(lua_State * L)
 {
-    if(g_pStringTexture == 0) return 0;
     GLuint textureId   = luaL_checknumber(L, 1);
-    GLenum format      = luaL_checknumber(L, 2);
-    GLenum type        = luaL_checknumber(L, 3);
-    g_pStringTexture->ReadFromTexture(textureId, format, type);
-    return 0;
-}
-
-// Split into separate functions to facilitate experiments
-// Seeing the effect of different patterns of bytes
-
-int luaCBGLInitTexBuffer(lua_State * L)
-{
-    if(g_pStringTexture == 0) g_pStringTexture = new StringTexture();
+    g_pTextureWorkbench->SetOptions(g_pTextureWorkbench->internalformat,
+                                    luaL_checknumber(L, 2),
+                                    luaL_checknumber(L, 3));
+    g_pTextureWorkbench->CopyFromExistingOpenGLTexture(textureId);
     return 0;
 }
 
@@ -1583,6 +1572,8 @@ int luaCBGLActiveTexture(lua_State * L)
 
 void luaInitCallbacksOpenGL()
 {
+    StartupTextureWorkbench();
+
     stringstream ss;
     ss << "GL_PROJECTION = " << GL_PROJECTION << "\n";
     ss << "GL_MODELVIEW = " << GL_MODELVIEW << "\n";
