@@ -49,6 +49,21 @@ function textshaderwriteline(text, linenum)
   glTexWBWriteToTexture(stringtex,0,linenum,#text,1)
 end
 
+function textshaderwritetext(text)
+  local row = 0
+  local col = 0
+  for i=1,#text,1 do
+    if text[i] == '\n' then
+      row = row + 1
+      col = 0
+    else
+      glTexWBSetByte(text[i], 512*row+col)
+      col = col + 1
+    end
+  end
+  glTexWBWriteToTexture(stringtex)
+end
+
 compiletextshader()
 maketextshaderfbos()
 
