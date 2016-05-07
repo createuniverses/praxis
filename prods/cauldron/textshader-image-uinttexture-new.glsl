@@ -27,20 +27,19 @@ vec4 drawCh(in float character, in float x, in float y)
 
 float readChar(in vec2 v)
 {
-    float line   = mod(v.y, 30.0);
-    float column = floor(v.x);
+    float line      = mod(v.y, 30.0);
+    float pixel     = floor(v.x/4.0);
+    float component = mod(v.x, 4.0);
     
-    //uvec4 chunk = texture(iChannel1, ((vec2(column + 0.5, line + 0.5)) / iResolution.xy));
-    vec4 chunk = texture(iChannel1, ((vec2(column + 0.5, line + 0.5)) / iResolution.xy));
+    uvec4 chunk = texture(iChannel1, ((vec2(pixel + 0.5, line + 0.5)) / iResolution.xy));
     
-    //uint ichar = chunk.a;
-    //ichar = ichar >> 1u;
-    //ichar = ichar >> 1u;
-    //ichar = ichar & 0x000000ffu;
-    //float fchar = float(ichar);
+    uint ichar = 0u;
+    if      (component < 0.5) ichar = chunk.x;
+    else if (component < 1.5) ichar = chunk.y;
+    else if (component < 2.5) ichar = chunk.z;
+    else                      ichar = chunk.a;
     
-    //float fchar = uintBitsToFloat(chunk.r) * 255.0;
-    float fchar = chunk.r * 255.0;
+    float fchar = float(ichar);
     
     return fchar;
 }
@@ -84,7 +83,18 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
         fragColor = color;
     }
     
-    //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture(iChannel0, fragCoord / iResolution.xy);
-    //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture(iChannel1, fragCoord / iResolution.xy);
+    //uncomment this line to see the output of the font texture
+    //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture2D(iChannel0, fragCoord / iResolution.xy);
+    
+    //uncomment this line to see the output of the string texture
+    //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0)
+    if (false)
+    {
+      uvec4 pixel = texture(iChannel1, fragCoord / iResolution.xy);
+      fragColor.r = float(pixel.r) / 256.0;
+      fragColor.g = float(pixel.g) / 256.0;
+      fragColor.b = float(pixel.b) / 256.0;
+      fragColor.a = float(pixel.a) / 256.0;
+    }
 }
 

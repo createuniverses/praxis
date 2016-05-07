@@ -14,39 +14,17 @@ float ZOOM = floor(min(iResolution.x,iResolution.y) / 100.0);
  **/
 vec4 drawCh(in float character, in float x, in float y)
 {
-    if (character == 0.0)
-      return vec4(0.0, 1.0, 0.0, 0.4);
-      
     vec2 coord = floor(vec2(CHAR_SIZE.x*mod(character,32.0) + x, iResolution.y - CHAR_SIZE.y*floor(0.0+character/32.0) - y));
     return texture2D(iChannel0, (coord+vec2(0.5,0.5)) / iResolution.xy);
 }
 
 float readChar(in vec2 v)
 {
-    float lineNmbr  = mod(v.y, 30.0);
-    float chunkNmbr = floor(v.x/16.0);
-    float chunkPos  = mod(v.x, 16.0);
-    float bytePos   = floor(mod(chunkPos, 4.0));
-    
-    vec4 chunk = texture(iChannel1, ((vec2(chunkNmbr + 0.5, lineNmbr + 0.5)) / iResolution.xy));
-    
-    uint iword = uint(0);
-    if      (chunkPos <  3.5)  iword = floatBitsToUint(chunk.x);
-    else if (chunkPos <  7.5)  iword = floatBitsToUint(chunk.y);
-    else if (chunkPos < 11.5)  iword = floatBitsToUint(chunk.z);
-    else                       iword = floatBitsToUint(chunk.a);
-
-    uint ichara = uint(0);
-    if      (bytePos < 0.5)    ichara = (iword >> uint( 0));
-    else if (bytePos < 1.5)    ichara = (iword >> uint( 8));
-    else if (bytePos < 2.5)    ichara = (iword >> uint(16));
-    else                       ichara = (iword >> uint(24));
-
-    ichara = uint(ichara & uint(0x000000ff));
-    
-    float fchara = float(ichara);
-    
-    return fchara;
+    float line   = mod(v.y, 30.0);
+    float column = floor(v.x);
+    vec4 chunk = texture2D(iChannel1, ((vec2(column + 0.5, line + 0.5)) / iResolution.xy));
+    float fchar = chunk.r * 255.0;
+    return fchar;
 }
 
 vec2 FragCoordToCharPixel_Plain(in vec2 fragCoord)
@@ -88,10 +66,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
         fragColor = color;
     }
     
-    //uncomment this line to see the output of the font texture
-    //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture2D(iChannel0, fragCoord / iResolution.xy);
-    
-    //uncomment this line to see the output of the string texture
-    //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture2D(iChannel1, fragCoord / iResolution.xy);
+    //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture(iChannel0, fragCoord / iResolution.xy);
+    //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture(iChannel1, fragCoord / iResolution.xy);
 }
 

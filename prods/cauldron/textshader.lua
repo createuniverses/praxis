@@ -7,10 +7,8 @@ function compiletextshader()
   local g = textshader
   
   g.docshader.prog,shadres = glCreateProgram(
-    shaderpassthruvertex330,
-    assembleshadersource330("textshader-image-uinttexture.glsl"))
-    --shaderpassthruvertex300es,
-    --assembleshadersource300es("textshader-image-uinttexture.glsl"))
+    shaderpassthruvertex,
+    assembleshadersource("textshader-image.glsl"))
   assertglshader(shadres)
   
   gather_shader_uniforms(g.docshader)
@@ -35,6 +33,14 @@ function updatetextshadertext(s)
     s,
     GL_ALPHA8UI_EXT,
     GL_ALPHA_INTEGER_EXT,
+    GL_UNSIGNED_BYTE)
+end
+
+function updatetextshadertext(s)
+  stringtex = glStringToTexture(
+    s,
+    GL_RED,
+    GL_RED,
     GL_UNSIGNED_BYTE)
 end
 
@@ -68,7 +74,8 @@ compiletextshader()
 maketextshaderfbos()
 
 loadfonttexture()
-updatetextshadertext("hello there")
+updatetextshadertext("abcdefghijklmnopqrstuvwxyz 0123456789 ")
+updatetextshadertext("0123456789 !@#$%^&*()_+")
 
 setMaxFramerate(30)
 enableStdMouseCam()

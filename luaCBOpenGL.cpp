@@ -1222,7 +1222,7 @@ public:
         if(type == GL_FLOAT)
             glGetTexImage(GL_TEXTURE_2D, 0, format, type, (GLfloat *)data);
         else
-            glGetTexImage(GL_TEXTURE_2D, 0, format, type, data);
+            glGetTexImage(GL_TEXTURE_2D, 0, format, type, (GLubyte *)data);
 
         glBindTexture(GL_TEXTURE_2D, 0);
     }
@@ -1681,12 +1681,23 @@ void luaInitCallbacksOpenGL()
     ss << "GL_4_BYTES = " << GL_4_BYTES << "\n";
 
     ss << "GL_RGBA = " << GL_RGBA << "\n";
+    ss << "GL_RGB = " << GL_RGB << "\n";
+    ss << "GL_RED = " << GL_RED << "\n";
+    ss << "GL_GREEN = " << GL_GREEN << "\n";
+    ss << "GL_BLUE = " << GL_BLUE << "\n";
+    ss << "GL_ALPHA = " << GL_ALPHA << "\n";
 
     ss << "GL_RGBA8UI_EXT = " << GL_RGBA8UI_EXT << "\n";
     ss << "GL_ALPHA8UI_EXT = " << GL_ALPHA8UI_EXT << "\n";
 
     ss << "GL_RGBA_INTEGER_EXT = " << GL_RGBA_INTEGER_EXT << "\n";
     ss << "GL_ALPHA_INTEGER_EXT = " << GL_ALPHA_INTEGER_EXT << "\n";
+
+    // GL_UNPACK_ALIGNMENT
+    // Initially 4, try setting it to 1
+    //glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    // casting from char to unsigned word
 
     luaCall(ss.str());
 

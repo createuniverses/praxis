@@ -21,76 +21,21 @@ function gather_shader_uniforms(shader)
   u.globaltime  = glGetUniformLocation(shader.prog, "iGlobalTime")   assertgl()
 end
 
-shader300esheader = [[
-#version 300 es
-
-precision mediump float;
-precision mediump int;
-
-]]
-
-shader330header = [[
-#version 330
-
-precision highp float;
-precision highp int;
-
-]]
-
 shaderheader = [[
 uniform vec2       iResolution;           // viewport resolution (in pixels)
 uniform int        iFrame;                // shader playback frame
 uniform vec4       iMouse;                // mouse pixel coords. xy: current (if MLB down), zw: click
 uniform sampler2D  iChannel0;             // input channel. XX = 2D/Cube
-uniform usampler2D iChannel1;             // input channel. XX = 2D/Cube
+uniform sampler2D  iChannel1;             // input channel. XX = 2D/Cube
 uniform float      iGlobalTime;           // global time
 
 ]]
-
-shader330footer = [[
-
-out vec4 myFragColor;
-
-void main()
-{
-    mainImage(myFragColor, gl_FragCoord.xy );
-    //mainImage(gl_FragColor, gl_FragCoord.xy );
-}
-]]
-
-shader300esfooter = shader330footer
 
 shaderfooter = [[
 
 void main()
 {
     mainImage(gl_FragColor, gl_FragCoord.xy );
-}
-]]
-
-shaderpassthruvertex300es = [[
-#version 300 es
-
-in vec4 myVertex;
-
-void main(void)
-{ 
-    //gl_Position = gl_Vertex;
-    gl_Position = myVertex;
-    gl_Position.w = 1.0;
-}
-]]
-
-shaderpassthruvertex330 = [[
-#version 330
-
-in vec4 myVertex;
-
-void main(void)
-{ 
-    //gl_Position = gl_Vertex;
-    gl_Position = myVertex;
-    gl_Position.w = 1.0;
 }
 ]]
 
@@ -112,16 +57,6 @@ void main(void)
 
 function assembleshadersource(file)
   local s = shaderheader .. readFile(file) .. shaderfooter
-  return s
-end
-
-function assembleshadersource300es(file)
-  local s = shader300esheader .. shaderheader .. readFile(file) .. shader300esfooter
-  return s
-end
-
-function assembleshadersource330(file)
-  local s = shader330header .. shaderheader .. readFile(file) .. shader330footer
   return s
 end
 
