@@ -59,11 +59,14 @@ function textshaderwritetext(text)
   local row = 0
   local col = 0
   for i=1,#text,1 do
-    if text[i] == '\n' then
+    if text:at(i) == '\n' then
+      for j=col,100,1 do
+        glTexWBSetByte(string.byte(' '), 512*row+j)
+      end
       row = row + 1
       col = 0
     else
-      glTexWBSetByte(text[i], 512*row+col)
+      glTexWBSetByte(string.byte(text:at(i)), 512*row+col)
       col = col + 1
     end
   end
