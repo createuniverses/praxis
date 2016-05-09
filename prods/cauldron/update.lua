@@ -21,10 +21,14 @@ function update()
   --textshaderwritetext(getBufferText())
   --textshader_writebuffer(edGetCharAt, edGetBufferLength())
   
+  --[[
   textshader_writebuffer(
     function (i)
       return edGetCharAt(edGetTopPosition() + i) end,
     edGetBottomPosition() - edGetTopPosition())
+    ]]
+  
+  textshader_writebuffer(edGetVisCharAt, edGetVisLength())
   
   local r,g,b = getClearColor()
   r = clamp(r-20,0,255)

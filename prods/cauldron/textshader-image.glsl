@@ -61,9 +61,39 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
         //float speed = 8.0;
         //pixel.y = pixel.y + speed*fFrame/30.0;
         
-        float ch  = readChar(floor(pixel/CHAR_SIZE));
+        vec2 colrow = floor(pixel/CHAR_SIZE);
+        
+        float ch  = readChar(colrow);
 
         vec4 color = drawCh(ch, mod(pixel.x, CHAR_SIZE.x), mod(pixel.y, CHAR_SIZE.y));
+        
+        if (colrow == iCursorPos)
+          color.r = 0.5;
+          
+        // On start row and selection on multiple rows
+        if (colrow.y        == iSelectionStart.y &&
+            iSelectionEnd.y > iSelectionStart.y &&
+            colrow.x        >= iSelectionStart.x)
+          color.g = 0.5;
+          
+        // On start row and selection on single row
+        if (iSelectionEnd.y == iSelectionStart.y &&
+            colrow.y        == iSelectionStart.y &&
+            colrow.x        >= iSelectionStart.x &&
+            colrow.x        <  iSelectionEnd.x)
+          color.g = 0.5;
+          
+        // On row between begin and end rows
+        if (colrow.y > iSelectionStart.y &&
+            colrow.y < iSelectionEnd.y)
+          color.g = 0.5;
+          
+        // On end row and selection on multiple rows
+        if (colrow.y        == iSelectionEnd.y &&
+            iSelectionEnd.y >  iSelectionStart.y &&
+            colrow.x        <  iSelectionEnd.x)
+          color.g = 0.5;
+          
         fragColor = color;
     }
     

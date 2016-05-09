@@ -135,6 +135,10 @@ function render_to_fbo_with_input(fbo, shader, ...)
     glUniformi(samplers[i], i-1);
     assertgl()
   end
+  
+  if shader.extrauniforms ~= nil then
+    shader.extrauniforms()
+  end
 
   --glBindTexture(fbo.texId);
   
