@@ -133,6 +133,9 @@ function textshaderwritetext(text)
 end
 
 function textshader_writebuffer(at, len)
+  glTexWBClear()
+  textshader.cursor.row = -1
+  textshader.cursor.col = -1
   textshader.selstart.row = -1.0
   textshader.selstart.col = -1.0
   textshader.selend.row = -1.0
@@ -169,6 +172,24 @@ function textshader_writebuffer(at, len)
     glTexWBSetByte(space, 512*row+j)
   end
   glTexWBWriteToTexture(stringtex)
+  
+  if textshader.cursor.row == -1 then
+    textshader.cursor.row = row
+    textshader.cursor.col = col
+  end
+  
+  if edGetVisSelectBegin() <= 0 then
+      textshader.selstart.row = 0
+      textshader.selstart.col = 0
+  end
+
+  if edGetVisSelectEnd() >= len then
+      textshader.selend.row = row
+      textshader.selend.col = 1000.0 -- col
+  end
+  
+  -- need to traverse entire buffer for selection row col info
+  -- not just visible area.
 end
 
 compiletextshader()
@@ -224,3 +245,8 @@ function update()
   b = clamp(b-20,0,255)
   setClearColor(r,g,b)
 end
+
+edSetVisLines(40)
+
+
+
