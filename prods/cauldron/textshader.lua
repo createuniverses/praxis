@@ -7,11 +7,15 @@ shaderheader2 = [[
 uniform vec2       iCursorPos;
 uniform vec2       iSelectionStart;
 uniform vec2       iSelectionEnd;
+uniform vec2       iBlockStart;
+uniform vec2       iBlockEnd;
 ]]
 
 textshader.cursor   = { row = 1.0, col = 5.0 }
 textshader.selstart = { row = 1.0, col = 7.0 }
 textshader.selend   = { row = 3.0, col = 2.0 }
+textshader.blkstart = { row = 0.0, col = 0.0 }
+textshader.blkend   = { row = 0.0, col = 0.0 }
 
 function edGetVisCharAt(i)
   return edGetCharAt(edGetTopPosition() + i)
@@ -43,11 +47,23 @@ function edGetVisSelectEnd()
   end
 end
 
+function edGetVisBlockBegin()
+  local b,e = edGetLuaBlockPosition()
+  return b-edGetTopPosition()
+end
+
+function edGetVisBlockEnd()
+  local b,e = edGetLuaBlockPosition()
+  return e-edGetTopPosition()
+end
+
 textshader.docshader.extrauniforms = function ()
   local u = textshader.docshader.uloc
   glUniformf(u.cursorpos, textshader.cursor.col,    textshader.cursor.row)    assertgl()
   glUniformf(u.selstart,  textshader.selstart.col,  textshader.selstart.row)  assertgl()
   glUniformf(u.selend,    textshader.selend.col,    textshader.selend.row)    assertgl()
+  glUniformf(u.blkstart,  textshader.blkstart.col,  textshader.blkstart.row)  assertgl()
+  glUniformf(u.blkend,    textshader.blkend.col,    textshader.blkend.row)    assertgl()
 end
 
 
@@ -71,28 +87,14 @@ function compiletextshader()
   u.cursorpos  = glGetUniformLocation(g.docshader.prog, "iCursorPos")      assertgl()
   u.selstart   = glGetUniformLocation(g.docshader.prog, "iSelectionStart") assertgl()
   u.selend     = glGetUniformLocation(g.docshader.prog, "iSelectionEnd")   assertgl()
+  u.blkstart   = glGetUniformLocation(g.docshader.prog, "iBlockStart")     assertgl()
+  u.blkend     = glGetUniformLocation(g.docshader.prog, "iBlockEnd")       assertgl()
 end
 
 function maketextshaderfbos()
   local g = textshader
   local sz = 512
   fbotest = makefbo(sz,sz, GL_NEAREST)
-end
-
-function updatetextshadertext(s)
-  stringtex = glStringToTexture(
-    s,
-    GL_RGBA8UI_EXT,
-    GL_RGBA_INTEGER_EXT,
-    GL_UNSIGNED_BYTE)
-end
-
-function updatetextshadertext(s)
-  stringtex = glStringToTexture(
-    s,
-    GL_ALPHA8UI_EXT,
-    GL_ALPHA_INTEGER_EXT,
-    GL_UNSIGNED_BYTE)
 end
 
 function updatetextshadertext(s)
@@ -134,16 +136,23 @@ end
 
 function textshader_writebuffer(at, len)
   glTexWBClear()
+  
   textshader.cursor.row = -1
   textshader.cursor.col = -1
   textshader.selstart.row = -1.0
   textshader.selstart.col = -1.0
   textshader.selend.row = -1.0
   textshader.selend.col = -1.0
+  textshader.blkstart.row = -1.0
+  textshader.blkstart.col = -1.0
+  textshader.blkend.row = -1.0
+  textshader.blkend.col = -1.0
+  
   local newline = string.byte('\n')
   local space = string.byte(' ')
   local row = 0
   local col = 0
+  local xcount = 0
   for i=0,len-1,1 do
     if i == edGetVisPosition() then
       textshader.cursor.row = row
@@ -157,15 +166,28 @@ function textshader_writebuffer(at, len)
       textshader.selend.row = row
       textshader.selend.col = col
     end
+    if i == edGetVisBlockBegin() then
+      textshader.blkstart.row = row
+      textshader.blkstart.col = col
+    end
+    if i == edGetVisBlockEnd() then
+      textshader.blkend.row = row
+      textshader.blkend.col = col
+    end
+    
     if at(i) == newline then
       for j=col,100,1 do
         glTexWBSetByte(space, 512*row+j)
       end
       row = row + 1
       col = 0
+      xcount = 0
     else
-      glTexWBSetByte(at(i), 512*row+col)
-      col = col + 1
+      if xcount >= edGetLeftPosition() then
+        glTexWBSetByte(at(i), 512*row+col)
+        col = col + 1
+      end
+      xcount = xcount + 1
     end
   end
   for j=col,100,1 do
@@ -183,9 +205,24 @@ function textshader_writebuffer(at, len)
       textshader.selstart.col = 0
   end
 
-  if edGetVisSelectEnd() >= len then
+  if edGetVisSelectBegin() > len then
+      textshader.selstart.row = row+1
+      textshader.selstart.col = 0
+  end
+  
+  if edGetVisSelectBegin() == len then
+      textshader.selstart.row = row
+      textshader.selstart.col = col
+  end
+
+  if edGetVisSelectEnd() > len then
+      textshader.selend.row = row+1
+      textshader.selend.col = 0
+  end
+  
+  if edGetVisSelectEnd() == len then
       textshader.selend.row = row
-      textshader.selend.col = 1000.0 -- col
+      textshader.selend.col = col
   end
   
   -- need to traverse entire buffer for selection row col info
@@ -247,6 +284,7 @@ function update()
 end
 
 edSetVisLines(40)
+
 
 
 

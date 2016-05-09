@@ -21,10 +21,7 @@ vec4 drawCh(in float character, in float x, in float y)
 
 float readChar(in vec2 v)
 {
-    //float line   = mod(v.y, 30.0);
-    float line   = v.y;
-    if(line > 50.0)
-      return 0.0;
+    float line   = floor(v.y);
     float column = floor(v.x);
     vec4 chunk = texture2D(iChannel1, ((vec2(column + 0.5, line + 0.5)) / iResolution.xy));
     float fchar = floor(chunk.r * 255.0 + 0.5);
@@ -73,6 +70,12 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
         if (colrow == iCursorPos)
           color.r = 0.5;
           
+        if (colrow == iBlockStart)
+          color.b = 1.0;
+
+        if (colrow == iBlockEnd)
+          color.b = 1.0;
+        
         // On start row and selection on multiple rows
         if (colrow.y        == iSelectionStart.y &&
             iSelectionEnd.y > iSelectionStart.y &&
@@ -103,4 +106,5 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture(iChannel0, fragCoord / iResolution.xy);
     //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture(iChannel1, fragCoord / iResolution.xy);
 }
+
 
