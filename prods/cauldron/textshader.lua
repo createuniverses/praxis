@@ -73,6 +73,29 @@ function textshaderwritetext(text)
   glTexWBWriteToTexture(stringtex)
 end
 
+function textshader_writebuffer(at, len)
+  local newline = string.byte('\n')
+  local space = string.byte(' ')
+  local row = 0
+  local col = 0
+  for i=0,len-1,1 do
+    if at(i) == newline then
+      for j=col,100,1 do
+        glTexWBSetByte(space, 512*row+j)
+      end
+      row = row + 1
+      col = 0
+    else
+      glTexWBSetByte(at(i), 512*row+col)
+      col = col + 1
+    end
+  end
+  for j=col,100,1 do
+    glTexWBSetByte(space, 512*row+j)
+  end
+  glTexWBWriteToTexture(stringtex)
+end
+
 compiletextshader()
 maketextshaderfbos()
 

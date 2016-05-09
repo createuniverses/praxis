@@ -15,7 +15,8 @@ float ZOOM = floor(min(iResolution.x,iResolution.y) / 100.0);
 vec4 drawCh(in float character, in float x, in float y)
 {
     vec2 coord = floor(vec2(CHAR_SIZE.x*mod(character,32.0) + x, iResolution.y - CHAR_SIZE.y*floor(0.0+character/32.0) - y));
-    return texture2D(iChannel0, (coord+vec2(0.5,0.5)) / iResolution.xy);
+    vec4 pixel = texture2D(iChannel0, (coord+vec2(0.5,0.5)) / iResolution.xy);
+    return pixel;
 }
 
 float readChar(in vec2 v)
@@ -23,7 +24,7 @@ float readChar(in vec2 v)
     float line   = mod(v.y, 30.0);
     float column = floor(v.x);
     vec4 chunk = texture2D(iChannel1, ((vec2(column + 0.5, line + 0.5)) / iResolution.xy));
-    float fchar = chunk.r * 255.0;
+    float fchar = floor(chunk.r * 255.0 + 0.5);
     return fchar;
 }
 
