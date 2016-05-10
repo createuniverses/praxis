@@ -3,14 +3,6 @@ textshader = {}
 
 textshader.docshader    = {}
 
-shaderheader2 = [[
-uniform vec2       iCursorPos;
-uniform vec2       iSelectionStart;
-uniform vec2       iSelectionEnd;
-uniform vec2       iBlockStart;
-uniform vec2       iBlockEnd;
-]]
-
 textshader.cursor   = { row = 1.0, col = 5.0 }
 textshader.selstart = { row = 1.0, col = 7.0 }
 textshader.selend   = { row = 3.0, col = 2.0 }
@@ -57,16 +49,6 @@ function edGetVisBlockEnd()
   return e-edGetTopPosition()-1
 end
 
-textshader.docshader.extrauniforms = function ()
-  local u = textshader.docshader.uloc
-  glUniformf(u.cursorpos, textshader.cursor.col,    textshader.cursor.row)    assertgl()
-  glUniformf(u.selstart,  textshader.selstart.col,  textshader.selstart.row)  assertgl()
-  glUniformf(u.selend,    textshader.selend.col,    textshader.selend.row)    assertgl()
-  glUniformf(u.blkstart,  textshader.blkstart.col,  textshader.blkstart.row)  assertgl()
-  glUniformf(u.blkend,    textshader.blkend.col,    textshader.blkend.row)    assertgl()
-end
-
-
 function textshader_assembleshadersource(file)
   local s = shaderheader .. shaderheader2 .. readFile(file) .. shaderfooter
   return s
@@ -76,8 +58,16 @@ function compiletextshader()
   local g = textshader
   
   g.docshader.prog,shadres = glCreateProgram(
-    shaderpassthruvertex,
-    textshader_assembleshadersource("textshader-image.glsl"))
+    [[
+    varying vec3 N, V;
+    void main(void)
+    { 
+        gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+        V = gl_Vertex.xyz;
+        N = gl_NormalMatrix * gl_Normal;
+    }
+    ]],
+    readFile("textshader-image.glsl"))
   assertglshader(shadres)
   
   gather_shader_uniforms(g.docshader)
@@ -98,7 +88,7 @@ function maketextshaderfbos()
 end
 
 function updatetextshadertext(s)
-  stringtex = glStringToTexture(
+  textshader.stringtex = glStringToTexture(
     s,
     GL_RED,
     GL_RED,
@@ -107,13 +97,13 @@ end
 
 function loadfonttexture()
   glTexWBLoadFromFile("test2.bin")
-  fonttex = glTexWBMakeTexture(GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT)
+  textshader.fonttex = glTexWBMakeTexture(GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT)
 end
 
 function textshaderwriteline(text, linenum)
   glTexWBLoadFromString(text, 0)
-  --glTexWBWriteToTexture(stringtex,0,linenum,math.ceil(#text / 4),1)
-  glTexWBWriteToTexture(stringtex,0,linenum,#text,1)
+  --glTexWBWriteToTexture(textshader.stringtex,0,linenum,math.ceil(#text / 4),1)
+  glTexWBWriteToTexture(textshader.stringtex,0,linenum,#text,1)
 end
 
 function textshaderwritetext(text)
@@ -131,7 +121,7 @@ function textshaderwritetext(text)
       col = col + 1
     end
   end
-  glTexWBWriteToTexture(stringtex)
+  glTexWBWriteToTexture(textshader.stringtex)
 end
 
 function textshader_writebuffer(at, len)
@@ -193,7 +183,7 @@ function textshader_writebuffer(at, len)
   for j=col,100,1 do
     glTexWBSetByte(space, 512*row+j)
   end
-  glTexWBWriteToTexture(stringtex)
+  glTexWBWriteToTexture(textshader.stringtex)
   
   if textshader.cursor.row == -1 then
     textshader.cursor.row = row
@@ -254,8 +244,8 @@ setMaxFramerate(30)
 enableStdMouseCam()
 
 function prerender()
-  local g = textshader
-  render_to_fbo_with_input(fbotest, g.docshader, { texId = fonttex }, { texId = stringtex })
+  --local g = textshader
+  --render_to_fbo_with_input(fbotest, g.docshader, { texId = textshader.fonttex }, { texId = textshader.stringtex })
 end
 
 function clamp(x,min,max)
@@ -299,6 +289,50 @@ end
 
 edSetVisLines(40)
 
+function use_text_shader(shader, fonttex, stringtex)
+  local u = shader.uloc
+  
+  glUseProgram(shader.prog)
+  assertgl()
+  
+  glUniformf(u.resolution, 512, 512);
+  assertgl()
+  
+  glActiveTexture(0);
+  glBindTexture(fonttex)     assertgl()
+  
+  glActiveTexture(1)
+  glBindTexture(stringtex)   assertgl()
+  
+  glUniformi(u.sampler1, 0)  assertgl()
+  glUniformi(u.sampler2, 1)  assertgl()
+  
+  glUniformf(u.cursorpos, textshader.cursor.col,    textshader.cursor.row)    assertgl()
+  glUniformf(u.selstart,  textshader.selstart.col,  textshader.selstart.row)  assertgl()
+  glUniformf(u.selend,    textshader.selend.col,    textshader.selend.row)    assertgl()
+  glUniformf(u.blkstart,  textshader.blkstart.col,  textshader.blkstart.row)  assertgl()
+  glUniformf(u.blkend,    textshader.blkend.col,    textshader.blkend.row)    assertgl()
+end
 
+function render()
+  WidgetLib.renderAll()
+
+  use_text_shader(textshader.docshader, textshader.fonttex, textshader.stringtex)
+
+  local h  = 5
+  local qs = 100
+  
+  beginQuadGL()
+    colorGL(255,255,255,255)
+    vectorGL(    0,  h,   0)
+    vectorGL( qs*2,  h,   0)
+    vectorGL( qs*2,  h,  qs)
+    vectorGL(    0,  h,  qs)
+  endGL()
+  
+  glUseProgram(0)
+  
+  trace2()
+end
 
 
