@@ -1,8 +1,6 @@
 
 textshader = {}
 
-textshader.docshader    = {}
-
 textshader.cursor   = { row = 1.0, col = 5.0 }
 textshader.selstart = { row = 1.0, col = 7.0 }
 textshader.selend   = { row = 3.0, col = 2.0 }
@@ -49,50 +47,36 @@ function edGetVisBlockEnd()
   return e-edGetTopPosition()-1
 end
 
-function textshader_assembleshadersource(file)
-  local s = shaderheader .. shaderheader2 .. readFile(file) .. shaderfooter
-  return s
-end
-
 function compiletextshader()
-  local g = textshader
-  
-  g.docshader.prog,shadres = glCreateProgram(
-    [[
-    varying vec3 N, V;
-    void main(void)
-    { 
-        gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
-        V = gl_Vertex.xyz;
-        N = gl_NormalMatrix * gl_Normal;
-    }
-    ]],
-    readFile("textshader-image.glsl"))
+  textshader.prog,shadres = glCreateProgram(
+    readFile("textshader-vertex.glsl"),
+    readFile("textshader-fragment.glsl"))
   assertglshader(shadres)
   
-  gather_shader_uniforms(g.docshader)
+  glGetError()
   
-  local u = g.docshader.uloc
-
-  u.cursorpos  = glGetUniformLocation(g.docshader.prog, "iCursorPos")      assertgl()
-  u.selstart   = glGetUniformLocation(g.docshader.prog, "iSelectionStart") assertgl()
-  u.selend     = glGetUniformLocation(g.docshader.prog, "iSelectionEnd")   assertgl()
-  u.blkstart   = glGetUniformLocation(g.docshader.prog, "iBlockStart")     assertgl()
-  u.blkend     = glGetUniformLocation(g.docshader.prog, "iBlockEnd")       assertgl()
+  textshader.uloc = {}
+  local u = textshader.uloc
+  
+  u.frame       = glGetUniformLocation(textshader.prog, "iFrame")          assertgl()
+  u.resolution  = glGetUniformLocation(textshader.prog, "iResolution")     assertgl()
+  u.mouse       = glGetUniformLocation(textshader.prog, "iMouse")          assertgl()
+  u.sampler     = glGetUniformLocation(textshader.prog, "iChannel0")       assertgl()
+  u.sampler1    = glGetUniformLocation(textshader.prog, "iChannel0")       assertgl()
+  u.sampler2    = glGetUniformLocation(textshader.prog, "iChannel1")       assertgl()
+  u.globaltime  = glGetUniformLocation(textshader.prog, "iGlobalTime")     assertgl()
+  
+  u.cursorpos   = glGetUniformLocation(textshader.prog, "iCursorPos")      assertgl()
+  u.selstart    = glGetUniformLocation(textshader.prog, "iSelectionStart") assertgl()
+  u.selend      = glGetUniformLocation(textshader.prog, "iSelectionEnd")   assertgl()
+  u.blkstart    = glGetUniformLocation(textshader.prog, "iBlockStart")     assertgl()
+  u.blkend      = glGetUniformLocation(textshader.prog, "iBlockEnd")       assertgl()
 end
 
-function maketextshaderfbos()
-  local g = textshader
-  local sz = 512
-  fbotest = makefbo(sz*2,sz*1, GL_NEAREST)
-end
-
-function updatetextshadertext(s)
-  textshader.stringtex = glStringToTexture(
-    s,
-    GL_RED,
-    GL_RED,
-    GL_UNSIGNED_BYTE)
+function createtexttexture(s)
+  textshader.stringtex = glTexWBMakeTexture(GL_RED, GL_RED, GL_UNSIGNED_BYTE)
+  glTexWBClear()
+  glTexWBWriteToTexture(textshader.stringtex)
 end
 
 function loadfonttexture()
@@ -102,7 +86,6 @@ end
 
 function textshaderwriteline(text, linenum)
   glTexWBLoadFromString(text, 0)
-  --glTexWBWriteToTexture(textshader.stringtex,0,linenum,math.ceil(#text / 4),1)
   glTexWBWriteToTexture(textshader.stringtex,0,linenum,#text,1)
 end
 
@@ -229,23 +212,12 @@ function textshader_writebuffer(at, len)
       textshader.blkend.row = row
       textshader.blkend.col = col
   end
+  
   -- need to traverse entire buffer for selection row col info
   -- not just visible area.
 end
 
-compiletextshader()
-maketextshaderfbos()
-
-loadfonttexture()
-updatetextshadertext("abcdefghijklmnopqrstuvwxyz 0123456789 ")
-updatetextshadertext("0123456789 !@#$%^&*()_+")
-
-setMaxFramerate(30)
-enableStdMouseCam()
-
 function prerender()
-  --local g = textshader
-  --render_to_fbo_with_input(fbotest, g.docshader, { texId = textshader.fonttex }, { texId = textshader.stringtex })
 end
 
 function clamp(x,min,max)
@@ -287,9 +259,7 @@ function update()
   setClearColor(r,g,b)
 end
 
-edSetVisLines(40)
-
-function use_text_shader(shader, fonttex, stringtex)
+function use_text_shader(shader)
   local u = shader.uloc
   
   glUseProgram(shader.prog)
@@ -299,25 +269,25 @@ function use_text_shader(shader, fonttex, stringtex)
   assertgl()
   
   glActiveTexture(0);
-  glBindTexture(fonttex)     assertgl()
+  glBindTexture(shader.fonttex)    assertgl()
   
   glActiveTexture(1)
-  glBindTexture(stringtex)   assertgl()
+  glBindTexture(shader.stringtex)  assertgl()
   
-  glUniformi(u.sampler1, 0)  assertgl()
-  glUniformi(u.sampler2, 1)  assertgl()
+  glUniformi(u.sampler1, 0)        assertgl()
+  glUniformi(u.sampler2, 1)        assertgl()
   
-  glUniformf(u.cursorpos, textshader.cursor.col,    textshader.cursor.row)    assertgl()
-  glUniformf(u.selstart,  textshader.selstart.col,  textshader.selstart.row)  assertgl()
-  glUniformf(u.selend,    textshader.selend.col,    textshader.selend.row)    assertgl()
-  glUniformf(u.blkstart,  textshader.blkstart.col,  textshader.blkstart.row)  assertgl()
-  glUniformf(u.blkend,    textshader.blkend.col,    textshader.blkend.row)    assertgl()
+  glUniformf(u.cursorpos, shader.cursor.col,    shader.cursor.row)    assertgl()
+  glUniformf(u.selstart,  shader.selstart.col,  shader.selstart.row)  assertgl()
+  glUniformf(u.selend,    shader.selend.col,    shader.selend.row)    assertgl()
+  glUniformf(u.blkstart,  shader.blkstart.col,  shader.blkstart.row)  assertgl()
+  glUniformf(u.blkend,    shader.blkend.col,    shader.blkend.row)    assertgl()
 end
 
 function render()
   WidgetLib.renderAll()
 
-  use_text_shader(textshader.docshader, textshader.fonttex, textshader.stringtex)
+  use_text_shader(textshader)
 
   local h  = 5
   local qs = 100
@@ -335,4 +305,15 @@ function render()
   trace2()
 end
 
+compiletextshader()
+loadfonttexture()
+createtexttexture()
 
+setMaxFramerate(30)
+edSetVisLines(40)
+edSetVisColumns(120)
+
+enableStdMouseCam()
+
+setCamPos(50,60,50)
+lookDown()

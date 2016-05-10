@@ -221,11 +221,14 @@ function f6Pressed()
   dofile("shader-fluid.lua")
 end
 
+dofile("opengl-prelude.lua")
+dofile("textshader.lua")
+
 function f7Pressed()
   continue()
-  dofile("fbotest.lua")
-  dofile("mainshader.lua")
-  dofile("render_to_fbo.lua")
+  --dofile("fbotest.lua")
+  --dofile("mainshader.lua")
+  --dofile("render_to_fbo.lua")
   dofile("textshader.lua")
 end
 
