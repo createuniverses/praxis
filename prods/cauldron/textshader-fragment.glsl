@@ -145,4 +145,6 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 void main()
 {
     mainImage(gl_FragColor, V.xz * 5.12 );
+    gl_FragColor.a = 0.7;
 }
+

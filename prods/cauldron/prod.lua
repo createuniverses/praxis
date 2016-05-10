@@ -84,31 +84,13 @@ function render()
   trace2()
 end
 
-function update()
-  WidgetLib.callAll("update")
-
-  for i=1,#skythings,1 do
-    local thing = skythings[i]
-    local planepos = vec3d(transform.getTranslation(airplane.lspace))
-    local tween = thing.p - planepos
-    local dist = Vector3D.magnitude(tween)
-    tween = Vector3D.normalize(tween)
-    if dist < (30 + thing.r) then
-      thing.p = planepos + (tween * (30+thing.r))
-    end
-  end
+function clamp(x,min,max)
+  if x < min then return min end
+  if x > max then return max end
+  return x
 end
-
-do
- local clamp
  
- function clamp(x,min,max)
-   if x < min then return min end
-   if x > max then return max end
-   return x
- end
- 
- function update()
+function update()
   WidgetLib.callAll("update")
 
   for i=1,#skythings,1 do
@@ -127,7 +109,6 @@ do
   g = clamp(g-20,0,255)
   b = clamp(b-20,0,255)
   setClearColor(r,g,b)
- end
 end
 
 dofile("widgetgroup.lua")
@@ -221,9 +202,6 @@ function f6Pressed()
   dofile("shader-fluid.lua")
 end
 
-dofile("opengl-prelude.lua")
-dofile("textshader.lua")
-
 function f7Pressed()
   continue()
   --dofile("fbotest.lua")
@@ -234,6 +212,11 @@ end
 
 --windowedMode(50,200,710,740)
 
+dofile("opengl-prelude.lua")
+dofile("textshader.lua")
+setKeyRepeat(true)
+
 windowedMode(200, 80, 720, 620)
 
 --dofile("forthexample.lua")
+
