@@ -217,9 +217,6 @@ function textshader_writebuffer(at, len)
   -- not just visible area.
 end
 
-function prerender()
-end
-
 function use_text_shader(shader)
   local u = shader.uloc
   
@@ -286,7 +283,8 @@ edSetVisColumns(120)
 
 enableStdMouseCam()
 
-setCamPos(50,60,50)
+--setCamPos(50,60,50)
+setCamPos(100,60,50)
 lookDown()
 
 textshaderwidget = WidgetLib2.newSimple("textshader")

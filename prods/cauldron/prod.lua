@@ -216,7 +216,8 @@ dofile("opengl-prelude.lua")
 dofile("textshader.lua")
 setKeyRepeat(true)
 
-windowedMode(200, 80, 720, 620)
+--windowedMode(200, 80, 720, 620)
+windowedMode(200, 80, 1200, 620)
 
 --dofile("forthexample.lua")
 

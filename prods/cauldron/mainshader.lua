@@ -137,13 +137,8 @@ end
 shader_frame_num = 0
 
 function render()
-  WidgetLib.renderAll()
-
-  local h = 5
+  local h = 4.5
   local t = fbotest
-  
-  --colorGL(255,255,255,255)
-  --drawLine(0,20,0,100,20,100)
   
   use_shader(mainshader)
 
@@ -157,14 +152,9 @@ function render()
   
   glUseProgram(0)
   
-  --colorGL(255,255,255,255)
-  --drawLine(0,20,0,100,20,100)
-
-  --renderGreets2()
-  --renderskythings()
   trace2()
+  
+  WidgetLib.renderAll()
   
   shader_frame_num = shader_frame_num + 1
 end
-
-
