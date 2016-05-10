@@ -94,6 +94,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ){
 void main()
 {
     mainImage(gl_FragColor, V.xz * 5.12 );
+    //mainImage(gl_FragColor, V.xz * vec2(10.24,5.12) );
 }
 ]])
 
@@ -149,8 +150,8 @@ function render()
   beginQuadGL()
     colorGL(255,255,255,255)
     vectorGL(    0, h,    0)
-    vectorGL( t.qs, h,    0)
-    vectorGL( t.qs, h, t.qs)
+    vectorGL( t.qs*2, h,    0)
+    vectorGL( t.qs*2, h, t.qs)
     vectorGL(    0, h, t.qs)
   endGL()
   

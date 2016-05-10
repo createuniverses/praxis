@@ -54,7 +54,7 @@ end
 
 function edGetVisBlockEnd()
   local b,e = edGetLuaBlockPosition()
-  return e-edGetTopPosition()
+  return e-edGetTopPosition()-1
 end
 
 textshader.docshader.extrauniforms = function ()
@@ -94,7 +94,7 @@ end
 function maketextshaderfbos()
   local g = textshader
   local sz = 512
-  fbotest = makefbo(sz,sz, GL_NEAREST)
+  fbotest = makefbo(sz*2,sz*1, GL_NEAREST)
 end
 
 function updatetextshadertext(s)
@@ -225,6 +225,20 @@ function textshader_writebuffer(at, len)
       textshader.selend.col = col
   end
   
+  if edGetVisBlockBegin() <= 0 then
+      textshader.blkstart.row = 0
+      textshader.blkstart.col = 0
+  end
+  
+  if edGetVisBlockEnd() > len then
+      textshader.blkend.row = row+1
+      textshader.blkend.col = 1000
+  end
+  
+  if edGetVisBlockEnd() == len then
+      textshader.blkend.row = row
+      textshader.blkend.col = col
+  end
   -- need to traverse entire buffer for selection row col info
   -- not just visible area.
 end

@@ -14,8 +14,11 @@ float ZOOM = floor(min(iResolution.x,iResolution.y) / 100.0);
  **/
 vec4 drawCh(in float character, in float x, in float y)
 {
-    vec2 coord = floor(vec2(CHAR_SIZE.x*mod(character,32.0) + x, iResolution.y - CHAR_SIZE.y*floor(0.0+character/32.0) - y));
-    vec4 pixel = texture2D(iChannel0, (coord+vec2(0.5,0.5)) / iResolution.xy);
+    //vec2 coord = floor(vec2(CHAR_SIZE.x*mod(character,32.0) + x, iResolution.y - CHAR_SIZE.y*floor(0.0+character/32.0) - y));
+    //vec4 pixel = texture2D(iChannel0, (coord+vec2(0.5,0.5)) / iResolution.xy);
+    
+    vec2 coord = floor(vec2(CHAR_SIZE.x*mod(character,32.0) + x, 512.0 - CHAR_SIZE.y*floor(0.0+character/32.0) - y));
+    vec4 pixel = texture2D(iChannel0, (coord+vec2(0.5,0.5)) / vec2(512.0,512.0));
     return pixel;
 }
 
@@ -23,7 +26,8 @@ float readChar(in vec2 v)
 {
     float line   = floor(v.y);
     float column = floor(v.x);
-    vec4 chunk = texture2D(iChannel1, ((vec2(column + 0.5, line + 0.5)) / iResolution.xy));
+    //vec4 chunk = texture2D(iChannel1, ((vec2(column + 0.5, line + 0.5)) / iResolution.xy));
+    vec4 chunk = texture2D(iChannel1, ((vec2(column + 0.5, line + 0.5)) / vec2(512.0,512.0)));
     float fchar = floor(chunk.r * 255.0 + 0.5);
     return fchar;
 }
@@ -43,6 +47,35 @@ vec2 FragCoordToCharPixel_Zoom(in vec2 fragCoord)
   pixel.x = pixel.x + 256.0;
   pixel.y = iResolution.y - pixel.y;
   return pixel;
+}
+
+bool textPosInRange(in vec2 pos, in vec2 start, in vec2 end)
+{
+  // On start row and selection on multiple rows
+  if (pos.y  == start.y &&
+      end.y  >  start.y &&
+      pos.x  >= start.x)
+    return true;
+  
+  // On start row and selection on single row
+  if (end.y  == start.y &&
+      pos.y  == start.y &&
+      pos.x  >= start.x &&
+      pos.x  <  end.x)
+    return true;
+  
+  // On row between begin and end rows
+  if (pos.y > start.y &&
+      pos.y < end.y)
+    return true;
+  
+  // On end row and selection on multiple rows
+  if (pos.y  == end.y &&
+      end.y  >  start.y &&
+      pos.x  <  end.x)
+    return true;
+
+  return false;
 }
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
@@ -75,34 +108,25 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
         if (colrow == iBlockEnd)
           color.b = 1.0;
+
+        if (textPosInRange(colrow,
+                           iBlockStart,
+                           iBlockEnd))
+        {
+          color.b = 1.0;
+        }
         
-        // On start row and selection on multiple rows
-        if (colrow.y        == iSelectionStart.y &&
-            iSelectionEnd.y > iSelectionStart.y &&
-            colrow.x        >= iSelectionStart.x)
+        if (textPosInRange(colrow,
+                           iSelectionStart,
+                           iSelectionEnd))
+        {
           color.g = 0.5;
-          
-        // On start row and selection on single row
-        if (iSelectionEnd.y == iSelectionStart.y &&
-            colrow.y        == iSelectionStart.y &&
-            colrow.x        >= iSelectionStart.x &&
-            colrow.x        <  iSelectionEnd.x)
-          color.g = 0.5;
-          
-        // On row between begin and end rows
-        if (colrow.y > iSelectionStart.y &&
-            colrow.y < iSelectionEnd.y)
-          color.g = 0.5;
-          
-        // On end row and selection on multiple rows
-        if (colrow.y        == iSelectionEnd.y &&
-            iSelectionEnd.y >  iSelectionStart.y &&
-            colrow.x        <  iSelectionEnd.x)
-          color.g = 0.5;
-          
+        }
+        
         fragColor = color;
     }
     
+    //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture(iChannel0, fragCoord / vec2(512.0,512.0));
     //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture(iChannel0, fragCoord / iResolution.xy);
     //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture(iChannel1, fragCoord / iResolution.xy);
 }
