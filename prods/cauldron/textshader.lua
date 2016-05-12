@@ -80,7 +80,7 @@ function createtexttexture(s)
 end
 
 function loadfonttexture()
-  glTexWBLoadFromFile("test2.bin")
+  glTexWBLoadFromFile("fonttexture.bin")
   textshader.fonttex = glTexWBMakeTexture(GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT)
 end
 

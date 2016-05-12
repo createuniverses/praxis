@@ -24,8 +24,7 @@ win32 {
 
     LIBS += $$_PRO_FILE_PWD_/fmodapi375win/lib/fmodvc.lib
     LIBS += $$_PRO_FILE_PWD_/freetype-2.3.5/objs/freetype235.lib
-    #LIBS += ..\\libs\\fmodvc.lib
-    #LIBS += ..\\libs\\freetype235.lib
+
     LIBS += wsock32.lib
     LIBS += Shell32.lib
 }
@@ -115,27 +114,6 @@ SOURCES += main.cpp \
     RtMidi.cpp \
     forthCallbacks.cpp \
     forthInterface.cpp \
-    ficl-4.1.0/bit.c \
-    ficl-4.1.0/callback.c \
-    ficl-4.1.0/compatibility.c \
-    ficl-4.1.0/dictionary.c \
-    ficl-4.1.0/double.c \
-    ficl-4.1.0/extras.c \
-    ficl-4.1.0/fileaccess.c \
-    ficl-4.1.0/float.c \
-    ficl-4.1.0/hash.c \
-    ficl-4.1.0/lzcompress.c \
-    ficl-4.1.0/lzuncompress.c \
-    ficl-4.1.0/prefix.c \
-    ficl-4.1.0/primitives.c \
-    ficl-4.1.0/search.c \
-    ficl-4.1.0/softcore.c \
-    ficl-4.1.0/stack.c \
-    ficl-4.1.0/system.c \
-    ficl-4.1.0/tools.c \
-    ficl-4.1.0/utility.c \
-    ficl-4.1.0/vm.c \
-    ficl-4.1.0/word.c \
     io/BStream.c \
     io/BStreamTag.c \
     io/cdecode.c \
@@ -291,15 +269,9 @@ SOURCES += main.cpp \
     lpeg-1.0.0/lptree.c \
     lpeg-1.0.0/lpvm.c
 
-unix {
-SOURCES += \
-    ficl-4.1.0/ficlplatform/unix.c
-}
-
 win32 {
 SOURCES += \
-    audioMidi.cpp \
-    ficl-4.1.0/ficlplatform/win32.c
+    audioMidi.cpp
 }
 
 HEADERS += \
@@ -336,10 +308,6 @@ HEADERS += \
     RtError.h \
     forthCallbacks.h \
     forthInterface.h \
-    ficl-4.1.0/ficl.h \
-    ficl-4.1.0/ficlcompatibility.h \
-    ficl-4.1.0/ficllocal.h \
-    ficl-4.1.0/ficltokens.h \
     io/386-ucontext.h \
     io/amd64-ucontext.h \
     io/Base.h \
@@ -510,13 +478,3 @@ HEADERS += \
     lpeg-1.0.0/lptree.h \
     lpeg-1.0.0/lptypes.h \
     lpeg-1.0.0/lpvm.h
-
-unix {
-HEADERS += \
-    ficl-4.1.0/ficlplatform/unix.h
-}
-
-win32 {
-HEADERS += \
-    ficl-4.1.0/ficlplatform/win32.h
-}

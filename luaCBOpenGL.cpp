@@ -1234,7 +1234,7 @@ public:
 
     void LoadFromFile(std::string sFilename)
     {
-        std::ifstream infile (sFilename,std::ofstream::binary);
+        std::ifstream infile (sFilename.c_str(), std::ifstream::binary);
         infile.seekg (0,infile.end);
         long filesize = infile.tellg();
         infile.seekg (0);
@@ -1245,7 +1245,7 @@ public:
 
     void WriteToFile(std::string sFilename)
     {
-        std::ofstream outfile (sFilename,std::ofstream::binary);
+        std::ofstream outfile (sFilename.c_str(), std::ofstream::binary);
         outfile.write (data, size);
         outfile.close();
     }

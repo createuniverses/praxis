@@ -77,7 +77,7 @@ void * inputthread_function( void *ptr )
 
 #endif
 
-void MoveConsTest();
+// void MoveConsTest();
 
 World *          g_pWorld;
 
@@ -127,7 +127,7 @@ int main()
 
 #endif
 
-    MoveConsTest();
+    //MoveConsTest();
 
 #ifdef __PRAXIS_WINDOWS__
 //    hInstance;hPrevInstance;lpCmdLine;nCmdShow;
@@ -206,6 +206,7 @@ int main()
 #endif
 }
 
+#if 0
 // MoveConsTest code
 
 #include <iostream>
@@ -339,3 +340,5 @@ void MoveConsTest()
    // Insert a new element into the second position of the vector.
    v.insert(v.begin() + 1, MemoryBlock(50));
 }
+
+#endif

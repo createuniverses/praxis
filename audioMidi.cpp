@@ -154,6 +154,10 @@ void SelectMidiInstrument(unsigned char nInstrument)
     MidiOutMessage (g_midihandle, 0x0C0, 0, nInstrument, 0) ;
 }
 
+// Defined in windef.h
+// static int min(int a, int b) { return (a < b ? a : b); }
+// static int max(int a, int b) { return (a > b ? a : b); }
+
 #define minmax(a,x,b) (min (max (x, a), b))
 #define TIMER_RES   5
 UINT     uTimerRes;
