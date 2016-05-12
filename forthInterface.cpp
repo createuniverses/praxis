@@ -1,103 +1,6 @@
 
 #include "forthInterface.h"
 
-ficlVm * g_ficlVm = 0;
-ficlSystem * g_ficlSystem = 0;
-ficlDictionary * g_ficlDictionary = 0;
-
-std::string g_ficlTextOut;
-std::string g_ficlErrorOut;
-
-void ficlTextOutCapture(ficlCallback *callback, char *text);
-void ficlErrorOutCapture(ficlCallback *callback, char *text);
-
-void forthInit_ficl()
-{
-    g_ficlSystem = ficlSystemCreate(NULL);
-    ficlSystemCompileExtras(g_ficlSystem);
-
-    g_ficlVm = ficlSystemCreateVm(g_ficlSystem);
-    g_ficlDictionary = ficlSystemGetDictionary(g_ficlSystem);
-
-    g_ficlVm->callback.textOut = ficlTextOutCapture;
-    g_ficlVm->callback.errorOut = ficlErrorOutCapture;
-}
-
-bool forthCall_ficl(std::string sCmd)
-{
-    g_ficlTextOut = "";
-    g_ficlErrorOut = "";
-
-    ficlVmEvaluate(g_ficlVm, const_cast<char *>(sCmd.c_str()));
-
-    return true;
-}
-
-void forthClose_ficl()
-{
-    ficlSystemDestroy(g_ficlSystem);
-
-    g_ficlVm = 0;
-    g_ficlSystem = 0;
-    g_ficlDictionary = 0;
-
-    //ficlSystemGlobal = 0;
-}
-
-std::string & forthGetError_ficl()
-{
-    return g_ficlErrorOut;
-}
-
-std::string & forthGetOutput_ficl()
-{
-    return g_ficlTextOut;
-}
-
-void forthClearError_ficl()
-{
-    g_ficlErrorOut = "";
-}
-
-void forthClearOutput_ficl()
-{
-    g_ficlTextOut = "";
-}
-
-std::string forthGetState_ficl()
-{
-    if(g_ficlVm)
-    {
-        if(g_ficlVm->state == FICL_VM_STATE_INTERPRET)
-            return "interpret";
-        else if(g_ficlVm->state == FICL_VM_STATE_COMPILE)
-            return "compiling";
-        else
-            return "invalid";
-    }
-    else
-    {
-        return "VM not initialized";
-    }
-}
-
-
-
-// FICL output capturing
-
-void ficlTextOutCapture(ficlCallback *callback, char *text)
-{
-    g_ficlTextOut += std::string(text);
-}
-
-void ficlErrorOutCapture(ficlCallback *callback, char *text)
-{
-    g_ficlErrorOut += std::string(text);
-}
-
-/////////////////////////
-// pForth
-
 std::string g_sOut;
 std::string g_sIn;
 int g_nInPos = 0;
@@ -227,9 +130,11 @@ bool forthCall(std::string sCmd)
     return true;
 }
 
+std::string g_sForthError;
+
 std::string & forthGetError()
 {
-    return g_ficlErrorOut;
+    return g_sForthError;
 }
 
 std::string & forthGetOutput()

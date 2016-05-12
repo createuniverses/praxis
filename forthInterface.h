@@ -16,8 +16,6 @@
 
 #include <string>
 
-#include "ficl-4.1.0/ficl.h"
-
 void forthInit();
 
 bool forthCall(std::string sCmd);
