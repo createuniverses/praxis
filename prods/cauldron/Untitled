@@ -1,0 +1,28 @@
+scp 77.377914428711,60,45.822772979736
+stack traceback:
+  [string "function setCamPos(x,y,z)..."]:5: in function 'setCamPos'
+  [string "do..."]:7: in function '?'
+  widgets2.lua:99: in function 'callAll'
+  widgets.lua:39: in function 'callAll'
+  prod.lua:94: in function 'update'
+  [string "update()"]:1: in main chunk
+
+print2(inspect(debug))
+{
+  debug = nil --[[<function 1>]],
+  gethook = nil --[[<function 2>]],
+  getinfo = nil --[[<function 3>]],
+  getlocal = nil --[[<function 4>]],
+  getmetatable = nil --[[<function 5>]],
+  getregistry = nil --[[<function 6>]],
+  getupvalue = nil --[[<function 7>]],
+  getuservalue = nil --[[<function 8>]],
+  sethook = nil --[[<function 9>]],
+  setlocal = nil --[[<function 10>]],
+  setmetatable = nil --[[<function 11>]],
+  setupvalue = nil --[[<function 12>]],
+  setuservalue = nil --[[<function 13>]],
+  traceback = nil --[[<function 14>]],
+  upvalueid = nil --[[<function 15>]],
+  upvaluejoin = nil --[[<function 16>]]
+}
