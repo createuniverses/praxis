@@ -134,7 +134,7 @@ void main()
 
 assertglshader(shadres)
 
-local function preparething()
+function gameoflife.preparefbo()
   local g = gameoflife
   
   g.fbo1 = makefbo(512,512, GL_NEAREST)
@@ -149,7 +149,7 @@ local function preparething()
   gather_shader_uniforms(g.copyshader)
 end
 
-preparething()
+gameoflife.preparefbo()
 
 function prerender()
   --do return end

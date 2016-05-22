@@ -73,7 +73,7 @@ bool textPosInRange(in vec2 pos, in vec2 start, in vec2 end)
   if (end.y  == start.y &&
       pos.y  == start.y &&
       pos.x  >= start.x &&
-      pos.x  <  end.x)
+      pos.x  <= end.x)
     return true;
   
   // On row between begin and end rows
@@ -84,7 +84,7 @@ bool textPosInRange(in vec2 pos, in vec2 start, in vec2 end)
   // On end row and selection on multiple rows
   if (pos.y  == end.y &&
       end.y  >  start.y &&
-      pos.x  <  end.x)
+      pos.x  <= end.x)
     return true;
 
   return false;
@@ -100,7 +100,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     
     if (pixel.y > 0.0)
     {
-        float fFrame = float(iFrame);
+        //float fFrame = float(iFrame);
         
         // Uncomment these to have scrolling.
         //float speed = 8.0;
@@ -115,11 +115,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
         if (colrow == iCursorPos)
           color.r = 0.5;
           
-        if (colrow == iBlockStart)
-          color.b = 1.0;
+        //if (colrow == iBlockStart)
+        //  color.b = 1.0;
 
-        if (colrow == iBlockEnd)
-          color.b = 1.0;
+        //if (colrow == iBlockEnd)
+        //  color.b = 1.0;
 
         if (textPosInRange(colrow,
                            iBlockStart,

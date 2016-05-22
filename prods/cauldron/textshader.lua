@@ -31,7 +31,7 @@ end
 function edGetVisSelectEnd()
   if edIsSelectionActive() then
     local b,e,a = edGetSelectionPositions()
-    return e - edGetTopPosition()
+    return e - edGetTopPosition() - 1
   else
     return -1
   end
