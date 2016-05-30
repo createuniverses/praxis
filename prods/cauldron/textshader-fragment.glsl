@@ -48,6 +48,7 @@ vec2 FragCoordToCharPixel_Plain(in vec2 fragCoord)
 {
   vec2 pixel = fragCoord;
   pixel.y = iResolution.y - pixel.y;
+  //pixel.y = 1000.0 - pixel.y;
   return pixel;
 }
 
@@ -96,9 +97,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     //vec2 pixel = FragCoordToCharPixel_Zoom(fragCoord);
     
     // Default blank color
-    fragColor = vec4(1.0, 0.0, 0.0, 0.4);
+    //fragColor = vec4(0.3, 0.0, 0.0, 0.4);
+    fragColor = vec4(0.0, 0.0, 0.0, 0.0);
     
-    if (pixel.y > 0.0)
+    if (pixel.y > 0.0 && pixel.x > 0.0)
     {
         //float fFrame = float(iFrame);
         
@@ -136,6 +138,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
         }
         
         fragColor = color;
+        fragColor.a = 0.7;
     }
     
     //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture(iChannel0, fragCoord / vec2(512.0,512.0));
@@ -144,7 +147,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
 void main()
 {
-    mainImage(gl_FragColor, V.xz * 5.12 );
-    gl_FragColor.a = 0.7;
+    //mainImage(gl_FragColor, V.xz * 5.12 );
+    mainImage(gl_FragColor, (gl_FragCoord.xy * vec2(1.0, 0.5)) + vec2(-30.0, 0.0));
+    //gl_FragColor.a = 0.7;
 }
-

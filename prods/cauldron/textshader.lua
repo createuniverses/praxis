@@ -217,14 +217,32 @@ function textshader_writebuffer(at, len)
   -- not just visible area.
 end
 
+--print2(edGetVisLines())
+--print2(80*12)
+--960
+
 function use_text_shader(shader)
+  -- need to parametrize the shader
   local u = shader.uloc
   
   glUseProgram(shader.prog)
   assertgl()
+
+  do
+    local x,y,w,h = getWindowRect()
+    h = h - 50
+    --local nl = math.floor(h / 12) - 2
+    local nl = math.floor(h / 24)
+    edSetVisLines(nl)
+    --local h = edGetVisLines() * 12
+    --h = h + 40
+    glUniformf(u.resolution, 512, h * 0.5);
+    assertgl()
+  end
   
-  glUniformf(u.resolution, 512, 512);
-  assertgl()
+  --glUniformf(u.resolution, 512, 512);
+  --glUniformf(u.resolution, 512, 1000);
+  --assertgl()
   
   glActiveTexture(0);
   glBindTexture(shader.fonttex)    assertgl()
@@ -278,13 +296,13 @@ loadfonttexture()
 createtexttexture()
 
 setMaxFramerate(30)
-edSetVisLines(40)
+edSetVisLines(80)
 edSetVisColumns(120)
 
 enableStdMouseCam()
 
 --setCamPos(50,60,50)
-setCamPos(100,60,50)
+setCamPos(100,40,50)
 --setCamPos(100,58,50)
 lookDown()
 
@@ -292,6 +310,5 @@ textshaderwidget = WidgetLib2.newSimple("textshader")
 textshaderwidget.render = function (o) textshader.render() end
 textshaderwidget.update = function (o) textshader.update() end
 Widgets["textshader"] = textshaderwidget
-
 
 
