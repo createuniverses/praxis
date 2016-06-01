@@ -148,6 +148,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 void main()
 {
     //mainImage(gl_FragColor, V.xz * 5.12 );
-    mainImage(gl_FragColor, (gl_FragCoord.xy * vec2(1.0, 0.5)) + vec2(-30.0, 0.0));
+    //mainImage(gl_FragColor, (gl_FragCoord.xy * vec2(1.0, 0.5)) + vec2(-30.0, 0.0));
+    mainImage(gl_FragColor, (gl_FragCoord.xy * vec2(1.0, 1.0)) + vec2(-30.0, 0.0));
     //gl_FragColor.a = 0.7;
 }
+

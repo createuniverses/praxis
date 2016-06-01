@@ -231,12 +231,13 @@ function use_text_shader(shader)
   do
     local x,y,w,h = getWindowRect()
     h = h - 50
-    --local nl = math.floor(h / 12) - 2
-    local nl = math.floor(h / 24)
+    local nl = math.floor(h / 12) - 2
+    --local nl = math.floor(h / 24)
     edSetVisLines(nl)
     --local h = edGetVisLines() * 12
     --h = h + 40
-    glUniformf(u.resolution, 512, h * 0.5);
+    glUniformf(u.resolution, 512, h);
+    --glUniformf(u.resolution, 512, h * 0.5);
     assertgl()
   end
   
@@ -310,5 +311,4 @@ textshaderwidget = WidgetLib2.newSimple("textshader")
 textshaderwidget.render = function (o) textshader.render() end
 textshaderwidget.update = function (o) textshader.update() end
 Widgets["textshader"] = textshaderwidget
-
 
