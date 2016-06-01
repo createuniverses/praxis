@@ -573,7 +573,7 @@ void GLEditor::ResizeTexture(int nNewSize)
 float g_fEdLeftMargin = 0.01f;
 float g_fEdRightMargin = 0.75f;
 float g_fEdBottomMargin = 0.05f;
-float g_fEdTopMargin = 0.9f;
+float g_fEdTopMargin = 0.95f;
 
 void GLEditor::Render()
 {
@@ -582,9 +582,9 @@ void GLEditor::Render()
     if(bDirectRenderMode)
     {
         int nLeftMargin    = m_Width * g_fEdLeftMargin;
-        int nWidth         = m_Width * g_fEdRightMargin;
+        int nWidth         = m_Width * g_fEdRightMargin - nLeftMargin;
         int nBottomMargin  = m_Height * g_fEdBottomMargin;
-        int nHeight        = m_Height * g_fEdTopMargin;
+        int nHeight        = m_Height * g_fEdTopMargin - nBottomMargin;
 
         glViewport(nLeftMargin, nBottomMargin, nWidth, nHeight);
         RenderBuffer(true);
@@ -701,6 +701,8 @@ void GLEditor::RenderBuffer(bool bBackground)
     glLoadIdentity();
     glPushMatrix();
 
+    luaCall("edPrerenderBg()", "onerrorgl");
+
     if(bBackground)
     {
         glColor4f(0,0,0,0.7f);
@@ -711,6 +713,8 @@ void GLEditor::RenderBuffer(bool bBackground)
         glVertex3f( minX, maxY, 0);
         glEnd();
     }
+
+    luaCall("edPostrenderBg()", "onerrorgl");
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();

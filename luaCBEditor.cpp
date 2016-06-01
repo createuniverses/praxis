@@ -857,6 +857,9 @@ void luaInitCallbacksEditor()
     luaCall("function edRenderChar(c,n,xp,yp) edStrokeCharacter(c,0,0) end");
 
     luaCall("function edRenderChars() end");
+    luaCall("function edPrerenderBg() end");
+    luaCall("function edPostrenderBg() end");
+
 
     lua_register(g_pLuaState, "newBuffer",             luaCBNewBuffer);
     lua_register(g_pLuaState, "closeBuffer",           luaCBCloseBuffer);

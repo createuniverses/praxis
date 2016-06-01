@@ -213,9 +213,9 @@ static void qt_save_gl_state()
 {
     glPushClientAttrib(GL_CLIENT_ALL_ATTRIB_BITS);
     glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glMatrixMode(GL_TEXTURE);
-    glPushMatrix();
-    glLoadIdentity();
+    //glMatrixMode(GL_TEXTURE);
+    //glPushMatrix();
+    //glLoadIdentity();
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glMatrixMode(GL_MODELVIEW);
@@ -232,8 +232,8 @@ static void qt_save_gl_state()
 
 static void qt_restore_gl_state()
 {
-    glMatrixMode(GL_TEXTURE);
-    glPopMatrix();
+    //glMatrixMode(GL_TEXTURE);
+    //glPopMatrix();
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
@@ -408,6 +408,7 @@ void World::Render()
 
     if(m_bRenderEditor)
     {
+        // Get rid of this completely.
         qt_save_gl_state();
         GetEditor()->Render();
         qt_restore_gl_state();

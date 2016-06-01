@@ -261,7 +261,7 @@ function use_text_shader(shader)
   glUniformf(u.blkend,    shader.blkend.col,    shader.blkend.row)    assertgl()
 end
 
-function textshader.update()
+function textshader.update(o)
   --textshaderwritetext(getBufferText())
   --textshader_writebuffer(edGetCharAt, edGetBufferLength())
   
@@ -275,19 +275,29 @@ function textshader.update()
   textshader_writebuffer(edGetVisCharAt, edGetVisLength())
 end
 
+
 function textshader.render()
   use_text_shader(textshader)
 
   local h  = 5
-  local qs = 100
+  local qw = 8
+  local qh = 10
+
+
+  glPushMatrix()
+
+  glApplyTransform(transform.camera())
+  glTranslate(-9,-4.8,0)
   
   beginQuadGL()
     colorGL(255,255,255,255)
-    vectorGL(    0,  h,   0)
-    vectorGL( qs*2,  h,   0)
-    vectorGL( qs*2,  h,  qs)
-    vectorGL(    0,  h,  qs)
+    vectorGL(  0,  0,  h)
+    vectorGL( qw,  0,  h)
+    vectorGL( qw, qh,  h)
+    vectorGL(  0, qh,  h)
   endGL()
+
+  glPopMatrix()
   
   glUseProgram(0)
 end
@@ -307,8 +317,24 @@ setCamPos(100,40,50)
 --setCamPos(100,58,50)
 lookDown()
 
-textshaderwidget = WidgetLib2.newSimple("textshader")
-textshaderwidget.render = function (o) textshader.render() end
-textshaderwidget.update = function (o) textshader.update() end
-Widgets["textshader"] = textshaderwidget
+--textshaderwidget = WidgetLib2.newSimple("textshader")
+--textshaderwidget.render = function (o) textshader.render() end
+--textshaderwidget.update = function (o) textshader.update() end
+--Widgets["textshader"] = textshaderwidget
+
+edNativeControlOff()
+
+function edPrerenderBg()
+  textshader_writebuffer(edGetVisCharAt, edGetVisLength())
+  use_text_shader(textshader)
+end
+
+function edPostrenderBg()
+  glUseProgram(0)
+end
+
+edSetLeftMargin(0)
+edSetBottomMargin(0)
+edSetTopMargin(1)
+edSetRightMargin(0.6)
 
