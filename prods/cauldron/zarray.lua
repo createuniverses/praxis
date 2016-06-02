@@ -1,4 +1,6 @@
--- from www.github.com/danielpower/zStarlocal zArray = {}
+-- from www.github.com/danielpower/zStar
+
+local zArray = {}
 
 function zArray.set(array, x, y, value)
     if not array[x] then array[x] = {} end
@@ -25,4 +27,5 @@ end
 
 _zArray = zArray
 return(zArray)
+
 
