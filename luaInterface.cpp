@@ -76,19 +76,20 @@ void luaInit()
     lua_register(g_pLuaState, "print",  cbLuaPrint);
 
     luaL_dostring(g_pLuaState,
-                  "function onerror(s) "
-                    "return s .. \"\\n\" .. debug.traceback() "
+                  "function onerror(s)\n"
+                  "  return s .. \"\\n\" .. debug.traceback()\n"
                   "end");
 
     luaL_dostring(g_pLuaState,
-                  "function onerrorgl(s) "
-                    "endGL() "
-                    "glResetStencil() "
-                    "glUseProgram(0); "
-                    "glBindFramebuffer(0) "
-                    "glBindRenderbuffer(0) "
-                    "setClearColor_c(0,0,0) "
-                    "return s .. \"\\n\" .. debug.traceback() "
+                  "function onerrorgl(s)\n"
+                  "  endGL()\n"
+                  "  glResetStencil()\n"
+                  "  glUseProgram(0)\n"
+                  "  glBindFramebuffer(0)\n"
+                  "  glBindRenderbuffer(0)\n"
+                  "  setClearColor_c(0,0,0)\n"
+                  "  glGetError()\n"
+                  "  return s .. \"\\n\" .. debug.traceback()\n"
                   "end");
 
     lua_sethook(g_pLuaState, cbLuaBreakHook, LUA_MASKCOUNT, 1000);

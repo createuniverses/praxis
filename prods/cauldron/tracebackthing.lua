@@ -30,7 +30,81 @@ function showcallingcode(fnname)
   -- after first run, sets itself back how it was.
 end
 
+------------------------------------
 
+function wraptoshowcaller(fn)
+  local wrappedfn = function (...)
+    print2(getFunction(debug.getinfo(2).func))
+    fn(...)
+  end
+  return wrappedfn
+end
+
+function wraptoshowcaller(fn, setfn)
+  local wrappedfn = function (...)
+    print2(getFunction(debug.getinfo(2).func))
+    fn(...)
+    setfn(fn)
+  end
+  setfn(wrappedfn)
+end
+
+do
+ myfns = {}
+ myfns[1] = function ()
+   print2("myfns1")
+   myfns[2]()
+ end
+ myfns[2] = function ()
+   print2("myfns2")
+ end
+ --myfns[2] = wraptoshowcaller(myfns[2])
+ wraptoshowcaller(myfns[2], function (fn) myfns[2] = fn end)
+end
+
+print2(getFunction(myfns[2]))
+ myfns[2] = function ()
+   print2("myfns2")
+ end
+
+
+  local wrappedfn = function (...)
+    print2(getFunction(debug.getinfo(2).func))
+    fn(...)
+    setfn(fn)
+  end
+
+
+
+myfns[1]()
+myfns1
+myfns2
+
+myfns1
+ myfns[1] = function ()
+   print2("myfns1")
+   myfns[2]()
+ end
+
+myfns2
+
+myfns1
+myfns2
+
+myfns1
+myfns2
+
+myfns1
+ myfns[1] = function ()
+   print2("myfns1")
+   myfns[2]()
+ end
+
+myfns2
+
+
+
+-------------------------------
 
 myfns1
 myfns2
@@ -102,5 +176,6 @@ do
   closeBuffer()
   switchToBuffer("cps-factorial.lua")
 end
+
 
 

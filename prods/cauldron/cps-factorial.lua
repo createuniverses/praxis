@@ -22,15 +22,143 @@ function factorial (n)
     return n * factorial(n-1)
   end
  end
- table.insert(diagfns, fn)
+ table.insert(diagfns, {
+   fn = fn, env = _ENV,
+   setn = function(newn) n = newn end,
+   getn = function () return n end })
  return fn()
 end
 
 print2(factorial(10))
 3628800
 
+3628800
+
 print2(#diagfns)
 10
+
+
+print2(diagfns[4].getn())
+7
+
+10
+
+7
+
+print2(diagfns[4].fn())
+param = 9
+6969690
+
+3628800
+
+5040
+
+diagfns[4].setn(10)
+
+print2(getFunction(diagfns[4].env.factorial))
+function factorial (n)
+ local fn = function ()
+  if n <= 1 then
+    return 1
+  else
+    return n * factorial(n-1)
+  end
+ end
+ table.insert(diagfns, {
+   fn = fn, env = _ENV,
+   setn = function(newn) n = newn end,
+   getn = function () return n end })
+ return fn()
+end
+
+do
+ clearError()
+ diagfns[4].env.factorial = function (m)
+  print2("param = " .. m)
+  return 696969
+ end
+end
+
+print2(getFunction(factorial))
+ diagfns[4].env.factorial = function (m)
+  print2("param = " .. m)
+  return 696969
+ end
+
+
+do
+  local a = 34
+  local fn = function () print2("hello " .. a) end
+  function geta() return a end
+  function fn2()
+    fn()
+  end
+  function setfn(f)
+    fn = f
+  end
+end
+
+
+fn2()
+hello 34
+
+hello 34
+
+fn2()
+hello
+
+setfn(function () print2("wooooooot" .. geta()) end)
+
+
+fn2()
+wooooooot34
+
+
+wooooooot
+
+hello
+fn()
+
+
+
+function factorial (n)
+ local fn = function ()
+  if n <= 1 then
+    return 1
+  else
+    return n * factorial(n-1)
+  end
+ end
+ table.insert(diagfns, {
+   fn = fn, env = _ENV,
+   setn = function(newn) n = newn end,
+   getn = function () return n end })
+ return fn()
+end
+
+ diagfns[4].env.factorial = function (m)
+  print2("param = " .. m)
+  return 696969
+ end
+
+factorial(10)
+param = 10
+
+
+
+
+10
+
+
+inspectclosure(diagfns[4])
+Params: 0
+Upvals: 2
+n: <number>
+ => 7
+_ENV: <table>
+
+
+
 
 print2(diagfns[3]())
 40320
@@ -404,4 +532,5 @@ Params: 1
 n: <nil>
 Upvals: 0
 n: 10
+
 
