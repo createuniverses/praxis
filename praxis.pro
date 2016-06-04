@@ -32,6 +32,7 @@ win32 {
 unix {
     DEFINES += __PRAXIS_LINUX__
     DEFINES += __LINUX_ALSASEQ__
+    DEFINES += LUA_USE_POSIX
     QMAKE_CXXFLAGS += $$system(freetype-config --cflags)
 
 #praxis is compatible with both SDL 1.2 and SDL 2
