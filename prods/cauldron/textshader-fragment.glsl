@@ -108,14 +108,18 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
         //float speed = 8.0;
         //pixel.y = pixel.y + speed*fFrame/30.0;
         
-        vec2 colrow = floor(pixel/CHAR_SIZE);
+        vec2 colrowraw = pixel/CHAR_SIZE;
+        vec2 colrow = floor(colrowraw);
         
         float ch  = readChar(colrow);
 
         vec4 color = drawCh(ch, mod(pixel.x, CHAR_SIZE.x), mod(pixel.y, CHAR_SIZE.y));
         
-        if (colrow == iCursorPos)
-          color.r = 0.5;
+        if (colrow == iCursorPos && colrowraw.x - colrow.x < 0.25)
+        {
+          color.r = 0.9;
+          color.g = 0.9;
+        }
           
         //if (colrow == iBlockStart)
         //  color.b = 1.0;
@@ -134,7 +138,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
                            iSelectionStart,
                            iSelectionEnd))
         {
-          color.g = 0.5;
+          color.g = 0.9;
         }
         
         fragColor = color;
@@ -152,4 +156,5 @@ void main()
     mainImage(gl_FragColor, (gl_FragCoord.xy * vec2(1.0, 1.0)) + vec2(-30.0, 0.0));
     //gl_FragColor.a = 0.7;
 }
+
 

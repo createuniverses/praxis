@@ -31,7 +31,7 @@ end
 function edGetVisSelectEnd()
   if edIsSelectionActive() then
     local b,e,a = edGetSelectionPositions()
-    return e - edGetTopPosition()
+    return e - edGetTopPosition()-1
   else
     return -1
   end
@@ -310,12 +310,12 @@ setMaxFramerate(30)
 edSetVisLines(80)
 edSetVisColumns(120)
 
-enableStdMouseCam()
+--enableStdMouseCam()
 
 --setCamPos(50,60,50)
-setCamPos(100,40,50)
+--setCamPos(100,40,50)
 --setCamPos(100,58,50)
-lookDown()
+--lookDown()
 
 --textshaderwidget = WidgetLib2.newSimple("textshader")
 --textshaderwidget.render = function (o) textshader.render() end
@@ -336,5 +336,7 @@ end
 edSetLeftMargin(0)
 edSetBottomMargin(0)
 edSetTopMargin(1)
-edSetRightMargin(0.6)
+edSetRightMargin(0.7)
+
+
 
