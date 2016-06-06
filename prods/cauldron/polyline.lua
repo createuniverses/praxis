@@ -165,14 +165,10 @@ end
 
 setCamPosXY(0,0)
 
---clearError()
---clearTrace()
+clearError()
+clearTrace()
 continue()
 
-lookDown()
-
---print2(getErrorText())
---print2(getFunction(lookDown))
 function lookDown()
   local pos = { getCamPos() }
   -- pos[1] = pos[1] + 10 -- look along x
@@ -181,3 +177,4 @@ function lookDown()
   rotateCam(0, math.pi * -0.5)
 end
 
+lookDown()
