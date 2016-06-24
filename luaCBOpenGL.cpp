@@ -1255,6 +1255,18 @@ public:
         data[pos] = byte;
     }
 
+    void SetPixel(float r, float g, float b, float a, int pos)
+    {
+        float * pr = (float *)(&data[(pos * 16) +  0]);
+        float * pg = (float *)(&data[(pos * 16) +  4]);
+        float * pb = (float *)(&data[(pos * 16) +  8]);
+        float * pa = (float *)(&data[(pos * 16) + 12]);
+        *pr = r;
+        *pg = g;
+        *pb = b;
+        *pa = a;
+    }
+
     void LoadFromString(const char * text, int offset)
     {
         int len = strlen(text);
@@ -1308,10 +1320,39 @@ public:
 
 TextureWorkbench * g_pTextureWorkbench = 0;
 
+TextureWorkbench * g_pTextureWorkbenches[128];
+
 void StartupTextureWorkbench()
 {
-    if(g_pTextureWorkbench == 0)
-        g_pTextureWorkbench = new TextureWorkbench();
+    for(int i = 0; i < 128; i++)
+    {
+        g_pTextureWorkbenches[i] = 0;
+    }
+
+    g_pTextureWorkbenches[0] = new TextureWorkbench();
+    g_pTextureWorkbench = g_pTextureWorkbenches[0];
+}
+
+// Initially I had a new function, but that confused the issue.
+// There are already 128 slots, use the one asked for.
+// Create a new instance if one doesn't already exist at the requested index.
+
+int luaCBGLTextWBSetCurrent(lua_State * L)
+{
+    int nIndex = luaL_checknumber(L, 1);
+    if (nIndex >= 0 && nIndex < 128)
+    {
+        if (g_pTextureWorkbenches[nIndex] == 0)
+            g_pTextureWorkbenches[nIndex] = new TextureWorkbench();
+
+        g_pTextureWorkbench = g_pTextureWorkbenches[nIndex];
+        lua_pushboolean(L, true);
+    }
+    else
+    {
+        lua_pushboolean(L, false);
+    }
+    return 1;
 }
 
 int luaCBGLTexWBClear(lua_State * L)
@@ -1349,6 +1390,19 @@ int luaCBGLTexWBSetByte(lua_State * L)
     char c = luaL_checknumber(L, 1);
     int  p = luaL_checknumber(L, 2);
     g_pTextureWorkbench->SetByte(c,p);
+    return 0;
+}
+
+int luaCBGLTexWBSetPixel(lua_State * L)
+{
+    float r = luaL_checknumber(L, 1);
+    float g = luaL_checknumber(L, 2);
+    float b = luaL_checknumber(L, 3);
+    float a = luaL_checknumber(L, 4);
+
+    int   p = luaL_checknumber(L, 5);
+
+    g_pTextureWorkbench->SetPixel(r,g,b,a,p);
     return 0;
 }
 
@@ -1842,9 +1896,10 @@ void luaInitCallbacksOpenGL()
     lua_register(g_pLuaState, "glTexWBClear",            luaCBGLTexWBClear);
     lua_register(g_pLuaState, "glTexWBSetByte",          luaCBGLTexWBSetByte);
     lua_register(g_pLuaState, "glTexWBLoadFromString",   luaCBGLTexWBLoadFromString);
-    //luaCBGLTexWBClear
-    //luaCBGLTexWBSetByte
-    //luaCBGLTexWBLoadFromString
+
+    lua_register(g_pLuaState, "glTexWBSetPixel",         luaCBGLTexWBSetPixel);
+    //lua_register(g_pLuaState, "glTexWBNew",              luaCBGLTexWBNew);
+    lua_register(g_pLuaState, "glTexWBSetCurrent",       luaCBGLTextWBSetCurrent);
 
     // Need to add functions that split up glStringToTexture more
     // Need to add function that generates the texture from the data that is there

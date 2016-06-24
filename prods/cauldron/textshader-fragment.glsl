@@ -3,11 +3,17 @@
 //  Adapted from shader program on Shadertoy written by Bart Verheijen 2016
 //  https://www.shadertoy.com/view/lsK3D1
 
-uniform vec2       iResolution;           // viewport resolution (in pixels)
+//uniform vec2       iResolution;           // viewport resolution (in pixels)
+uniform vec2       iTopLeft;
 uniform int        iFrame;                // shader playback frame
 uniform vec4       iMouse;                // mouse pixel coords. xy: current (if MLB down), zw: click
-uniform sampler2D  iChannel0;             // input channel. XX = 2D/Cube
-uniform sampler2D  iChannel1;             // input channel. XX = 2D/Cube
+
+uniform sampler2D  iChannel0;             // font texture
+uniform sampler2D  iChannel1;             // text grid
+uniform sampler2D  iChannel2;             // background colour
+uniform sampler2D  iChannel3;             // foreground colour
+uniform sampler2D  iChannel4;             // effect (bold, italic, underline)
+
 uniform float      iGlobalTime;           // global time
 
 uniform vec2       iCursorPos;
@@ -21,8 +27,7 @@ varying vec3 N; // eye-space normal
 
 #define CHAR_SIZE vec2(8.0, 12.0)
 
-//#define ZOOM 5.0
-float ZOOM = floor(min(iResolution.x,iResolution.y) / 100.0);
+#define ZOOM 5.0
 
 /**
  * x [0..8>
@@ -44,21 +49,25 @@ float readChar(in vec2 v)
     return fchar;
 }
 
+vec4 readbgcol(in vec2 v)
+{
+    float line   = floor(v.y);
+    float column = floor(v.x);
+    vec4 chunk = texture2D(iChannel2, ((vec2(column + 0.5, line + 0.5)) / vec2(512.0,512.0)));
+    return chunk;
+}
+
 vec2 FragCoordToCharPixel_Plain(in vec2 fragCoord)
 {
   vec2 pixel = fragCoord;
-  pixel.y = iResolution.y - pixel.y;
-  //pixel.y = 1000.0 - pixel.y;
   return pixel;
 }
 
 vec2 FragCoordToCharPixel_Zoom(in vec2 fragCoord)
 {
   vec2 pixel = fragCoord;
-  //pixel.y = pixel.y + 100.0;
-  pixel = (pixel - vec2(iResolution.x/2.0, 0.0)) / (ZOOM * (1.4 - pixel.y/iResolution.y));
+  pixel = (pixel - vec2(256.0, 0.0)) / (ZOOM * (1.4 - pixel.y/512.0));
   pixel.x = pixel.x + 256.0;
-  pixel.y = iResolution.y - pixel.y;
   return pixel;
 }
 
@@ -93,14 +102,16 @@ bool textPosInRange(in vec2 pos, in vec2 start, in vec2 end)
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
-    vec2 pixel = FragCoordToCharPixel_Plain(fragCoord);
+    //vec2 pixel = FragCoordToCharPixel_Plain(fragCoord);
     //vec2 pixel = FragCoordToCharPixel_Zoom(fragCoord);
-    
+    vec2 pixel = fragCoord;
+
     // Default blank color
     //fragColor = vec4(0.3, 0.0, 0.0, 0.4);
     fragColor = vec4(0.0, 0.0, 0.0, 0.0);
     
-    if (pixel.y > 0.0 && pixel.x > 0.0)
+// 45678901234567890123456789012345678901234567890123456789012345678901234567890
+    if (pixel.y > 0.0 && pixel.x > 0.0 && pixel.x <= (8.0 * (80.0 + 6.0)))
     {
         //float fFrame = float(iFrame);
         
@@ -115,34 +126,48 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
         vec4 color = drawCh(ch, mod(pixel.x, CHAR_SIZE.x), mod(pixel.y, CHAR_SIZE.y));
         
+        if (color.r < 0.1) // black
+        {
+          color = readbgcol(colrow);
+        }
+
         if (colrow == iCursorPos && colrowraw.x - colrow.x < 0.25)
         {
           color.r = 0.9;
           color.g = 0.9;
         }
-          
+
+        if (colrow.x > 3.9)
+        {
         //if (colrow == iBlockStart)
         //  color.b = 1.0;
 
         //if (colrow == iBlockEnd)
         //  color.b = 1.0;
 
-        if (textPosInRange(colrow,
-                           iBlockStart,
-                           iBlockEnd))
-        {
-          color.b = 1.0;
-        }
-        
-        if (textPosInRange(colrow,
-                           iSelectionStart,
-                           iSelectionEnd))
-        {
-          color.g = 0.9;
+          if (textPosInRange(colrow,
+                             iBlockStart,
+                             iBlockEnd))
+          {
+            color.b = 1.0;
+          }
+          
+          if (textPosInRange(colrow,
+                             iSelectionStart,
+                             iSelectionEnd))
+          {
+            color.g = 0.9;
+          }
         }
         
         fragColor = color;
+        //fragColor.a = 1.0;
         fragColor.a = 0.7;
+        //fragColor.a = color.a * 0.7;
+    }
+    else
+    {
+        discard;
     }
     
     //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture(iChannel0, fragCoord / vec2(512.0,512.0));
@@ -153,8 +178,14 @@ void main()
 {
     //mainImage(gl_FragColor, V.xz * 5.12 );
     //mainImage(gl_FragColor, (gl_FragCoord.xy * vec2(1.0, 0.5)) + vec2(-30.0, 0.0));
-    mainImage(gl_FragColor, (gl_FragCoord.xy * vec2(1.0, 1.0)) + vec2(-30.0, 0.0));
+    //mainImage(gl_FragColor, (gl_FragCoord.xy * vec2(1.0, 1.0)) - vec2(30.0, 0.0));
+    //mainImage(gl_FragColor, (gl_FragCoord.xy - vec2(30.0, 0.0)));
+
+    mainImage(gl_FragColor, ((gl_FragCoord.xy * vec2(1.0, -1.0)) + vec2(-iTopLeft.x, iTopLeft.y)));
+    //mainImage(gl_FragColor, ((gl_FragCoord.xy * vec2(1.0, -1.0)) +
+    //  vec2(0.0, iTopLeft.y)));
+
+    //mainImage(gl_FragColor, ((gl_FragCoord.xy * vec2(1.0, -1.0)) + vec2(-30.0, 200.0)));
     //gl_FragColor.a = 0.7;
 }
-
 

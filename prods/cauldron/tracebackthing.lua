@@ -49,6 +49,33 @@ function wraptoshowcaller(fn, setfn)
   setfn(wrappedfn)
 end
 
+wraptoshowcaller(edForceUpdate, function (fn) edForceUpdate = fn end)
+print2(getFunction(edForceUpdate))
+  local wrappedfn = function (...)
+    print2(getFunction(debug.getinfo(2).func))
+    fn(...)
+    setfn(fn)
+  end
+
+do
+  local tmpfn = function () edForceUpdate() end
+  tmpfn()
+end
+  local tmpfn = function () edForceUpdate() end
+
+
+
+
+  local wrappedfn = function (...)
+    print2(getFunction(debug.getinfo(2).func))
+    fn(...)
+    setfn(fn)
+  end
+
+edForceUpdate()
+
+
+
 do
  myfns = {}
  myfns[1] = function ()
@@ -77,6 +104,14 @@ print2(getFunction(myfns[2]))
 
 
 myfns[1]()
+myfns1
+ myfns[1] = function ()
+   print2("myfns1")
+   myfns[2]()
+ end
+
+myfns2
+
 myfns1
 myfns2
 
@@ -176,6 +211,8 @@ do
   closeBuffer()
   switchToBuffer("cps-factorial.lua")
 end
+
+
 
 
 

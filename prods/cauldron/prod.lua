@@ -123,18 +123,6 @@ Widgets[2] = airplane
 Widgets[3] = uimainwidget
 end
 
-setBufferText([[
-do
-uimainwidget.Widgets = {}
-local w = uimainwidget.Widgets
-w[1] = addButton(0,10,function(b) end)
-w[2] = addButton(5,32,function(b) end)
---w[3] = redslider
-w[3] = colorwheelgrp
-w[4] = dome
-end
-]])
-
 dofile("trace2.lua")
 
 showdiscs = true
@@ -220,4 +208,17 @@ setKeyRepeat(true)
 windowedMode(200, 80, 1200, 620)
 
 --dofile("forthexample.lua")
+
+
+loadBuffer("initial.lua")
+
+hideFPS()
+function trace2() end
+
+edSetVisColumns(80)
+
+dofile("errorhandling.lua")
+dofile("update.lua")
+
+
 
