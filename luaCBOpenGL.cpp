@@ -656,6 +656,16 @@ int luaCBGLClear(lua_State * L)
     return 0;
 }
 
+int luaCBGLUProject(lua_State * L)
+{
+    return 0;
+}
+
+int luaCBGLUUnProject(lua_State * L)
+{
+    return 0;
+}
+
 int luaCBGLBuildStencil(lua_State * L)
 {
     bool bInverted = luaL_checkinteger(L, 1);
@@ -1819,6 +1829,9 @@ void luaInitCallbacksOpenGL()
     lua_register(g_pLuaState, "glOrtho",                luaCBGLOrtho);
     lua_register(g_pLuaState, "glViewport",             luaCBGLViewport);
     lua_register(g_pLuaState, "glClear",                luaCBGLClear);
+
+    lua_register(g_pLuaState, "gluProject",             luaCBGLUProject);
+    lua_register(g_pLuaState, "gluUnProject",           luaCBGLUUnProject);
 
     lua_register(g_pLuaState, "glBuildStencil",         luaCBGLBuildStencil);
     lua_register(g_pLuaState, "glDrawWithinStencil",    luaCBGLDrawWithinStencil);
