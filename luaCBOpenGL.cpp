@@ -635,6 +635,34 @@ int luaCBGLOrtho(lua_State * L)
     return 0;
 }
 
+int luaCBGLGetDoublev(lua_State * L)
+{
+    GLuint pname = luaL_checknumber(L, 1);
+
+    GLdouble buffer[128];
+
+    glGetDoublev(pname, buffer);
+
+    for(int i = 0; i < 16; i++)
+        lua_pushnumber(L, buffer[i]);
+
+    return 16;
+}
+
+int luaCBGLGetIntegerv(lua_State * L)
+{
+    GLuint pname = luaL_checknumber(L, 1);
+
+    GLint buffer[128];
+
+    glGetIntegerv(pname, buffer);
+
+    for(int i = 0; i < 4; i++)
+        lua_pushnumber(L, buffer[i]);
+
+    return 4;
+}
+
 int luaCBGLViewport(lua_State * L)
 {
     int n = lua_gettop(L);
@@ -656,14 +684,58 @@ int luaCBGLClear(lua_State * L)
     return 0;
 }
 
+// Implement it the inefficient way first,
+// implement cached matrices if necessary.
 int luaCBGLUProject(lua_State * L)
 {
-    return 0;
+    GLint viewport[4];
+    GLdouble modelMatrix[16];
+    GLdouble projMatrix[16];
+
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
+
+    GLdouble winX, winY, winZ;
+    GLdouble objX, objY, objZ;
+
+    objX = luaL_checknumber(L, 1);
+    objY = luaL_checknumber(L, 2);
+    objZ = luaL_checknumber(L, 3);
+
+    gluProject(objX, objY, objZ, modelMatrix, projMatrix, viewport, &winX, &winY, &winZ);
+
+    lua_pushnumber(L, winX);
+    lua_pushnumber(L, winY);
+    lua_pushnumber(L, winZ);
+
+    return 3;
 }
 
 int luaCBGLUUnProject(lua_State * L)
 {
-    return 0;
+    GLint viewport[4];
+    GLdouble modelMatrix[16];
+    GLdouble projMatrix[16];
+
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
+
+    GLdouble winX, winY, winZ;
+    GLdouble objX, objY, objZ;
+
+    winX = luaL_checknumber(L, 1);
+    winY = luaL_checknumber(L, 2);
+    winZ = luaL_checknumber(L, 3);
+
+    gluUnProject(winX, winY, winZ, modelMatrix, projMatrix, viewport, &objX, &objY, &objZ);
+
+    lua_pushnumber(L, objX);
+    lua_pushnumber(L, objY);
+    lua_pushnumber(L, objZ);
+
+    return 3;
 }
 
 int luaCBGLBuildStencil(lua_State * L)
@@ -1757,6 +1829,10 @@ void luaInitCallbacksOpenGL()
     ss << "GL_RGBA_INTEGER_EXT = " << GL_RGBA_INTEGER_EXT << "\n";
     ss << "GL_ALPHA_INTEGER_EXT = " << GL_ALPHA_INTEGER_EXT << "\n";
 
+    ss << "GL_VIEWPORT = " << GL_VIEWPORT << "\n";
+    ss << "GL_PROJECTION_MATRIX = " << GL_PROJECTION_MATRIX << "\n";
+    ss << "GL_MODELVIEW_MATRIX = " << GL_MODELVIEW_MATRIX << "\n";
+
     // GL_UNPACK_ALIGNMENT
     // Initially 4, try setting it to 1
     //glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -1829,6 +1905,9 @@ void luaInitCallbacksOpenGL()
     lua_register(g_pLuaState, "glOrtho",                luaCBGLOrtho);
     lua_register(g_pLuaState, "glViewport",             luaCBGLViewport);
     lua_register(g_pLuaState, "glClear",                luaCBGLClear);
+
+    lua_register(g_pLuaState, "glGetDoublev",           luaCBGLGetDoublev);
+    lua_register(g_pLuaState, "glGetIntegerv",          luaCBGLGetIntegerv);
 
     lua_register(g_pLuaState, "gluProject",             luaCBGLUProject);
     lua_register(g_pLuaState, "gluUnProject",           luaCBGLUUnProject);
