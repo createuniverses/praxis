@@ -369,6 +369,26 @@ int luaCBTransformCopyFrom(lua_State * L)
     return 0;
 }
 
+#if 0
+int luaCBTransformSet(lua_State * L)
+{
+    int n = lua_gettop(L);
+    if(n!=17) luaL_error(L, "17 arguments expected.");
+
+    // 17 arguments.
+    // One for the transform, 16 for the numbers.
+
+    mlTransform * t = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
+
+    mlMatrix3x4 m;
+    m.I = mlVector3D(luaL_checknumber(L, 2), luaL_checknumber(L, 3), luaL_checknumber(L, 4));
+    // etc.
+
+    //t->SetMatrix(m);
+    return 0;
+}
+#endif
+
 int luaCBTransformTransform(lua_State * L)
 {
     int n = lua_gettop(L);
@@ -410,6 +430,7 @@ void luaInitCallbacksTransformLib()
         {"transformVector",        luaCBTransformTransformVector},
         {"transformVectorInverse", luaCBTransformTransformVectorInverse},
         {"copy",                   luaCBTransformCopyFrom},
+        //{"set",                    luaCBTransformSet},
         {"normalise",              luaCBTransformNormalise},
         {NULL, NULL}
     };
