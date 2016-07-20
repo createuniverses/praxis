@@ -284,6 +284,37 @@ int luaCBTransformRotate(lua_State * L)
     return 0;
 }
 
+int luaCBTransformSetRotation(lua_State * L)
+{
+    int n = lua_gettop(L);
+    if(n!=3 && n!=5) luaL_error(L, "3 or 5 arguments expected.");
+
+    mlTransform * t = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
+
+    if(n == 3)
+    {
+        float yaw   = luaL_checknumber(L, 2);
+        float pitch = luaL_checknumber(L, 3);
+
+        t->ApplyRotation(mlQuaternion(mlVector3D(0,1,0), -yaw));
+
+        mlVector3D vSide = t->TransformVector(mlVector3D(1,0,0));
+
+        t->SetRotation(mlQuaternion(vSide, pitch));
+    }
+    else if(n == 5)
+    {
+        float angle  = luaL_checknumber(L, 2);
+        float x      = luaL_checknumber(L, 3);
+        float y      = luaL_checknumber(L, 4);
+        float z      = luaL_checknumber(L, 5);
+
+        t->SetRotation(mlQuaternion(mlVector3D(x,y,z), angle));
+    }
+
+    return 0;
+}
+
 int luaCBTransformLocalToGlobal(lua_State * L)
 {
     int n = lua_gettop(L);
@@ -423,6 +454,7 @@ void luaInitCallbacksTransformLib()
         {"translate",              luaCBTransformApplyTranslation},
         {"scale",                  luaCBTransformApplyScale},
         {"rotate",                 luaCBTransformRotate},
+        {"setRotation",            luaCBTransformSetRotation},
         {"localToGlobal",          luaCBTransformLocalToGlobal},
         {"globalToLocal",          luaCBTransformGlobalToLocal},
         {"transformPoint",         luaCBTransformLocalToGlobal},
