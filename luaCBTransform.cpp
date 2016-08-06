@@ -33,6 +33,13 @@ int luaCBTransformIdentity(lua_State * L)
     return 1;
 }
 
+int luaCBTransformInvert(lua_State * L)
+{
+    mlTransform * t = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
+    t->Invert();
+    return 0;
+}
+
 int luaCBTransformCamera(lua_State * L)
 {
     mlTransform ** t = (mlTransform **)lua_newuserdata(L, sizeof(mlTransform *));
@@ -438,6 +445,7 @@ void luaInitCallbacksTransformLib()
     const struct luaL_Reg lua_transformlib [] = {
         {"new",                    luaCBTransformNew},
         {"identity",               luaCBTransformIdentity},
+        {"invert",                 luaCBTransformInvert},
         {"camera",                 luaCBTransformCamera},
         {"cameraBase",             luaCBTransformCameraBase},
         {"getTranslation",         luaCBTransformGetTranslation},
