@@ -407,6 +407,21 @@ int luaCBTransformCopyFrom(lua_State * L)
     return 0;
 }
 
+int luaCBTransformInterpolate(lua_State * L)
+{
+    int n = lua_gettop(L);
+    if(n!=4) luaL_error(L, "4 arguments expected.");
+
+    mlTransform * t1 = *(mlTransform **)luaL_checkudata(L, 1, "LiveCode.transform");
+    mlTransform * t2 = *(mlTransform **)luaL_checkudata(L, 2, "LiveCode.transform");
+    mlTransform * t3 = *(mlTransform **)luaL_checkudata(L, 3, "LiveCode.transform");
+    float alpha = luaL_checknumber(L, 4);
+
+    t1->Interpolate(alpha, *t2, *t3);
+
+    return 0;
+}
+
 #if 0
 int luaCBTransformSet(lua_State * L)
 {
@@ -470,6 +485,7 @@ void luaInitCallbacksTransformLib()
         {"transformVector",        luaCBTransformTransformVector},
         {"transformVectorInverse", luaCBTransformTransformVectorInverse},
         {"copy",                   luaCBTransformCopyFrom},
+        {"interpolate",            luaCBTransformInterpolate},
         //{"set",                    luaCBTransformSet},
         {"normalise",              luaCBTransformNormalise},
         {NULL, NULL}
