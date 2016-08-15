@@ -1646,7 +1646,7 @@ int luaCBGLUniformf(lua_State * L)
         params[0] = luaL_checknumber(L, 2);
         params[1] = luaL_checknumber(L, 3);
         params[2] = luaL_checknumber(L, 4);
-        glUniform3f(id, params[0], params[1], params[3]);
+        glUniform3f(id, params[0], params[1], params[2]);
         break;
     case 5:
         params[0] = luaL_checknumber(L, 2);
@@ -1687,7 +1687,7 @@ int luaCBGLUniformi(lua_State * L)
         params[0] = luaL_checknumber(L, 2);
         params[1] = luaL_checknumber(L, 3);
         params[2] = luaL_checknumber(L, 4);
-        glUniform3i(id, params[0], params[1], params[3]);
+        glUniform3i(id, params[0], params[1], params[2]);
         break;
     case 5:
         params[0] = luaL_checknumber(L, 2);

@@ -17,17 +17,17 @@ PRAXIS_WITH_IO     = false
 PRAXIS_WITH_LISP   = true
 
 equals(PRAXIS_WITH_FORTH, "true") {
-    message("Including Forth")
+    #message("Including Forth")
     DEFINES += __PRAXIS_WITH_FORTH__
 }
 
 equals(PRAXIS_WITH_IO, "true") {
-    message("Including Io lang")
+    #message("Including Io lang")
     DEFINES += __PRAXIS_WITH_IO__
 }
 
 equals(PRAXIS_WITH_LISP, "true") {
-    message("Including Lisp")
+    #message("Including Lisp")
     DEFINES += __PRAXIS_WITH_LISP__
 }
 
@@ -38,6 +38,10 @@ win32 {
     DEFINES += _ALLOW_KEYWORD_MACROS
     INCLUDEPATH += ./freetype-2.3.5/include/
     INCLUDEPATH += ./fmodapi375win/inc/
+
+    QMAKE_CXXFLAGS += /wd4005 /wd4100 /wd4800 /wd4018 /wd4189 /wd4244 /wd4090 /wd4273 /wd4305 /wd4047
+    QMAKE_CFLAGS   += /wd4005 /wd4100 /wd4800 /wd4018 /wd4189 /wd4244 /wd4090 /wd4273 /wd4305 /wd4047
+    QMAKE_LFLAGS   += /ignore:4217 /ignore:4049 /ignore:4098
 
     #message($$_PRO_FILE_PWD_)
 
