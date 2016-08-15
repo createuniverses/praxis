@@ -12,6 +12,25 @@ INCLUDEPATH += ./Neural/
 
 INCLUDEPATH += ./glew/include/
 
+PRAXIS_WITH_FORTH  = false
+PRAXIS_WITH_IO     = false
+PRAXIS_WITH_LISP   = true
+
+equals(PRAXIS_WITH_FORTH, "true") {
+    message("Including Forth")
+    DEFINES += __PRAXIS_WITH_FORTH__
+}
+
+equals(PRAXIS_WITH_IO, "true") {
+    message("Including Io lang")
+    DEFINES += __PRAXIS_WITH_IO__
+}
+
+equals(PRAXIS_WITH_LISP, "true") {
+    message("Including Lisp")
+    DEFINES += __PRAXIS_WITH_LISP__
+}
+
 win32 {
     DEFINES += __PRAXIS_WINDOWS__
     DEFINES += __WINDOWS_MM__
@@ -108,13 +127,100 @@ SOURCES += main.cpp \
     Neural/AI_NeuralNetwork.cpp \
     Neural/UT_String.cpp \
     Neural/UT_Functions.cpp \
-    s7/s7.c \
-    lispCallbacks.cpp \
-    lispInterface.cpp \
     audioWave.cpp \
     RtMidi.cpp \
-    forthCallbacks.cpp \
+    PraxisTexture.cpp \
+    PraxisLog.cpp \
+    PraxisServer.cpp \
+    luaCBOpenGL.cpp \
+    luaCBEditor.cpp \
+    luaCBServer.cpp \
+    luaCBTransform.cpp \
+    luaCBTexture.cpp \
+    luaCBMp3.cpp \
+    luaCBWindow.cpp \
+    luaCBClipboard.cpp \
+    luaCBVoxel.cpp \
+    luaCBSynth.cpp \
+    luaCBMidi.cpp \
+    luaCBWorld.cpp \
+    luaCBLang.cpp \
+    luaCBJoystick.cpp \
+    luaCBSystem.cpp \
+    glew/source/glew.c \
+    lua-5.2.4/src/lapi.c \
+    lua-5.2.4/src/lauxlib.c \
+    lua-5.2.4/src/lbaselib.c \
+    lua-5.2.4/src/lbitlib.c \
+    lua-5.2.4/src/lcode.c \
+    lua-5.2.4/src/lcorolib.c \
+    lua-5.2.4/src/lctype.c \
+    lua-5.2.4/src/ldblib.c \
+    lua-5.2.4/src/ldebug.c \
+    lua-5.2.4/src/ldo.c \
+    lua-5.2.4/src/ldump.c \
+    lua-5.2.4/src/lfunc.c \
+    lua-5.2.4/src/lgc.c \
+    lua-5.2.4/src/linit.c \
+    lua-5.2.4/src/liolib.c \
+    lua-5.2.4/src/llex.c \
+    lua-5.2.4/src/lmathlib.c \
+    lua-5.2.4/src/lmem.c \
+    lua-5.2.4/src/loadlib.c \
+    lua-5.2.4/src/lobject.c \
+    lua-5.2.4/src/lopcodes.c \
+    lua-5.2.4/src/loslib.c \
+    lua-5.2.4/src/lparser.c \
+    lua-5.2.4/src/lstate.c \
+    lua-5.2.4/src/lstring.c \
+    lua-5.2.4/src/lstrlib.c \
+    lua-5.2.4/src/ltable.c \
+    lua-5.2.4/src/ltablib.c \
+    lua-5.2.4/src/ltm.c \
+    lua-5.2.4/src/lundump.c \
+    lua-5.2.4/src/lvm.c \
+    lua-5.2.4/src/lzio.c \
+    lpeg-1.0.0/lpcap.c \
+    lpeg-1.0.0/lpcode.c \
+    lpeg-1.0.0/lpprint.c \
+    lpeg-1.0.0/lptree.c \
+    lpeg-1.0.0/lpvm.c
+
+win32 {
+SOURCES += \
+    audioMidi.cpp
+}
+
+equals(PRAXIS_WITH_LISP, "true") {
+SOURCES += \
+    lispInterface.cpp \
+    lispCallbacks.cpp \
+    s7/s7.c
+}
+
+equals(PRAXIS_WITH_FORTH, "true") {
+SOURCES += \
     forthInterface.cpp \
+    forthCallbacks.cpp \
+    pforth/pf_cglue.c \
+    pforth/pf_clib.c \
+    pforth/pf_core.c \
+    pforth/pf_inner.c \
+    pforth/pf_io.c \
+    pforth/pf_io_none.c \
+    pforth/pf_main.c \
+    pforth/pf_mem.c \
+    pforth/pf_save.c \
+    pforth/pf_text.c \
+    pforth/pf_words.c \
+    pforth/pfcompil.c \
+    pforth/pfcustom.c
+}
+
+equals(PRAXIS_WITH_IO, "true") {
+SOURCES += \
+    ioInterface.cpp \
+    ioCallbacks.cpp \
     io/BStream.c \
     io/BStreamTag.c \
     io/cdecode.c \
@@ -196,83 +302,8 @@ SOURCES += main.cpp \
     io/ucs4.c \
     io/utf_convert.c \
     io/utf8.c \
-    ioInterface.cpp \
-    ioCallbacks.cpp \
     io/io_main.c \
-    io/Stack_io.c \
-    PraxisTexture.cpp \
-    PraxisLog.cpp \
-    PraxisServer.cpp \
-    pforth/pf_cglue.c \
-    pforth/pf_clib.c \
-    pforth/pf_core.c \
-    pforth/pf_inner.c \
-    pforth/pf_io.c \
-    pforth/pf_io_none.c \
-    pforth/pf_main.c \
-    pforth/pf_mem.c \
-    pforth/pf_save.c \
-    pforth/pf_text.c \
-    pforth/pf_words.c \
-    pforth/pfcompil.c \
-    pforth/pfcustom.c \
-    luaCBOpenGL.cpp \
-    luaCBEditor.cpp \
-    luaCBServer.cpp \
-    luaCBTransform.cpp \
-    luaCBTexture.cpp \
-    luaCBMp3.cpp \
-    luaCBWindow.cpp \
-    luaCBClipboard.cpp \
-    luaCBVoxel.cpp \
-    luaCBSynth.cpp \
-    luaCBMidi.cpp \
-    luaCBWorld.cpp \
-    luaCBLang.cpp \
-    luaCBJoystick.cpp \
-    luaCBSystem.cpp \
-    glew/source/glew.c \
-    lua-5.2.4/src/lapi.c \
-    lua-5.2.4/src/lauxlib.c \
-    lua-5.2.4/src/lbaselib.c \
-    lua-5.2.4/src/lbitlib.c \
-    lua-5.2.4/src/lcode.c \
-    lua-5.2.4/src/lcorolib.c \
-    lua-5.2.4/src/lctype.c \
-    lua-5.2.4/src/ldblib.c \
-    lua-5.2.4/src/ldebug.c \
-    lua-5.2.4/src/ldo.c \
-    lua-5.2.4/src/ldump.c \
-    lua-5.2.4/src/lfunc.c \
-    lua-5.2.4/src/lgc.c \
-    lua-5.2.4/src/linit.c \
-    lua-5.2.4/src/liolib.c \
-    lua-5.2.4/src/llex.c \
-    lua-5.2.4/src/lmathlib.c \
-    lua-5.2.4/src/lmem.c \
-    lua-5.2.4/src/loadlib.c \
-    lua-5.2.4/src/lobject.c \
-    lua-5.2.4/src/lopcodes.c \
-    lua-5.2.4/src/loslib.c \
-    lua-5.2.4/src/lparser.c \
-    lua-5.2.4/src/lstate.c \
-    lua-5.2.4/src/lstring.c \
-    lua-5.2.4/src/lstrlib.c \
-    lua-5.2.4/src/ltable.c \
-    lua-5.2.4/src/ltablib.c \
-    lua-5.2.4/src/ltm.c \
-    lua-5.2.4/src/lundump.c \
-    lua-5.2.4/src/lvm.c \
-    lua-5.2.4/src/lzio.c \
-    lpeg-1.0.0/lpcap.c \
-    lpeg-1.0.0/lpcode.c \
-    lpeg-1.0.0/lpprint.c \
-    lpeg-1.0.0/lptree.c \
-    lpeg-1.0.0/lpvm.c
-
-win32 {
-SOURCES += \
-    audioMidi.cpp
+    io/Stack_io.c
 }
 
 HEADERS += \

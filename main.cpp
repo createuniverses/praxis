@@ -142,17 +142,23 @@ int main()
     luaInit();
     luaInitCallbacks();
 
+#ifdef __PRAXIS_WITH_LISP__
     // Lisp
     lispInit();
     lispInitCallbacks();
+#endif
 
+#ifdef __PRAXIS_WITH_FORTH__
     // Forth
     forthInit();
     forthInitCallbacks();
+#endif
 
+#ifdef __PRAXIS_WITH_IO__
     // Io
     ioInit();
     ioInitCallbacks();
+#endif
 
 #ifdef __PRAXIS_WINDOWS__
     // FMOD mp3 playing
@@ -184,9 +190,18 @@ int main()
 	delete pWorld;
 
     luaClose();
+
+#ifdef __PRAXIS_WITH_LISP__
     lispClose();
+#endif
+
+#ifdef __PRAXIS_WITH_FORTH__
     forthClose();
+#endif
+
+#ifdef __PRAXIS_WITH_IO__
     ioClose();
+#endif
 
 #ifdef __PRAXIS_WINDOWS__
     FSOUND_Stream_Close(g_pMp3Stream);
