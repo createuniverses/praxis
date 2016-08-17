@@ -84,8 +84,8 @@ function Vector3D_meta.__index(tbl,key)
 end
 
 function calcCurve(p1, p2, t)
-  t2 = t*t
-  t3 = t2*t
+  local t2 = t*t
+  local t3 = t2*t
   return p1.p * (  2*t3 - 3*t2 + 1) +
          p2.p * ( -2*t3 + 3*t2    ) +
          p1.t * (    t3 - 2*t2 + t) +
@@ -138,4 +138,5 @@ function Vector3D.fromEulerAngles(zero,hdg,pitch)
   v = Vector3D.rotate(v,vec3d(0,0,0),vec3d(0,1,0),hdg)
   return v
 end
+
 

@@ -3,24 +3,16 @@
 //  Adapted from shader program on Shadertoy written by Bart Verheijen 2016
 //  https://www.shadertoy.com/view/lsK3D1
 
-//uniform vec2       iResolution;           // viewport resolution (in pixels)
 uniform vec2       iTopLeft;
-uniform int        iFrame;                // shader playback frame
-uniform vec4       iMouse;                // mouse pixel coords. xy: current (if MLB down), zw: click
-
-uniform sampler2D  iChannel0;             // font texture
-uniform sampler2D  iChannel1;             // text grid
-uniform sampler2D  iChannel2;             // background colour
-uniform sampler2D  iChannel3;             // foreground colour
-uniform sampler2D  iChannel4;             // effect (bold, italic, underline)
-
-uniform float      iGlobalTime;           // global time
-
 uniform vec2       iCursorPos;
-uniform vec2       iSelectionStart;
-uniform vec2       iSelectionEnd;
-uniform vec2       iBlockStart;
-uniform vec2       iBlockEnd;
+
+uniform sampler2D  iFont;             // font texture
+uniform sampler2D  iTextGrid;         // text grid
+uniform sampler2D  iBackground;       // background colour
+
+// Future work
+//uniform sampler2D  iChannel3;             // foreground colour
+//uniform sampler2D  iChannel4;             // effect (bold, italic, underline)
 
 varying vec3 V; // object-space position
 varying vec3 N; // eye-space normal
@@ -36,7 +28,7 @@ varying vec3 N; // eye-space normal
 vec4 drawCh(in float character, in float x, in float y)
 {
     vec2 coord = floor(vec2(CHAR_SIZE.x*mod(character,32.0) + x, 512.0 - CHAR_SIZE.y*floor(0.0+character/32.0) - y));
-    vec4 pixel = texture2D(iChannel0, (coord+vec2(0.5,0.5)) / vec2(512.0,512.0));
+    vec4 pixel = texture2D(iFont, (coord+vec2(0.5,0.5)) / vec2(512.0,512.0));
     return pixel;
 }
 
@@ -44,7 +36,7 @@ float readChar(in vec2 v)
 {
     float line   = floor(v.y);
     float column = floor(v.x);
-    vec4 chunk = texture2D(iChannel1, ((vec2(column + 0.5, line + 0.5)) / vec2(512.0,512.0)));
+    vec4 chunk = texture2D(iTextGrid, ((vec2(column + 0.5, line + 0.5)) / vec2(512.0,512.0)));
     float fchar = floor(chunk.r * 255.0 + 0.5);
     return fchar;
 }
@@ -53,7 +45,7 @@ vec4 readbgcol(in vec2 v)
 {
     float line   = floor(v.y);
     float column = floor(v.x);
-    vec4 chunk = texture2D(iChannel2, ((vec2(column + 0.5, line + 0.5)) / vec2(512.0,512.0)));
+    vec4 chunk = texture2D(iBackground, ((vec2(column + 0.5, line + 0.5)) / vec2(512.0,512.0)));
     return chunk;
 }
 
@@ -100,6 +92,16 @@ bool textPosInRange(in vec2 pos, in vec2 start, in vec2 end)
   return false;
 }
 
+bool pixelDrawable(in vec2 pixel)
+{
+  // Add a limit for the height
+  
+  if (pixel.y > 0.0 && pixel.x > 0.0 && pixel.x <= (8.0 * (80.0 + 6.0)))
+    return true;
+  else
+    return false;
+}
+
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
     //vec2 pixel = FragCoordToCharPixel_Plain(fragCoord);
@@ -110,15 +112,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     //fragColor = vec4(0.3, 0.0, 0.0, 0.4);
     fragColor = vec4(0.0, 0.0, 0.0, 0.0);
     
-// 45678901234567890123456789012345678901234567890123456789012345678901234567890
-    if (pixel.y > 0.0 && pixel.x > 0.0 && pixel.x <= (8.0 * (80.0 + 6.0)))
+    if (pixelDrawable(pixel))
     {
-        //float fFrame = float(iFrame);
-        
-        // Uncomment these to have scrolling.
-        //float speed = 8.0;
-        //pixel.y = pixel.y + speed*fFrame/30.0;
-        
         vec2 colrowraw = pixel/CHAR_SIZE;
         vec2 colrow = floor(colrowraw);
         
@@ -136,29 +131,6 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
           color.r = 0.9;
           color.g = 0.9;
         }
-
-        if (colrow.x > 3.9)
-        {
-        //if (colrow == iBlockStart)
-        //  color.b = 1.0;
-
-        //if (colrow == iBlockEnd)
-        //  color.b = 1.0;
-
-          if (textPosInRange(colrow,
-                             iBlockStart,
-                             iBlockEnd))
-          {
-            color.b = 1.0;
-          }
-          
-          if (textPosInRange(colrow,
-                             iSelectionStart,
-                             iSelectionEnd))
-          {
-            color.g = 0.9;
-          }
-        }
         
         fragColor = color;
         //fragColor.a = 1.0;
@@ -170,22 +142,15 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
         discard;
     }
     
-    //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture(iChannel0, fragCoord / vec2(512.0,512.0));
-    //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture(iChannel1, fragCoord / vec2(512.0,512.0));
+    //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture(iFont, fragCoord / vec2(512.0,512.0));
+    //if (fragCoord.y > iResolution.y- 95.0 && fragCoord.x < 256.0) fragColor = texture(iTextGrid, fragCoord / vec2(512.0,512.0));
 }
 
 void main()
 {
+    // When applying as a texture
     //mainImage(gl_FragColor, V.xz * 5.12 );
-    //mainImage(gl_FragColor, (gl_FragCoord.xy * vec2(1.0, 0.5)) + vec2(-30.0, 0.0));
-    //mainImage(gl_FragColor, (gl_FragCoord.xy * vec2(1.0, 1.0)) - vec2(30.0, 0.0));
-    //mainImage(gl_FragColor, (gl_FragCoord.xy - vec2(30.0, 0.0)));
-
+    
+    // When drawing directly to the screen
     mainImage(gl_FragColor, ((gl_FragCoord.xy * vec2(1.0, -1.0)) + vec2(-iTopLeft.x, iTopLeft.y)));
-    //mainImage(gl_FragColor, ((gl_FragCoord.xy * vec2(1.0, -1.0)) +
-    //  vec2(0.0, iTopLeft.y)));
-
-    //mainImage(gl_FragColor, ((gl_FragCoord.xy * vec2(1.0, -1.0)) + vec2(-30.0, 200.0)));
-    //gl_FragColor.a = 0.7;
 }
-
