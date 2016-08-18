@@ -15,6 +15,7 @@ function csection()
     glVertex(0,0,0)
   glEnd()
 end
+showFPS()
 
 do
  local s = 2
@@ -28,27 +29,17 @@ end
 
 do
   local r = 3
-  csectionptc = {}
-  local step = math.pi * 0.5
+  local sides = 3
+  csectionpts = {}
+  local step = (math.pi * 2.01)/sides
   for a = 0,math.pi*2,step do
+    --print2(a)
     local x = math.sin(a) * r
     local y = math.cos(a) * r
     local z = 0
     table.insert(csectionpts, vec3d(x,y,z))
   end
-end
-
--- praxis:
-do
-  local r = 3
-  csectionptc = {}
-  local step = math.pi * 0.5
-  for a = 0,math.pi*2,step do
-    local x = math.sin(a) * r
-    local y = math.cos(a) * r
-    local z = 0
-    table.insert(csectionpts, vec3d(x,y,z))
-  end
+  --print2(#csectionpts)
 end
 
 function helix()
@@ -203,6 +194,7 @@ function render()
 
   trace2()
 end
+
 
 
 
