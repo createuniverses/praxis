@@ -140,10 +140,23 @@ end
 
 continue()
 
+helixnum = 0.05
+dhelixnum = -0.001
+do updatefns["swooshy"] = function ()
+  helixnum = helixnum + dhelixnum
+  if helixnum < 0.005 then
+    dhelixnum = 0.002
+  end
+  if helixnum > 0.15 then
+    dhelixnum = -0.002
+  end
+end end
+
 function helixsolid()
   local r = 20
   local a = 0
   helixt = transform.identity()
+  helixt:translate(0,10,0)
   --helixt:translate(r*math.sin(a), r*math.cos(a), 0)
   local ptsa = {}
   local ptsb = {}
@@ -166,7 +179,8 @@ function helixsolid()
     --helixt:translate(0,0,3)
      
     -- do a barrel roll
-    helixt:rotate(math.pi * 0.05, (vec3d(helixt:forward())):getArgs())
+    --helixt:rotate(math.pi * 0.03, (vec3d(helixt:forward())):getArgs())
+    helixt:rotate(math.pi * helixnum, (vec3d(helixt:forward())):getArgs())
     helixt:rotate(math.pi * 0.02, (vec3d(helixt:side())):getArgs())
     
     helixt:translate((vec3d(helixt:forward())*2):getArgs())
@@ -194,6 +208,7 @@ function render()
 
   trace2()
 end
+
 
 
 
