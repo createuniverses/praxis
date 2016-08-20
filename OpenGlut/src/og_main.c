@@ -1031,13 +1031,13 @@ void oghDispatchEvent( SOG_Event *ev )
 
             if( KeyPress == event->type )
             {
-                printf("KeyPress: %d, %d\n", event->xkey.keycode, event->xkey.state);
-                fflush(stdout);
+                //printf("KeyPress: %d, %d\n", event->xkey.keycode, event->xkey.state);
+                //fflush(stdout);
             }
             else
             {
-                printf("KeyRelease: %d, %d\n", event->xkey.keycode, event->xkey.state);
-                fflush(stdout);
+                //printf("KeyRelease: %d, %d\n", event->xkey.keycode, event->xkey.state);
+                //fflush(stdout);
             }
 
             /* Detect repeated keys if configured globally or per-window */
@@ -1101,8 +1101,8 @@ void oghDispatchEvent( SOG_Event *ev )
 
                 if( KeyPress == event->type )
                 {
-                    printf("KeyPress CB: asciiCode[0] = %d, keySym = %d\n", asciiCode[0],keySym);
-                    fflush(stdout);
+                    //printf("KeyPress CB: asciiCode[0] = %d, keySym = %d\n", asciiCode[0],keySym);
+                    //fflush(stdout);
 
                     /* 65056 is Shift Tab, XK_ISO_Left_Tab
                      */
@@ -1127,8 +1127,8 @@ void oghDispatchEvent( SOG_Event *ev )
                 }
                 else
                 {
-                    printf("KeyRelease CB: asciiCode[0] = %d, keySym = %d\n", asciiCode[0],keySym);
-                    fflush(stdout);
+                    //printf("KeyRelease CB: asciiCode[0] = %d, keySym = %d\n", asciiCode[0],keySym);
+                    //fflush(stdout);
 
                     // keyboard
 

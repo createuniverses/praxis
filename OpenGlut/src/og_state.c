@@ -838,7 +838,7 @@ int OGAPIENTRY glutGetModifiers( void )
 {
     if( ogState.Modifiers == 0xffffffff )
     {
-        ogWarning( "glutGetModifiers() called outside an input callback" );
+        //ogWarning( "glutGetModifiers() called outside an input callback" );
         return 0;
     }
 

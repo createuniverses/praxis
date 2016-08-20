@@ -138,6 +138,10 @@ end
 --print2(unpack2({vec3d(1,2,3):getArgs()}, {vec3d(4,5,6):getArgs()}))
 
 
+
+setCamPos(4.6143589019775, 10.858580589294, -2.8097171783447)
+lookAt(4.6143589019775, 10.858580589294, 12.8097171783447)
+
 continue()
 
 helixnum = 0.05
@@ -208,6 +212,7 @@ function render()
 
   trace2()
 end
+
 
 
 

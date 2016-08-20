@@ -1,14 +1,14 @@
 
 #fmodapi375win
 #freetype-2.3.5
-#lua-5.2.1
+#lua-5.2.4
 #OpenGlut
 
 *.user
 #*.dll
 #*.mp3
 #*.ttf
-*.png
+#*.png
 *.bmp
 
 *.autosave
