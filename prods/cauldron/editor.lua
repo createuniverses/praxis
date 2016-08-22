@@ -64,6 +64,7 @@ end
 edEchoKeys = false
 
 function onKeyDown(k)
+  -- recording happens here.
   if edEchoKeys then
     print("onKeyDown " .. k)
   end
