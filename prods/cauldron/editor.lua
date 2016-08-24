@@ -63,30 +63,8 @@ end
 
 edEchoKeys = false
 
-updatefns = updatefns or {}
-
-updatefns["keyrecorder"] = function ()
-  local k = keyrecorder
-  k.framenum = k.framenum + 1
-end
-
-keyrecorder = {}
-keyrecorder.framenum = 0
-keyrecorder.keys = {}
-
-keyrecorder.state = "stopped" -- recording, playing
-
-function keyrecorder:onKeyDown(k)
-  if self.state == "recording" then
-    local kr = self
-    table.insert(kr.keys, {key = k, t = kr.framenum })
-  end
-  if self.state == "playing" then
-  end  
-end
-
 function onKeyDown(k)
-  keyrecorder:onKeyDown(k)
+  if keyrecorder then keyrecorder:onKeyDown(k) end
   
   if edEchoKeys then
     print("onKeyDown " .. k)
