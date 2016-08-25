@@ -24,11 +24,13 @@ function keyrecorder.update()
     local key = findmatch(k.framenum)
     if key ~= nil then
       onKeyDown(key.key)
+      -- need to provide the modifiers here!!
     end
   end  
 end
 
 function keyrecorder:onKeyDown(k)
+  -- need to save the state of the key modifiers too!!
   if self.state == "recording" then
     local kr = self
     table.insert(kr.keys, {key = k, t = kr.framenum })
@@ -53,3 +55,4 @@ end
 updatefns = updatefns or {}
 
 updatefns["keyrecorder"] = keyrecorder.update
+
