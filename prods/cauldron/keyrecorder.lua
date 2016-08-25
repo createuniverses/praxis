@@ -6,11 +6,25 @@ keyrecorder.keys = {}
 
 keyrecorder.state = "stopped" -- recording, playing
 
+function findmatch(n)
+  for i=1,#keyrecorder.keys, 1 do
+    local k = keyrecorder.keys[i]
+    if k.t == n then
+      return k
+    end
+  end
+  return nil
+end
+
 function keyrecorder.update()
   local k = keyrecorder
   k.framenum = k.framenum + 1
   
   if k.state == "playing" then
+    local key = findmatch(k.framenum)
+    if key ~= nil then
+      onKeyDown(key.key)
+    end
   end  
 end
 
@@ -27,11 +41,12 @@ function keyrecorder:play()
 end
 
 function keyrecorder:record()
+  self.framenum = 0
   self.state = "recording"
 end
 
 function keyrecorder:stop()
-  --self.framenum = 0
+  self.framenum = 0
   self.state = "stopped"
 end
 
