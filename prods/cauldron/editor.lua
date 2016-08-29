@@ -64,12 +64,16 @@ end
 edEchoKeys = false
 
 function onKeyDown(k)
-  if keyrecorder then keyrecorder:onKeyDown(k) end
+  local m = edGetKeyModifiers()
+  if keyrecorder then keyrecorder:onKeyDown(k,m) end
+  onKeyDownWithMods(k,m)
+end
   
+function onKeyDownWithMods(k,mods)
   if edEchoKeys then
     print("onKeyDown " .. k)
   end
-  local mods = edGetKeyModifiers()
+  --local mods = edGetKeyModifiers()
   if editorVisible() then
     local action = getKeyHandler(keymap, k, mods)
     if action ~= nil then
@@ -77,7 +81,7 @@ function onKeyDown(k)
       action()
     else
       if edEchoKeys then
-        print("Missing key handler for " .. k .. ", mods = " .. edGetKeyModifiers())
+        print("Missing key handler for " .. k .. ", mods = " .. mods)
       end
       replaceFunction("onKeyDownSpecial", onKeyDownSpecial_Plain,
         function (k2)

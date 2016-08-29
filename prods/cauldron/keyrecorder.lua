@@ -21,19 +21,17 @@ function keyrecorder.update()
   k.framenum = k.framenum + 1
   
   if k.state == "playing" then
-    local key = findmatch(k.framenum)
-    if key ~= nil then
-      onKeyDown(key.key)
-      -- need to provide the modifiers here!!
+    local event = findmatch(k.framenum)
+    if event ~= nil then
+      onKeyDownWithMods(event.key, event.mods)
     end
   end  
 end
 
-function keyrecorder:onKeyDown(k)
-  -- need to save the state of the key modifiers too!!
+function keyrecorder:onKeyDown(k,m)
   if self.state == "recording" then
     local kr = self
-    table.insert(kr.keys, {key = k, t = kr.framenum })
+    table.insert(kr.keys, {key = k, mods = m, t = kr.framenum })
   end
 end
 
